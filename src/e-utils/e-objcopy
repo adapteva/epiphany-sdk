@@ -1,0 +1,57 @@
+#!/bin/sh
+
+#  Copyright (c) 2010, All Right Reserved, Adapteva, Inc.
+
+#  This source is subject to the Adapteva Software License.
+#  You should have received a copy of the full license file
+#  named ("LICENSE") along with this program.  If not, contact
+#  Adapteva immediately at support@adapteva.com
+
+#coreId wrapper iover objdump
+
+usage()
+{
+    epiphany-elf-objcopy -h
+    st=$status
+    echo "     --coreid <coreid>             Insert coreid to SREC file S0 record"
+    exit $st
+}
+
+srecFile=$@
+for srecFile; do true; done
+
+origOpt=$@
+coreId=""
+
+
+until
+  opt=$1
+  case ${opt} in
+    --coreid)
+       shift  ; coreId=$1;;  
+    -coreid)
+       shift  ; coreId=$1;;  
+     -h) 
+       usage;;
+     --help)  
+       usage;;
+    *)
+      allOpt="$allOpt ${opt}"
+  esac;
+  [ -z "${opt}" ]; do 
+    shift
+done
+
+
+if [ -z "${coreId}" ]; then
+    epiphany-elf-objcopy ${origOpt}
+    st=$status
+else
+    epiphany-elf-objcopy ${allOpt}
+    st=$status
+    
+    sed -i 's/^S0\(..\)0000/S0\10'${coreId}'/' ${srecFile}
+fi
+
+exit $st
+

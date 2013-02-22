@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.config.gnu.lib.debug.1360902260">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.lib.debug.1360902260" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/e-lib"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/e-lib/Debug"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="e-lib"/>
+					</externalSetting>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="a" artifactName="e-lib" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.lib.debug.1360902260" name="Debug" parent="cdt.managedbuild.config.gnu.lib.debug">
+					<folderInfo id="cdt.managedbuild.config.gnu.lib.debug.1360902260." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.atdsp.base.1954949844" name="Epiphany" superClass="cdt.managedbuild.toolchain.gnu.atdsp.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.atdsp.base.308274766" name="%PlatformName.Dbg" osList="all" superClass="cdt.managedbuild.target.gnu.platform.atdsp.base"/>
+							<builder buildPath="${workspace_loc:/ert_lib/Debug}" id="cdt.managedbuild.target.gnu.builder.atdsp.base.520112104" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.atdsp.base"/>
+							<tool command="e-as" id="cdt.managedbuild.tool.gnu.assembler.atdsp.base.1009302301" name="Epiphany assembler" superClass="cdt.managedbuild.tool.gnu.assembler.atdsp.base">
+								<option id="gnu.both.asm.option.flags.189566403" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-g" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.757370695" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool command="e-ar" id="cdt.managedbuild.tool.gnu.archiver.atdsp.base.1734480294" name="Epiphany archiver" superClass="cdt.managedbuild.tool.gnu.archiver.atdsp.base"/>
+							<tool command="e-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.194723844" name="Epiphany compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.atdsp.base">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.154852333" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.10465204" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.include.paths.476052427" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="../include"/>
+									<listOptionValue builtIn="false" value="/opt/adapteva/esdk/tools/gnu/epiphany-elf/include"/>
+								</option>
+								<option id="gnu.c.compiler.option.misc.other.1136154" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0" valueType="string"/>
+								<option id="com.adapteva.cdt.epiphany.project.option1.667155302" name="Set the prevailing mode of the floating point unit." superClass="com.adapteva.cdt.epiphany.project.option1" value="com.adapteva.cdt.epiphany.project.enumeratedOptionValue4" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2085364566" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.atdsp.base.372896602" name="Epiphany linker" superClass="cdt.managedbuild.tool.gnu.c.linker.atdsp.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.objcopy.atdsp.base.779499054" name="Epiphany Objcopy" superClass="cdt.managedbuild.tool.gnu.c.objcopy.atdsp.base"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="excluded_modules|e_memprotect.c|e_sync.c|e_regs.c|e_ic.c|mutex_destroy.s|e_coreid.c|ctimer_mode.s|e_common.c|e_dma.c|e_gpio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings">
+				<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
+					<path value=""/>
+				</doc-comment-owner>
+			</storageModule>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.lib.release.914895592">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.lib.release.914895592" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/e-lib"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/e-lib/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="e-lib"/>
+					</externalSetting>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="a" artifactName="e-lib" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.lib.release.914895592" name="Release" parent="cdt.managedbuild.config.gnu.lib.release">
+					<folderInfo id="cdt.managedbuild.config.gnu.lib.release.914895592." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.atdsp.base.2132531775" name="Epiphany" superClass="cdt.managedbuild.toolchain.gnu.atdsp.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.atdsp.base.280748583" name="%PlatformName.Dbg" osList="all" superClass="cdt.managedbuild.target.gnu.platform.atdsp.base"/>
+							<builder buildPath="${workspace_loc:/ert_lib/Release}" id="cdt.managedbuild.target.gnu.builder.atdsp.base.931426869" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.atdsp.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.atdsp.base.1550374909" name="Epiphany assembler" superClass="cdt.managedbuild.tool.gnu.assembler.atdsp.base">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1876325243" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.atdsp.base.1103509399" name="Epiphany archiver" superClass="cdt.managedbuild.tool.gnu.archiver.atdsp.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.959479610" name="Epiphany compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.atdsp.base">
+								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.option.optimization.level.460242365" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.more" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.1467821036" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.include.paths.668785422" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="../include"/>
+									<listOptionValue builtIn="false" value="/opt/adapteva/esdk/tools/gnu/epiphany-elf/include"/>
+								</option>
+								<option id="gnu.c.compiler.option.misc.other.1807296860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0" valueType="string"/>
+								<option id="atdsp.com.cdt.atdsp.project.option2.1569398133" name="Set floating-point expression contraction" superClass="atdsp.com.cdt.atdsp.project.option2" value="com.adapteva.cdt.epiphany.project.enumeratedOptionValue1" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.optimization.flags.137874393" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-falign-loops=8" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.721978818" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.atdsp.base.150171784" name="Epiphany linker" superClass="cdt.managedbuild.tool.gnu.c.linker.atdsp.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.objcopy.atdsp.base.1742954427" name="Epiphany Objcopy" superClass="cdt.managedbuild.tool.gnu.c.objcopy.atdsp.base"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="excluded_modules|e_memprotect.c|e_sync.c|e_regs.c|e_ic.c|mutex_destroy.s|e_coreid.c|e_dma.c|ctimer_mode.s|e_common.c|e_gpio.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings">
+				<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
+					<path value=""/>
+				</doc-comment-owner>
+			</storageModule>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="ert_lib.cdt.managedbuild.target.gnu.lib.1661742593" name="Static Library" projectType="cdt.managedbuild.target.gnu.lib"/>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/e-lib"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.debug.1360902260;cdt.managedbuild.config.gnu.lib.debug.1360902260.860446675;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.194723844.741531193;cdt.managedbuild.tool.gnu.c.compiler.input.2036448308">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.release.914895592;cdt.managedbuild.config.gnu.lib.release.914895592.1735082681;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.959479610.1694779722;cdt.managedbuild.tool.gnu.c.compiler.input.728330598">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.release.914895592;cdt.managedbuild.config.gnu.lib.release.914895592.;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.959479610;cdt.managedbuild.tool.gnu.c.compiler.input.721978818">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.release.914895592;cdt.managedbuild.config.gnu.lib.release.914895592.;cdt.managedbuild.tool.gnu.c.compiler.lib.release.1527399692;cdt.managedbuild.tool.gnu.c.compiler.input.611568902">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.debug.1360902260;cdt.managedbuild.config.gnu.lib.debug.1360902260.1477825687;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.194723844.1523187741;cdt.managedbuild.tool.gnu.c.compiler.input.2064367029">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.debug.1360902260;cdt.managedbuild.config.gnu.lib.debug.1360902260.2142903934;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.194723844.994860510;cdt.managedbuild.tool.gnu.c.compiler.input.1558475127">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.release.914895592;cdt.managedbuild.config.gnu.lib.release.914895592.1997579600;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.959479610.1037928656;cdt.managedbuild.tool.gnu.c.compiler.input.918850217">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.debug.1360902260;cdt.managedbuild.config.gnu.lib.debug.1360902260.;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.194723844;cdt.managedbuild.tool.gnu.c.compiler.input.2085364566">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.release.914895592;cdt.managedbuild.config.gnu.lib.release.914895592.1829284835;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.959479610.972553530;cdt.managedbuild.tool.gnu.c.compiler.input.854591589">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.debug.1360902260;cdt.managedbuild.config.gnu.lib.debug.1360902260.;cdt.managedbuild.tool.gnu.c.compiler.lib.debug.287191500;cdt.managedbuild.tool.gnu.c.compiler.input.1469386412">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.release.914895592;cdt.managedbuild.config.gnu.lib.release.914895592.221999114;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.959479610.1653293366;cdt.managedbuild.tool.gnu.c.compiler.input.1441181191">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.lib.debug.1360902260;cdt.managedbuild.config.gnu.lib.debug.1360902260.2057896308;cdt.managedbuild.tool.gnu.c.compiler.atdsp.base.194723844.198149906;cdt.managedbuild.tool.gnu.c.compiler.input.783747014">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>
