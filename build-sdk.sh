@@ -23,7 +23,7 @@ if [ ! -d "${ESDK}/tools/e-gnu/epiphany-elf/lib" ]; then
 	exit
 fi
 
-if [ ! -d "${ESDK_LIBS}" ]
+if [ ! -d "${ESDK_LIBS}" ]; then
 #	echo "Please make sure the epiphany-libs repo is placed correctly!"
 	echo "ERROR: Can't find the epiphany-libs repository!"
 	exit 1
