@@ -31,9 +31,9 @@ fi
 
 
 echo "Building eSDK libraries..."
-pushd ${ESDK_LIBS} >& /dev/nul
+pushd ${ESDK_LIBS} >& /dev/null
 ./build-libs.sh
-popd >& /dev/nul
+popd >& /dev/null
 
 echo "Installing eSDK components..."
 
@@ -42,7 +42,7 @@ cp -Rd docs ${ESDK}/docs/
 cp -Rd examples ${ESDK}/examples/
 
 
-pushd ${ESDK_LIBS} >& /dev/nul
+pushd ${ESDK_LIBS} >& /dev/null
 
 # Install the current BSP
 cp -Rd bsps/${BSP} ${ESDK}/bsps/
@@ -88,6 +88,6 @@ cp Release/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
 cp include/*.h ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
 cd ../../
 
-popd >& /dev/nul
+popd >& /dev/null
 
 
