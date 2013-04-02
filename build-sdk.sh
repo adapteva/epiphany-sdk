@@ -56,12 +56,12 @@ cd ../../
 # Install the Epiphnay HAL library
 cd src/e-hal
 ln -sTf ../../../bsps/current/libe-hal.so ${HOST}/lib/libe-hal.so
-cp -f src/epiphany-hal.h              ${HOST}/include
-cp -f src/epiphany-hal-data.h         ${HOST}/include
-cp -f src/epiphany-hal-data-local.h   ${HOST}/include
-cp -f src/epiphany-hal-api.h          ${HOST}/include
-ln -sTf epiphany-hal.h                ${HOST}/include/e-hal.h
-ln -sTf epiphany-hal.h                ${HOST}/include/e_hal.h
+cp -f src/epiphany-hal.h                  ${HOST}/include
+cp -f src/epiphany-hal-data.h             ${HOST}/include
+cp -f src/epiphany-hal-data-local.h       ${HOST}/include
+cp -f src/epiphany-hal-api.h              ${HOST}/include
+ln -sTf epiphany-hal.h                    ${HOST}/include/e-hal.h
+ln -sTf epiphany-hal.h                    ${HOST}/include/e_hal.h
 cd ../../
 
 # Install the Epiphnay Loader library
