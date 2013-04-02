@@ -5,7 +5,7 @@ set -e
 ESDK=${EPIPHANY_HOME}
 ARCH='armv7l'
 HOST=${ESDK}/tools/host.${ARCH}
-BSP='zed_E64G4_808_512mb'
+BSP='zed_E64G4_512mb'
 ESDK_LIBS='../epiphany-libs'
 
 if [ ! -d "${ESDK}/tools/host/lib" ]; then
