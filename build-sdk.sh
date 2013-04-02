@@ -4,14 +4,14 @@ set -e
 
 ESDK=${EPIPHANY_HOME}
 ARCH='armv7l'
-HOST=${ESDK}/tools/host/${ARCH}
+HOST=${ESDK}/tools/host.${ARCH}
 BSP='zed_E64G4_808_512mb'
 ESDK_LIBS='../epiphany-libs'
 
 if [ ! -d "${ESDK}/tools/host/lib" ]; then
-	mkdir -p ${ESDK}/tools/host/${ARCH}/lib
-	mkdir -p ${ESDK}/tools/host/${ARCH}/include
-	mkdir -p ${ESDK}/tools/host/${ARCH}/bin
+	mkdir -p ${ESDK}/tools/host.${ARCH}/lib
+	mkdir -p ${ESDK}/tools/host.${ARCH}/include
+	mkdir -p ${ESDK}/tools/host.${ARCH}/bin
 fi
 
 if [ ! -d "${ESDK}/bsps" ]; then
@@ -50,7 +50,7 @@ ln -sTf ${BSP} ${ESDK}/bsps/bsp
 
 # Install the XML parser library
 cd src/e-xml
-cp -f Release/libe-xml.so ${ESDK}/tools/host/${ARCH}/lib
+cp -f Release/libe-xml.so ${ESDK}/tools/host.${ARCH}/lib
 cd ../../
 
 # Install the Epiphnay HAL library
