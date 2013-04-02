@@ -8,9 +8,6 @@ installation node and copies the various modules into that node.
 It is required to build the Epiphany GNU Tools package (epiphany-gcc,
 epiphany-sourceware) before building this eSDK package.
 
-The files in this package reflect the current state of the work on the
-software support for the Parallella system prototype ZedBoards with E64G4
-Epiphany chips.
 
 
 =======================================
