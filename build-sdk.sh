@@ -38,7 +38,7 @@ popd >& /dev/null
 echo "Installing eSDK components..."
 
 # Install the documentation and examples
-cp -Rd docs ${ESDK}/docs/
+cp -Rd docs     ${ESDK}/docs/
 cp -Rd examples ${ESDK}/examples/
 
 
@@ -83,7 +83,7 @@ cd ../../
 # Install the Epiphnay Runtime Library
 cd src/e-lib
 cp Release/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
-cp include/*.h ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
+cp include/*.h        ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
 cd ../../
 
 popd >& /dev/null
