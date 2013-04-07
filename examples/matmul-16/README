@@ -1,0 +1,125 @@
+MATMUL-16 multicore big matrix multiplication for 16-cores Epiphany
+===================================================================
+
+YS, Oct.2012
+
+
+Importing the projects into an Eclipse Workspace
+================================================
+
+In this archive are packed the Eclipse project files required for building a Host-Accelerator 
+framework for parallel big matrix multiplication for the E16G3 16-core chip on the EMEK3 kit.
+
+In order to open the project in an Eclipse environment, please follow these steps:
+
+1.  At the current directory extract the matmul-16.tgz archive and change the directory using:
+
+    >> tar xvf matmul-16.tgz
+    >> cd matmul-16
+
+    you are now inside the Workspace directory (WSD).
+
+2.  Inside the WSD directory you should see the 19 new extracted project directories:
+
+    >> ls -1
+    matmul-16
+    matmul-16_commonlib
+    matmul-16.core.32_36
+    matmul-16.core.32_37
+    matmul-16.core.32_38
+    matmul-16.core.32_39
+    matmul-16.core.33_36
+    matmul-16.core.33_37
+    matmul-16.core.33_38
+    matmul-16.core.33_39
+    matmul-16.core.34_36
+    matmul-16.core.34_37
+    matmul-16.core.34_38
+    matmul-16.core.34_39
+    matmul-16.core.35_36
+    matmul-16.core.35_37
+    matmul-16.core.35_38
+    matmul-16.core.35_39
+    matmul-16_host
+
+    From the top of the list, these are the master multicore meta-project, the common-library
+    project, 16 individual per-core projects and the host side project.
+
+3.  Start Eclipse:
+
+    >> {$EPIPHANY_HOME}/eclipse &
+
+4.  At the "Workspace Launcher" dialog browse for the WSD and click "OK". The Eclispe Welcome
+    window now opens.
+
+5.  Click on the "Workbench" icon. The window now changes to an empty workbench.
+
+6.  From the "File" menu select the "Import..." entry. An "Import" dialog window pops-up.
+
+7.  Expand the "General" branch, select the "Existing Projects into Workspace" and Click "Next >".
+
+8.  Select the "Select root directory:" option, browse for the WSD and confirm. You should now see
+    the 19 extracted projects added and selected in the "Projects:" list.
+
+9.  Click "Finish". The 19 projects now populate the "Project Explorer" view.
+
+10. It is a good idea now to change the following Workbench preferences:
+
+    * "Window" menu -> "Preferences" -> "General" -> "Workspace"
+
+    * Check the "Save automatically before build" checkbox.
+
+    * "Window" menu -> "Preferences" -> "C/C++" -> "Indexer"
+
+    * Check the "Index unused headers" and "Index source and header files opened in editor"
+      checkboxes.
+
+
+Building the project
+====================
+
+11. In the "Project Explorer" select one of the projects. "Edit" menu -> "Select All".
+
+12. "Project" menu -> "Build Configurations" -> "Set Active" -> "Release".
+
+13. In the "Project Explorer", select the "matmul-16" meta-project and from the "Project" menu
+    select "Build Project". The Epiphany program now builds. Click on the "Console" view to see the
+    building process.
+
+14. Select the "matmul-16_host" project and from the "Project" menu select "Build Project". The
+    host program now builds.
+
+
+Loading the program on the EMEK3 target
+=======================================
+
+15. In the "Project Explorer", select the "matmul-16" meta-project and from the "Run" menu select
+    "Run Configuration...". The "Run Configuration" dialog opens.
+
+16. From the list right-click on the "Epiphany Multicore Application (loader)" and select "New".
+    The "matmul-16 Release" launch configuration is created.
+
+17. Click on the "Run" button. The project will be rebuilt and then loaded on the target.
+
+
+Running the host application
+============================
+
+18. In the "Project Explorer", select the "matmul-16_host" project and from the "Run" menu select
+    "Run Configuration...".
+
+19. From the list right-click on the "C/C++ Application" and select "New". The
+    "matmul-16_host Release" launch configuration is created.
+
+20. Click on the "Run" button. The project now runs in the "Console" view.
+
+21. The program expects a seed number for generating the operand matrices. Click on the "Console"
+    view and enter some number.
+
+22. The calculation now takes place and when the result is ready, it is read back to the host and
+    compared to a reference calculation. Note that reading back large matrices may take a long time
+    on the EMEK3 system.
+
+23. Once the target project is loaded on the target, you can repeatedly run the host program - no
+    need to reload the target.
+
