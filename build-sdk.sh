@@ -53,6 +53,13 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 fi
 
 
+# Copy top files
+cp -d ./README    ${ESDK}
+cp -d ./COPYING   ${ESDK}
+cp -d ./setup.sh  ${ESDK}
+cp -d ./setup.csh ${ESDK}
+
+
 # Build the eSDK libraries from epiphany-libs repo
 echo "Building eSDK libraries..."
 pushd ${ESDK_LIBS} >& /dev/null
