@@ -123,5 +123,5 @@ popd >& /dev/null
 
 
 # Any special operations here...
-ln -s ../bsps/current/parallella_prototype_quick_start_guide.pdf ${ESDK}/docs
+ln -sf ../bsps/current/parallella_prototype_quick_start_guide.pdf ${ESDK}/docs
 
