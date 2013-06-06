@@ -1,6 +1,19 @@
 Epiphany SDK Build and Install Package
 --------------------------------------
 
+=======================================
+NOTE
+
+This repository is the development repo. containing the latest code
+changes. It may not build, and if it does, it may not work correctly.
+
+To download the latest release repo, see:
+
+https://github.com/Adapteva/epiphany-sdk/tree/esdk.4.13.02.24
+=======================================
+
+
+
 This directory is the main poject for building and installing
 the Epiphany SDK components. When invoked, it creates the eSDK release
 installation node and copies the various modules into that node.
