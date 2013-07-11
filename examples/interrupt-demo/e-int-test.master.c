@@ -17,15 +17,12 @@
   <http://www.gnu.org/licenses/>.
 */
 
-#include <machine/epiphany_config.h>
-
 #include "e_lib.h"
 
 #define Fhz   (600e6)            // Clock frequency (Hz)
 #define Td    (1)                // Delay time (sec)
 #define Delay (Td * Fhz)
 
-#define SOFF          0x3        // Signal number offset
 #define TIMER0_VECTOR 0x0000000c // address of TIMER0 entry in IVT
 #define B_OPCODE      0x000000e8 // OpCode of the B<*> instruction
 
@@ -47,7 +44,7 @@ int main(void)
 #ifdef INDIRECT
 
 	// Register the ISR with the interrupt dispatcher
-	signal((E_TIMER0_INT + SOFF), timer_isr);
+	e_irq_attach(E_TIMER0_INT, timer_isr);
 
 #else
 
@@ -60,23 +57,25 @@ int main(void)
 	// Set TIMER0 IVT entry address
 	ivt  = (unsigned *) TIMER0_VECTOR;
 	// Set the relative branch offset.
-	*ivt = (((unsigned) (timer_isr - 0x0c)) >> 1) << 8;
+	*ivt = (((unsigned) timer_isr - (unsigned) ivt) >> 1) << 8;
 	// Add the instruction opcode.
 	*ivt = *ivt | B_OPCODE;
 
 #endif
 
 	// Enable the TIMER0 interrupt
-	e_irq_enable((E_TIMER0_INT + SOFF));
-	e_gie();
+	e_ctimer_start(E_CTIMER_0, E_CTIMER_OFF);
+	e_irq_mask(E_TIMER0_INT, E_FALSE);
+	e_irq_global_mask(E_FALSE);
 
 	// Start the timer, counting for ~1 sec, and wait for
 	// it to finish.
-	e_ctimer_set(E_CTIMER_0, E_CTIMER_CLK, Delay);
+	e_ctimer_set(E_CTIMER_0, Delay);
+	e_ctimer_start(E_CTIMER_0, E_CTIMER_CLK);
 	while (e_ctimer_get(E_CTIMER_0));
-	// At this point, a TIMER0 interrupt should have been fired
+	// At this point, a TIMER0 interrupt event should have been fired
 
-	// Save final state to mailbox
+	// Save final progress state to mailbox
 	M[4] = 0x44444444;
 
 	return 0;
@@ -85,11 +84,20 @@ int main(void)
 
 void __attribute__((interrupt)) timer_isr(int signum)
 {
+	// This ISR is called when the respective event occured (IOW, when
+	// the event it was attached to by e_irq_attach() is raised). Upon
+	// call, it sends the SYNC signal to the neighor core, causing it
+	// to start runnign its program.
+
+	// Save progress state to mailbox
 	M[2] = 0x22222222;
 
-	e_irq_remote_raise(0x809, (E_SYNC + SOFF));
+	// Raise a SYNC event on neighbor core, to make it start running
+	e_irq_set(0, 1, E_SYNC);
 
+	// Save progress state to mailbox
 	M[3] = 0x33333333;
 
 	return;
 }
+

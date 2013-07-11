@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 	e_epiphany_t dev;
 	e_mem_t      emem;
 
+	// Initialize progress state in mailbox
 	M[0]  = 0xdeadbeef;
 	M[1]  = M[2] = M[3] = M[4] = M[0];
 
@@ -46,15 +47,15 @@ int main(int argc, char *argv[])
 	e_init(NULL);
 	e_reset_system();
 
-	// Open the first and second core for master and slave programs, resp.
+	// Open the first and second cores for master and slave programs, resp.
 	e_open(&dev, 0, 0, 1, 2);
 	
 	// Allocate the ext. mem. mailbox
 	e_alloc(&emem, _BufOffset, sizeof(M));
 
 	// Load programs on cores.
-	e_load("e-int-test.master.srec", &dev, 0, 0, e_false);
-	e_load("e-int-test.slave.srec",  &dev, 0, 1, e_false);
+	e_load("e-int-test.master.srec", &dev, 0, 0, E_FALSE);
+	e_load("e-int-test.slave.srec",  &dev, 0, 1, E_FALSE);
 
 	// clear mailbox.
 	e_write(&emem, 0, 0, (off_t) (0x0000), (void *) &(M[0]), sizeof(M));
@@ -70,6 +71,14 @@ int main(int argc, char *argv[])
 	
 	usleep(1e6);
 	print_mbox(&dev, &emem, "3. Slave started:");
+
+	// At this point, the  mailbox should contain all of the progress
+	// indicators, and look like the following:
+	//
+	// 0x808       0x809       0x22222222  0x33333333  0x44444444
+	//
+	// If there is a "0xdeadbeef" state in one of the slots, it means
+	// that something went wrong.
 
 	// Finalize
 	e_close(&dev);

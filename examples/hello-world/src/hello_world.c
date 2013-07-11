@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
 		// Load the device program onto the selected eCore
 		// and launch after loading.
-		e_load("e_hello_world.srec", &dev, 0, 0, e_true);
+		e_load("e_hello_world.srec", &dev, 0, 0, E_TRUE);
 
 		// Wait for core program execution to finish, then
 		// read message from shared buffer.

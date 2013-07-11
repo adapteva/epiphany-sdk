@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lmatmul-16_commonlib -lelib
+LIBS := -le-lib
 

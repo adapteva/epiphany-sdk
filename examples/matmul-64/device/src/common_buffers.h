@@ -1,5 +1,7 @@
 /*
-  Copyright (C) 2013 Adapteva, Inc.
+  common_buffers.h
+
+  Copyright (C) 2012 Adapteva, Inc.
   Contributed by Yaniv Sapir <yaniv@adapteva.com>
 
   This program is free software: you can redistribute it and/or modify
@@ -17,15 +19,20 @@
   <http://www.gnu.org/licenses/>.
 */
 
-#include "e_lib.h"
 
-unsigned volatile M[5] SECTION("shared_dram");
+#ifndef __COMMON_BUFFERS_H__
+#define __COMMON_BUFFERS_H__
 
-int main(void) {
+#ifdef __HOST__
+//#define SECTION(x)
+shared_buf_t Mailbox;
+//volatile shared_buf_t Mailbox;
+#else // __HOST__
+#include <e_common.h>
+#endif // __HOST__
 
-	// Set mailbox to coreID
-	M[1] = 0x809;
+//volatile shared_buf_t Mailbox SECTION(".shared_dram");
+extern const unsigned _SHARED_DRAM_;
+#define SHARED_DRAM   ((unsigned)(&_SHARED_DRAM_))
 
-	return 0;
-}
-
+#endif // __COMMON_BUFFERS_H__

@@ -2,22 +2,24 @@
 
 set -e
 
-REV="4.13.03.30"
-ESDKPATH="/opt/adapteva"
+REV="5.13.07.09"
+#ESDKPATH="/opt/adapteva" # must be an absolute path
+ESDKPATH="${PWD}/.." # must be an absolute path
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
-ARCH='armv7l'
+ARCH="armv7l"
 HOSTNAME="host.${ARCH}"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.${ARCH}"
 GNU="${ESDK}/tools/${GNUNAME}"
-BSP='zed_E64G4_512mb'
-ESDK_LIBS='../epiphany-libs'
+BSPS="zed_E16G3_512mb zed_E64G4_512mb"
+BSP="zed_E16G3_512mb"
+ESDK_LIBS="../epiphany-libs"
 
 export PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${EPIPHANY_HOME}/tools/host/bin:${PATH}"
 
 echo "==============================================="
-echo "| NOTE: The default BSP is set to ${BSP}      |"
+echo "| NOTE: The default BSP is set to ${BSP}"
 echo "| Please make sure it matches your system,    |"
 echo "| or chenge the settings in this build script |"
 echo "==============================================="
@@ -63,7 +65,7 @@ cp -d ./setup.csh ${ESDK}
 # Build the eSDK libraries from epiphany-libs repo
 echo "Building eSDK libraries..."
 pushd ${ESDK_LIBS} >& /dev/null
-./build-libs.sh
+./build-libs.sh -a
 popd >& /dev/null
 
 
@@ -78,15 +80,20 @@ cp -Rd examples ${ESDK}
 pushd ${ESDK_LIBS} >& /dev/null
 
 # Install the current BSP
-cp -Rd bsps/${BSP} ${ESDK}/bsps
+echo "-- Installing BSPs"
+for bsp in ${BSPS}; do
+	cp -Rd bsps/${bsp} ${ESDK}/bsps
+done
 ln -sTf ${BSP} ${ESDK}/bsps/current
 
 # Install the XML parser library
+echo "-- Installing eXML"
 cd src/e-xml
 cp -f Release/libe-xml.so ${HOST}/lib
 cd ../../
 
 # Install the Epiphnay HAL library
+echo "-- Installing eHAL"
 cd src/e-hal
 ln -sTf ../../../bsps/current/libe-hal.so ${HOST}/lib/libe-hal.so
 cp -f src/epiphany-hal.h                  ${HOST}/include
@@ -98,22 +105,36 @@ ln -sTf epiphany-hal.h                    ${HOST}/include/e_hal.h
 cd ../../
 
 # Install the Epiphnay Loader library
+echo "-- Installing eLoader"
 cd src/e-loader
 cp -f src/e-loader.h ${HOST}/include
 ln -sTf e-loader.h   ${HOST}/include/e_loader.h
 cd ../../
 
 # Install the Epiphnay GDB RSP Server
+echo "-- Installing eServer"
 cd src/e-server
-cp -f Release/e-server ${HOST}/bin
+cp -f Release/e-server ${HOST}/bin/e-server.e
+cp -f e-server.sh      ${HOST}/bin/e-server
 cd ../../
 
-# Install the Epiphnay GNU Tools wrappers
+# Install the Epiphnay Utilities
 cd src/e-utils
-cp -f e-objcopy ${HOST}/bin
+cp -f e-reset/e-reset         ${HOST}/bin/e-reset.e
+cp -f e-reset/e-reset.sh      ${HOST}/bin/e-reset
+cp -f e-loader/Debug/e-loader ${HOST}/bin/e-loader.e
+cp -f e-loader/e-loader.sh    ${HOST}/bin/e-loader
+cp -f e-read/Debug/e-read     ${HOST}/bin/e-read.e
+cp -f e-read/e-read.sh        ${HOST}/bin/e-read
+cp -f e-write/Debug/e-write   ${HOST}/bin/e-write.e
+cp -f e-write/e-write.sh      ${HOST}/bin/e-write
+cp -f e-hw-rev/e-hw-rev       ${HOST}/bin/e-hw-rev.e
+cp -f e-hw-rev/e-hw-rev.sh    ${HOST}/bin/e-hw-rev
+cp -f e-objcopy               ${HOST}/bin
 cd ../../
 
 # Install the Epiphnay Runtime Library
+echo "-- Installing eLib"
 cd src/e-lib
 cp Release/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
 cp include/*.h        ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
@@ -124,4 +145,10 @@ popd >& /dev/null
 
 # Any special operations here...
 ln -sf ../bsps/current/parallella_prototype_quick_start_guide.pdf ${ESDK}/docs
+
+echo "==============================================="
+echo "| NOTE: The default BSP is set to ${BSP}"
+echo "| Please make sure it matches your system,    |"
+echo "| or chenge the settings in this build script |"
+echo "==============================================="
 

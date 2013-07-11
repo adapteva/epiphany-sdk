@@ -70,10 +70,12 @@ typedef struct {
 	char srecFile[4096];
 } args_t;
 
-args_t ar = {e_true, e_false, e_true, H_D0, ""};
+args_t ar = {E_TRUE, E_FALSE, E_TRUE, H_D0, ""};
 void get_args(int argc, char *argv[]);
 
 FILE *fo, *fi;
+float Aepi[_Smtx * _Smtx];
+float Bepi[_Smtx * _Smtx];
 float Cref[_Smtx * _Smtx];
 float Cdiff[_Smtx * _Smtx];
 
@@ -242,6 +244,20 @@ int main(int argc, char *argv[])
 	matprt(Mailbox.C, _Smtx);
 	fprintf(fo, "Cref[][] = \n");
 	matprt(Cref, _Smtx);
+
+	int i, j;
+	for (i=0; i<_Nside; i++)
+		for (j=0; j<_Nside; j++)
+		{
+			e_read(pEpiphany, i, j, 0x2000+0*sizeof(float), &Aepi[(i*_Score+0)*_Smtx + j*_Score], 2*sizeof(float));
+			e_read(pEpiphany, i, j, 0x2000+2*sizeof(float), &Aepi[(i*_Score+1)*_Smtx + j*_Score], 2*sizeof(float));
+			e_read(pEpiphany, i, j, 0x4000+0*sizeof(float), &Bepi[(i*_Score+0)*_Smtx + j*_Score], 2*sizeof(float));
+			e_read(pEpiphany, i, j, 0x4000+2*sizeof(float), &Bepi[(i*_Score+1)*_Smtx + j*_Score], 2*sizeof(float));
+		}
+	fprintf(fo, "Aepi[][] = \n");
+	matprt(Aepi, _Smtx);
+	fprintf(fo, "Bepi[][] = \n");
+	matprt(Bepi, _Smtx);
 #endif
 
 	fprintf(fo, "\n* * *   EPIPHANY FTW !!!   * * *\n");
@@ -273,21 +289,21 @@ int matmul_go(e_mem_t *pDRAM)
 	// Wait until cores finished previous calculation
 	if (ar.verbose > 0) fprintf(fo, "Waiting for Epiphany to be ready...\n");
 	addr = offsetof(shared_buf_t, core.go);
-	Mailbox.core.go[0] = 1;
-	while (Mailbox.core.go[0] != 0)
-		e_read(pDRAM, 0, 0, addr, &Mailbox.core.go[0], sizeof(Mailbox.core.go[0]));
+	Mailbox.core.go = 1;
+	while (Mailbox.core.go != 0)
+		e_read(pDRAM, 0, 0, addr, &Mailbox.core.go, sizeof(Mailbox.core.go));
 
 	// Signal cores to start crunching
 	fprintf(fo, "Writing the GO!...\n");
 	addr = offsetof(shared_buf_t, core.go);
-	Mailbox.core.go[0] = _MAX_MEMBER_;
-	e_write(pDRAM, 0, 0, addr, &Mailbox.core.go[0], sizeof(Mailbox.core.go[0]));
+	Mailbox.core.go = _MAX_MEMBER_;
+	e_write(pDRAM, 0, 0, addr, &Mailbox.core.go, sizeof(Mailbox.core.go));
 
 	// Wait until cores finished calculation
 	addr = offsetof(shared_buf_t, core.go);
-	Mailbox.core.go[0] = 1;
-	while (Mailbox.core.go[0] != 0)
-		e_read(pDRAM, 0, 0, addr, &Mailbox.core.go[0], sizeof(Mailbox.core.go[0]));
+	Mailbox.core.go = 1;
+	while (Mailbox.core.go != 0)
+		e_read(pDRAM, 0, 0, addr, &Mailbox.core.go, sizeof(Mailbox.core.go));
 
 	fprintf(fo, "Done...\n");
 
@@ -367,19 +383,19 @@ void get_args(int argc, char *argv[])
 	{
 		if (!strcmp(argv[n], "-no-reset"))
 		{
-			ar.reset_target = e_false;
+			ar.reset_target = E_FALSE;
 			continue;
 		}
 
 		if (!strcmp(argv[n], "-broadcast"))
 		{
-			ar.broadcast = e_true;
+			ar.broadcast = E_TRUE;
 			continue;
 		}
 
 		if (!strcmp(argv[n], "-no-run"))
 		{
-			ar.run_target = e_false;
+			ar.run_target = E_FALSE;
 			continue;
 		}
 
