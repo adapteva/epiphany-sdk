@@ -2,18 +2,27 @@
 
 set -e
 
-REV="5.13.07.09"
-#ESDKPATH="/opt/adapteva" # must be an absolute path
-ESDKPATH="${PWD}/.." # must be an absolute path
+# Path to location of eSDK installation
+# (must be an absolute path)
+#ESDKPATH="/opt/adapteva" # Default system location
+ESDKPATH="${PWD}/.."     # In user account, adjacent directory
+
+# Revision number of new eSDK build
+REV="5.13.07.10"
+
+# Host machine architecture
+ARCH="armv7l"
+
+# List if available BSPs and default BSP
+BSPS="zed_E16G3_512mb zed_E64G4_512mb"
+BSP="zed_E16G3_512mb"
+
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
-ARCH="armv7l"
 HOSTNAME="host.${ARCH}"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.${ARCH}"
 GNU="${ESDK}/tools/${GNUNAME}"
-BSPS="zed_E16G3_512mb zed_E64G4_512mb"
-BSP="zed_E16G3_512mb"
 ESDK_LIBS="../epiphany-libs"
 
 export PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${EPIPHANY_HOME}/tools/host/bin:${PATH}"
@@ -36,7 +45,7 @@ mkdir -p ${ESDK}/tools
 mkdir -p ${HOST}
 mkdir -p ${GNU}
 ln -sTf ${HOSTNAME} ${ESDK}/tools/host
-ln -sTf ${GNUNAME} ${ESDK}/tools/e-gnu
+ln -sTf ${GNUNAME}  ${ESDK}/tools/e-gnu
 
 mkdir -p ${HOST}/lib
 mkdir -p ${HOST}/include
