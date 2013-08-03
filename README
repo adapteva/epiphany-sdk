@@ -7,9 +7,9 @@ NOTE
 This repository is the development repo. containing the latest code
 changes. It may not build, and if it does, it may not work correctly.
 
-To download the latest release repo, see:
+To download the latest release repo, see the Parallella FTP site:
 
-https://github.com/Adapteva/epiphany-sdk/tree/esdk.5.13.07.10
+ftp://ftp.parallella.org/esdk/
 =======================================
 
 
