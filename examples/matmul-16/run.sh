@@ -9,7 +9,7 @@ else
 fi
 
 ELIBS="${EPIPHANY_HOME}/tools/host/lib"
-EHDF="${EPIPHANY_HOME}/bsps/zed_E16G3_512mb/zed_E16G3_512mb.hdf"
+EHDF=${EPIPHANY_HDF}
 
 cd host/${Config}
 
