@@ -14,8 +14,8 @@ REV="5.13.07.10"
 ARCH="armv7l"
 
 # List if available BSPs and default BSP
-BSPS="zed_E16G3_512mb zed_E64G4_512mb"
-BSP="zed_E16G3_512mb"
+BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
+BSP="parallella_E16G3_1GB"
 
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
@@ -25,7 +25,8 @@ GNUNAME="e-gnu.${ARCH}"
 GNU="${ESDK}/tools/${GNUNAME}"
 ESDK_LIBS="../epiphany-libs"
 
-export PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${EPIPHANY_HOME}/tools/host/bin:${PATH}"
+export PATH="${EPIPHANY_HOME}/tools/host/bin:${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
+export EPIPHANY_HOME
 
 echo "==============================================="
 echo "| NOTE: The default BSP is set to ${BSP}"
@@ -128,6 +129,7 @@ cp -f e-server.sh      ${HOST}/bin/e-server
 cd ../../
 
 # Install the Epiphnay Utilities
+echo "-- Installing eUtilities"
 cd src/e-utils
 cp -f e-reset/e-reset         ${HOST}/bin/e-reset.e
 cp -f e-reset/e-reset.sh      ${HOST}/bin/e-reset
@@ -147,6 +149,8 @@ echo "-- Installing eLib"
 cd src/e-lib
 cp Release/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
 cp include/*.h        ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
+ln -sTf libe-lib.a    ${ESDK}/tools/e-gnu/epiphany-elf/lib/libelib.a
+ln -sTf e_lib.h       ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/e-lib.h
 cd ../../
 
 popd >& /dev/null
