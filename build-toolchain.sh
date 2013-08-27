@@ -116,7 +116,7 @@ until
 done
 
 # Clean up old builds
-rm -rf "${build_dir}" "${install_dir}"
+rm -rf "${build_dir}"
 
 if test ${preserveunisrc} -eq 0; then
   rm -rf "${unified_src}"
