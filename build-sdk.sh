@@ -8,7 +8,7 @@ set -e
 ESDKPATH="${PWD}/.."     # In user account, adjacent directory
 
 # Revision number of new eSDK build
-REV="5.13.07.10"
+REV="5.13.09.10"
 
 # Host machine architecture
 ARCH="armv7l"
