@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 		// case a previous process is running. Note that we used
 		// core coordinates relative to the workgroup.
 		e_open(&dev, row, col, 1, 1);
-		e_reset_core(&dev, 0, 0);
+		e_reset_group(&dev);
 
 		// Load the device program onto the selected eCore
 		// and launch after loading.
