@@ -8,10 +8,10 @@ This repository is the development repo. containing the latest code
 changes. It may not build, and if it does, it may not work correctly.
 
 The latest release repo is located at:
-https://github.com/adapteva/epiphany-sdk/tree/esdk.5.13.07.10
+https://github.com/adapteva/epiphany-sdk/tree/esdk.5.13.09.10
 
 To download the latest release repo:
-https://github.com/adapteva/epiphany-sdk/archive/esdk.5.13.07.10.tar.gz
+https://github.com/adapteva/epiphany-sdk/archive/esdk.5.13.09.10.tar.gz
 =======================================
 
 
