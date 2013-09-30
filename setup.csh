@@ -14,7 +14,9 @@ else
 	exit 2
 endif
 
-setenv PATH ${EPIPHANY_HOME}/tools/host/bin:${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}
+#setenv PATH ${EPIPHANY_HOME}/tools/a-gnu/bin:${PATH}
+setenv PATH ${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}
+setenv PATH ${EPIPHANY_HOME}/tools/host/bin:${PATH}
 setenv EPIPHANY_HDF ${EPIPHANY_HOME}/bsps/current/platform.hdf
 
 if ( $?LD_LIBRARY_PATH  ) then 
