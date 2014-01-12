@@ -1,0 +1,7 @@
+2014-01-12  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* .gitignore: Created.
+	* build-sdk.sh: Added GPL header, rather than leaving as implicit,
+	use Intel rather than ARM as architecture.
+	* ChangeLog: Created.
+

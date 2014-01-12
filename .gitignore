@@ -1,0 +1,4 @@
+# ignore editor backup files
+*~
+# ignore clone logs
+clone*.log
