@@ -1,3 +1,9 @@
+2014-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-sdk.sh: Add -c and -d arguments. Modify for use on ARM.
+	* build-server.sh: Modify for use on ARM.
+	* build-hal.sh: Add for convenience.
+
 2014-01-12  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-server.sh: Created.

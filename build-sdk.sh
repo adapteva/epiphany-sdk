@@ -24,19 +24,20 @@ set -e
 
 # Path to location of eSDK installation
 # (must be an absolute path)
-#ESDKPATH="/opt/adapteva" # Default system location
-ESDKPATH="${PWD}/.."     # In user account, adjacent directory
+ESDKPATH="/opt/adapteva" # Default system location
+#ESDKPATH="${PWD}/.."     # In user account, adjacent directory
 
 # Revision number of new eSDK build
-REV="5.13.09.10"
+export REV="5.13.09.10"
 
 # Host machine architecture
-# ARCH="armv7l"
-ARC="x86_64"
+ARCH="armv7l"
+# ARCH="x86_64"
 
 # List if available BSPs and default BSP
 BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
-BSP="parallella_E16G3_1GB"
+#BSP="parallella_E16G3_1GB"
+BSP=zed_E64G4_512mb
 
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
@@ -96,9 +97,22 @@ cp -d ./setup.csh ${ESDK}
 # Build the eSDK libraries from epiphany-libs repo
 echo "Building eSDK libraries..."
 pushd ${ESDK_LIBS} >& /dev/null
-./build-libs.sh -a
+
+# No checking on the command line at present. Only -c (for clean first) and -d
+# (for debug) will do anything really useful. Others (like the numbers 1-6)
+# will actively confuse things!
+./build-libs.sh $* -a
 popd >& /dev/null
 
+version=Release
+
+for f in $*
+do
+    if [ "x$f" == "x-d" ]
+    then
+	version=Debug
+    fi
+done
 
 # Install components
 echo "Installing eSDK components..."
@@ -120,7 +134,7 @@ ln -sTf ${BSP} ${ESDK}/bsps/current
 # Install the XML parser library
 echo "-- Installing eXML"
 cd src/e-xml
-cp -f Release/libe-xml.so ${HOST}/lib
+cp -f ${version}/libe-xml.so ${HOST}/lib
 cd ../../
 
 # Install the Epiphnay HAL library
@@ -145,7 +159,7 @@ cd ../../
 # Install the Epiphnay GDB RSP Server
 echo "-- Installing eServer"
 cd src/e-server
-cp -f Release/e-server ${HOST}/bin/e-server.e
+cp -f ${version}/e-server ${HOST}/bin/e-server.e
 cp -f e-server.sh      ${HOST}/bin/e-server
 cd ../../
 
@@ -168,7 +182,7 @@ cd ../../
 # Install the Epiphnay Runtime Library
 echo "-- Installing eLib"
 cd src/e-lib
-cp Release/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
+cp ${version}/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
 cp include/*.h        ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
 ln -sTf libe-lib.a    ${ESDK}/tools/e-gnu/epiphany-elf/lib/libelib.a
 ln -sTf e_lib.h       ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/e-lib.h

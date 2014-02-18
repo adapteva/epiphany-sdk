@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Copyright (C) 2014 Adapteva Inc.
+# Copyright (C) 2009 - 2013 Adapteva Inc.
 
+# Contributor Yaniv Sapir <ysapir@adapteva.com>
 # Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
 
-# This file is a script to build and install just the e-server program.
+# This file is a script to build and install just the e-hal library.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -23,20 +24,19 @@ set -e
 
 # Path to location of eSDK installation
 # (must be an absolute path)
-ESDKPATH="/opt/adapteva" # Default system location
-#ESDKPATH="${PWD}/.."     # In user account, adjacent directory
+#ESDKPATH="/opt/adapteva" # Default system location
+ESDKPATH="${PWD}/.."     # In user account, adjacent directory
 
 # Revision number of new eSDK build
-export REV="5.13.09.10"
+REV="5.13.09.10"
 
 # Host machine architecture
-ARCH="armv7l"
-# ARCH="x86_64"
+# ARCH="armv7l"
+ARCH="x86_64"
 
 # List if available BSPs and default BSP
 BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
-#BSP="parallella_E16G3_1GB"
-BSP=zed_E64G4_512mb
+BSP="parallella_E16G3_1GB"
 
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
@@ -61,17 +61,30 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 fi
 
 
-# Build the just the e-server from epiphany-libs repo
+# Build just the e-hal library from epiphany-libs repo
 echo "Building eSDK libraries..."
 pushd ${ESDK_LIBS} >& /dev/null
-./build-libs.sh e-server
+./build-libs.sh e-hal
 popd >& /dev/null
+
 
 pushd ${ESDK_LIBS} >& /dev/null
 
-# Install the Epiphany GDB RSP Server
-echo "-- Installing eServer"
-cd src/e-server
-cp -f Release/e-server ${HOST}/bin/e-server.e
-cp -f e-server.sh      ${HOST}/bin/e-server
+# Install the current BSP
+echo "-- Installing BSPs"
+for bsp in ${BSPS}; do
+	cp -Rd bsps/${bsp} ${ESDK}/bsps
+done
+ln -sTf ${BSP} ${ESDK}/bsps/current
+
+# Install the Epiphnay HAL library
+echo "-- Installing eHAL"
+cd src/e-hal
+ln -sTf ../../../bsps/current/libe-hal.so ${HOST}/lib/libe-hal.so
+cp -f src/epiphany-hal.h                  ${HOST}/include
+cp -f src/epiphany-hal-data.h             ${HOST}/include
+cp -f src/epiphany-hal-data-local.h       ${HOST}/include
+cp -f src/epiphany-hal-api.h              ${HOST}/include
+ln -sTf epiphany-hal.h                    ${HOST}/include/e-hal.h
+ln -sTf epiphany-hal.h                    ${HOST}/include/e_hal.h
 cd ../../
