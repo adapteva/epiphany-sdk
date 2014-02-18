@@ -61,17 +61,28 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 fi
 
 
-# Build the just the e-server from epiphany-libs repo
+# Build the just the e-server from epiphany-libs repo. -c and -d flags work
+# here.
 echo "Building eSDK libraries..."
 pushd ${ESDK_LIBS} >& /dev/null
-./build-libs.sh e-server
+./build-libs.sh $* e-server
 popd >& /dev/null
+
+version=Release
+
+for f in $*
+do
+    if [ "x$f" == "x-d" ]
+    then
+	version=Debug
+    fi
+done
 
 pushd ${ESDK_LIBS} >& /dev/null
 
 # Install the Epiphany GDB RSP Server
 echo "-- Installing eServer"
 cd src/e-server
-cp -f Release/e-server ${HOST}/bin/e-server.e
+cp -f ${version}/e-server ${HOST}/bin/e-server.e
 cp -f e-server.sh      ${HOST}/bin/e-server
 cd ../../

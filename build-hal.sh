@@ -61,12 +61,21 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 fi
 
 
-# Build just the e-hal library from epiphany-libs repo
+# Build just the e-hal library from epiphany-libs repo. -c and -d flags work
 echo "Building eSDK libraries..."
 pushd ${ESDK_LIBS} >& /dev/null
-./build-libs.sh e-hal
+./build-libs.sh $* e-hal
 popd >& /dev/null
 
+version=Release
+
+for f in $*
+do
+    if [ "x$f" == "x-d" ]
+    then
+	version=Debug
+    fi
+done
 
 pushd ${ESDK_LIBS} >& /dev/null
 
