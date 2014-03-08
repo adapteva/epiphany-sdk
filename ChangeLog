@@ -1,3 +1,16 @@
+2014-03-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-all.sh: Created.
+	* define-release.sh: Created.
+	* docs/parallella_16_memory_map.pdf: Deleted.
+	* docs/parallella_16_prototype_memory_map.pdf: Deleted.
+	* docs/parallella_16_sdk_memory_map.pdf: Deleted.
+	* docs/parallella_64_prototype_memory_map.pdf: Deleted.
+	* docs/parallella_64_sdk_memory_map.pdf: Deleted.
+	* docs/parallella_prototype_quick_start_guide.pdf: Deleted.
+	* get-versions.sh: Created.
+	* symlink-all.sh: Created.
+
 2014-02-18  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-server.sh: Allow use of -c and -d arguments.
