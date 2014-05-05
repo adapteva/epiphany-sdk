@@ -39,8 +39,6 @@ echo "Creating the eSDK directory tree..."
 mkdir -p ${ESDK}
 ln -sTf "esdk.${REV}" ${ESDKPATH}/esdk
 mkdir -p ${ESDK}/bsps
-mkdir -p ${ESDK}/docs
-mkdir -p ${ESDK}/examples
 mkdir -p ${ESDK}/tools
 
 mkdir -p ${HOST}
@@ -81,10 +79,6 @@ popd >& /dev/null
 
 # Install components
 echo "Installing eSDK components..."
-
-# Install the documentation and examples
-cp -Rd docs     ${ESDK}
-cp -Rd examples ${ESDK}
 
 
 pushd ${ESDK_LIBS} >& /dev/null
@@ -157,7 +151,6 @@ popd >& /dev/null
 
 
 # Any special operations here...
-ln -sf ../bsps/current/parallella_prototype_quick_start_guide.pdf ${ESDK}/docs
 
 echo "==============================================="
 echo "| NOTE: The default BSP is set to ${BSP}"
