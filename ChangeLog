@@ -1,0 +1,3 @@
+2014-05-14  Ben Chaco  <bchaco@x3-c.com>
+
+	* build-sdk.sh: Copy libe-loader.so to host/lib
