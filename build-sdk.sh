@@ -151,7 +151,6 @@ popd >& /dev/null
 
 
 # Any special operations here...
-ln -sf ../bsps/current/parallella_prototype_quick_start_guide.pdf ${ESDK}/docs
 
 echo "==============================================="
 echo "| NOTE: The default BSP is set to ${BSP}"
