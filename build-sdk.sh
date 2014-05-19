@@ -80,7 +80,6 @@ popd >& /dev/null
 # Install components
 echo "Installing eSDK components..."
 
-
 pushd ${ESDK_LIBS} >& /dev/null
 
 # Install the current BSP
@@ -113,6 +112,7 @@ echo "-- Installing eLoader"
 cd src/e-loader
 cp -f src/e-loader.h ${HOST}/include
 ln -sTf e-loader.h   ${HOST}/include/e_loader.h
+cp -f Release/libe-loader.so ${HOST}/lib
 cd ../../
 
 # Install the Epiphnay GDB RSP Server
