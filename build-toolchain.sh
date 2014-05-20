@@ -45,6 +45,25 @@ absolutedir() {
 basedir=`dirname "$0"`
 basedir=`(cd "${basedir}/.." && pwd)`
 
+# Ensure that everything has been downloaded correctly.
+ensure_directory_exists()
+{
+  if [ ! -d "${basedir}/${1}" ]; then
+    echo "Error: ${basedir}/${1} seems to be missing. Please check https://github.com/adapteva/epiphany-sdk/wiki/Downloading-the-SDK for instructions.";
+    exit 1;
+  fi
+}
+
+ensure_directory_exists "gcc"
+ensure_directory_exists "binutils"
+ensure_directory_exists "gcc/mpc"
+ensure_directory_exists "gcc/mpfr"
+ensure_directory_exists "gcc/gmp"
+ensure_directory_exists "gdb"
+ensure_directory_exists "newlib"
+ensure_directory_exists "cgen"
+ensure_directory_exists "sdk"
+
 component_dirs="${basedir}/gcc ${basedir}/binutils ${basedir}/gdb ${basedir}/newlib ${basedir}/cgen"
 unified_src="${basedir}/srcw"
 build_dir="${basedir}/bld-epiphany"
