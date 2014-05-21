@@ -1,0 +1,18 @@
+This directory contains the components and scripts to install and configure
+the Jenkins Continuous Integration tool on an Ubuntu Linux host. After
+installing Jenkins the scripts will configure a project that will be used
+for nightly builds of the Adapteva Epiphany SDK.
+
+The procedure that the scripts use to install Jenkins can be found at the
+link
+
+     https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+on+Ubuntu
+
+To start the installation execute the shell script name jenkins-cfg.sh
+
+After the installation completes point your browser to
+
+	  http://localhost:8081/
+
+You should see a project named epiphany_build in the dashboard.
+
