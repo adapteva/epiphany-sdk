@@ -136,11 +136,12 @@ log="${PWD}/clone-$(date -u +%F-%H%M).log"
 rm -f "${log}"
 
 # Clone repositories
-download_tool gcc      adapteva epiphany-gcc      epiphany-gcc-4.8
-download_tool binutils adapteva epiphany-binutils epiphany-binutils-2.23
-download_tool gdb      adapteva epiphany-gdb      epiphany-gdb-7.6
-download_tool newlib   adapteva epiphany-newlib   epiphany-newlib-1.20
-download_tool cgen     adapteva epiphany-cgen     epiphany-cgen-1.1
-download_tool sdk      adapteva epiphany-sdk      master
+download_tool gcc           adapteva epiphany-gcc      epiphany-gcc-4.8
+download_tool binutils      adapteva epiphany-binutils epiphany-binutils-2.23
+download_tool gdb           adapteva epiphany-gdb      epiphany-gdb-7.6
+download_tool newlib        adapteva epiphany-newlib   epiphany-newlib-1.20
+download_tool cgen          adapteva epiphany-cgen     epiphany-cgen-1.1
+download_tool sdk           adapteva epiphany-sdk      master
+download_tool epiphany-libs adapteva epiphany-libs     master
 
 echo "Download complete"
