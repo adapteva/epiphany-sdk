@@ -1,3 +1,9 @@
+2014-05-26  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-sdk.sh: Add copyright declarations. Add command arguments
+	to control host, paths and release/debug install. Remove bash
+	specific dependencies.
+
 2014-05-21  Ben Chaco  <bchaco@x3-c.com>
 
 	* jenkins-epiphany: Added Jenkins install and config scripts
