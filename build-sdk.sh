@@ -107,7 +107,7 @@ topdir=`(cd "$d/.." && pwd)`
 # Default values
 
 # Path to location of eSDK installation (must be an absolute path)
-ESDKPATH="${topdir}/.."     # In user account, adjacent directory
+ESDKPATH="${topdir}"     # In user account, adjacent directory
 
 # Revision number of new eSDK build
 REV="5.13.09.10"
@@ -254,14 +254,31 @@ PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
 export PATH
 export EPIPHANY_HOME
 
+echo ""
 echo "==============================================="
 echo "| NOTE: The default BSP is set to ${BSP}"
 echo "| Please make sure it matches your system,    |"
-echo "| or chenge the settings in this build script |"
+echo "| or change the settings in this build script |"
 echo "==============================================="
+echo ""
+
+echo ""
+echo "=============================================="
+echo "Build Settings:                               "
+echo "                                              "
+echo "Build Rev     = $REV                          "
+echo "EPIPHANY_HOME = $EPIPHANY_HOME                "
+echo "ESDK          = $ESDK                         "
+echo "HOSTNAME      = $HOSTNAME                     "
+echo "GNUNAME       = $GNUNAME                      "
+echo "GNU           = $GNU                          "
+echo "PATH          = $PATH                         "
+echo "=============================================="
+echo ""
 
 # Create the SDK tree and set default symlinks
 echo "Creating the eSDK directory tree..."
+
 mkdir -p ${ESDK}
 ln -sTf "esdk.${REV}" ${ESDKPATH}/esdk
 mkdir -p ${ESDK}/bsps
@@ -276,16 +293,15 @@ mkdir -p ${HOST}/lib
 mkdir -p ${HOST}/include
 mkdir -p ${HOST}/bin
 
-
 # Check prerequisites
 if [ ! -d "${ESDK}/tools/e-gnu/epiphany-elf/lib" ]; then
-	echo "Please install the Epiphany GNU tools suite first at ${GNU}"
-	exit 1
+    echo "Please install the Epiphany GNU tools suite first at ${GNU}"
+    exit 1
 fi
 
 if [ ! -d "${ESDK_LIBS}" ]; then
-	echo "ERROR: Can't find the epiphany-libs repository!"
-	exit 1
+    echo "ERROR: Can't find the epiphany-libs repository!"
+    exit 1
 fi
 
 
@@ -300,8 +316,10 @@ cp -d ./setup.csh ${ESDK}
 # in the epiphany libraries directory.
 echo "Building eSDK libraries..."
 cd ${ESDK_LIBS} > /dev/null 2>&1
-./build-libs.sh -a
-
+if ! ./build-libs.sh -a ; then
+    echo "epiphany-libs failed to build"
+    exit 1
+fi
 
 # Install components
 echo "Installing eSDK components..."
@@ -379,3 +397,5 @@ echo "| NOTE: The default BSP is set to ${BSP}"
 echo "| Please make sure it matches your system,    |"
 echo "| or chenge the settings in this build script |"
 echo "==============================================="
+
+exit 0

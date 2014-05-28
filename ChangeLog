@@ -1,3 +1,8 @@
+2014-05-28  Ben Chaco  <bchaco@x3-c.com>
+
+	* build-sdk.sh: Fix ESDKPATH. Error handling, print environment
+	settings
+
 2014-05-26  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-sdk.sh: Add copyright declarations. Add command arguments
