@@ -1,3 +1,11 @@
+2014-06-04  Ben Chaco  <bchaco@x3-c.com>
+
+	* build-sdk.sh: Renamed to install-sdk.sh
+	* build_scripts: Directory and contents removed
+	* build-epiphany-sdk.sh: added
+	* download-toolchain.sh: Modified so as not to fetch the epiphany-sdk repository
+	* epiphany_build_jenkins.tar.gz: Updated for new build commands
+
 2014-05-28  Ben Chaco  <bchaco@x3-c.com>
 
 	* build-sdk.sh: Fix ESDKPATH. Error handling, print environment
