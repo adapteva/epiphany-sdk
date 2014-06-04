@@ -311,7 +311,12 @@ cp -d ./COPYING   ${ESDK}
 cp -d ./setup.sh  ${ESDK}
 cp -d ./setup.csh ${ESDK}
 
-
+# Clone the epiphany-libs repository
+if ! git clone https://github.com/adapteva/epiphany-libs.git; then
+    echo "Failed to clone the epiphany-libs repository"
+    exit 1
+fi
+ 
 # Build the eSDK libraries from epiphany-libs repo. From this point on we are
 # in the epiphany libraries directory.
 echo "Building eSDK libraries..."
