@@ -121,7 +121,7 @@ BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
 BSP="parallella_E16G3_1GB"
 
 # Default location of epiphany-libs.
-ESDK_LIBS="${topdir}/epiphany-libs"
+ESDK_LIBS="${topdir}/sdk/epiphany-libs"
 
 # Default version to install
 VERSION=Release
@@ -300,8 +300,12 @@ if [ ! -d "${ESDK}/tools/e-gnu/epiphany-elf/lib" ]; then
 fi
 
 if [ ! -d "${ESDK_LIBS}" ]; then
-    echo "ERROR: Can't find the epiphany-libs repository!"
-    exit 1
+    # Clone the epiphany-libs repository
+	if ! git clone https://github.com/adapteva/epiphany-libs.git; then
+		printf "Failed to clone the epiphany-libs repository and no "
+		printf "ESDKLIBS pat was provided on the command line\n"
+		exit 1
+	fi
 fi
 
 
@@ -311,7 +315,10 @@ cp -d ./COPYING   ${ESDK}
 cp -d ./setup.sh  ${ESDK}
 cp -d ./setup.csh ${ESDK}
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 # Build the eSDK libraries from epiphany-libs repo. From this point on we are
 # in the epiphany libraries directory.
 echo "Building eSDK libraries..."
