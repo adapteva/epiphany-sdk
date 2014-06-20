@@ -100,7 +100,7 @@ fi
 
 if [ ! -d ../esdk/tools/${GNUNAME}/ ]; then
     # Create the SDK tree and set default symlinks
-    # Note the build-sdk.sh script will attempt to create
+    # Note the install-sdk.sh script will attempt to create
     # this toolchain tree but it does not Install the
     # toolchain!!
     echo "Creating the eSDK directory tree..."
@@ -108,8 +108,6 @@ if [ ! -d ../esdk/tools/${GNUNAME}/ ]; then
     mkdir -p ${ESDK}
     ln -sT "esdk.${REV}" ${ESDKPATH}/esdk
     mkdir -p ${ESDK}/bsps
-    mkdir -p ${ESDK}/docs
-    mkdir -p ${ESDK}/examples
     mkdir -p ${ESDK}/tools
 
     mkdir -p ${HOST}

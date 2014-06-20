@@ -28,7 +28,7 @@
 
 # Usage:
 #
-#     ./build-sdk.sh [-a | --arch | --host <arch>]
+#     ./install-sdk.sh [-a | --arch | --host <arch>]
 #                    [--arm | --x86 ]
 #                    [-b | --bsp <bsp_name> ]
 #                    [-d | --debug | -r | --release]
