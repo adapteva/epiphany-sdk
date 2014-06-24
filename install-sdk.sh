@@ -247,12 +247,14 @@ HOSTNAME="host.${ARCH}"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.${ARCH}"
 GNU="${ESDK}/tools/${GNUNAME}"
+CROSS_PREFIX=arm-linux-gnueabi-
+EPIPHANY_PREFIX=epiphany-elf-
 
 # Add Epiphany and host GNU tool to path
 PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
 PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
-export PATH
-export EPIPHANY_HOME
+
+export CROSS_PREFIX EPIPHANY_PREFIX EPIPHANY_HOME PATH
 
 echo ""
 echo "==============================================="

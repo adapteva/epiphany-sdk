@@ -1,3 +1,8 @@
+2014-06-24  Ben Chaco  <bchaco@x3-c.com>
+
+	* install-sdk.sh:
+	Set CROSS_PREFIX and EPIPHANY_PREFIX env vars
+
 2014-06-20  Ben Chaco  <bchaco@x3-c.com>
 
 	* build-epiphany-sdk.sh:
