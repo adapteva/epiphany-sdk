@@ -247,7 +247,7 @@ HOSTNAME="host.${ARCH}"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.${ARCH}"
 GNU="${ESDK}/tools/${GNUNAME}"
-CROSS_PREFIX=arm-linux-gnueabi-
+CROSS_PREFIX=arm-linux-gnueabihf-
 EPIPHANY_PREFIX=epiphany-elf-
 
 # Add Epiphany and host GNU tool to path
