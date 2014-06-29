@@ -19,7 +19,7 @@
 # more details.
 
 # You should have received a copy of the GNU General Public License along
-# with this program.  If not, see <http://www.gnu.org/licenses/>.          
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Usage: ./build-toolchain.sh [ --build-dir <build_directory>]
 #                 [--enable-cgen-maint]
@@ -130,7 +130,7 @@ until
     *)
       opt="";;
   esac;
-  [ -z "${opt}" ]; do 
+  [ -z "${opt}" ]; do
     shift
 done
 

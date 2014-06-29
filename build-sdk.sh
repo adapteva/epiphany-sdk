@@ -61,6 +61,11 @@
 #     The name of the BSP to use. This must be a valid directory in the bsps
 #     subdirectory of epiphany-libs.
 
+# -c
+# --clean
+
+#     Perform a clean build (default is not to clean)
+
 # -d
 # --debug
 # -r
@@ -126,9 +131,12 @@ ESDK_LIBS="${topdir}/epiphany-libs"
 # Default version to install
 VERSION=Release
 
+# Should we do a clean build?
+BUILD_FLAG=-a
+
 # Parse options
-getopt_string=`getopt -n build-sdk -o a:b:drl:p:h -l arch:,host: \
-                   -l arm,x86 -l debug,release -l help -l version \
+getopt_string=`getopt -n build-sdk -o a:b:cdrl:p:h -l arch:,host: \
+                   -l arm,x86 -l clean -l debug,release -l help -l version \
                    -l bsp: -l esdklibs: -l esdkpath:,prefix: \
                    -s sh -- "$@"`
 eval set -- "$getopt_string"
@@ -155,6 +163,10 @@ do
 	    BSP=$1
 	    ;;
 
+	-c|--clean)
+	    BUILD_FLAG="-c"
+	    ;;
+
 	-d|--debug)
 	    VERSION=Debug
 	    ;;
@@ -178,6 +190,7 @@ do
 	    echo "Usage: ./build-sdk.sh [-a | --arch | --host <arch>]"
             echo "                      [--arm | --x86]"
             echo "                      [-b | --bsp <bsp_name> ]"
+            echo "                      [-c | --clean]"
             echo "                      [-d | --debug | -r | --release]"
             echo "                      [-l | --esdklibs <path> ]"
             echo "                      [-p | --esdkpath | --prefix <path>]"
@@ -296,11 +309,12 @@ cp -d ./setup.sh  ${ESDK}
 cp -d ./setup.csh ${ESDK}
 
 
-# Build the eSDK libraries from epiphany-libs repo. From this point on we are
-# in the epiphany libraries directory.
+# Build the eSDK libraries from epiphany-libs repo. We use either -a (to build
+# everything) or -c (to do a clean build of everything. From this point on we
+# are in the epiphany libraries directory.
 echo "Building eSDK libraries..."
 cd ${ESDK_LIBS} > /dev/null 2>&1
-./build-libs.sh -a
+./build-libs.sh ${BUILD_FLAG}
 
 
 # Install components
