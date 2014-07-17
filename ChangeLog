@@ -1,3 +1,16 @@
+2014-07-17  Ben Chaco  <bchaco@x3-c.com>
+
+	* build-epiphany-sdk.sh:
+	Use EPIPHANY_BUILD_HOME environment variable for the build root.
+	Tabified the script for consistency and because there were a mix
+	of TAB and whitespace used.
+	* install-sdk.sh:
+	Changed VERSION variable name to BLD_VERSION for clarity.
+	Added -t/--toolprfx script options to override CROSS_COMPILE
+	environmrnt variable. Removed CROSS_PREFIX variable.
+	Tabified the script for consistency and because there were a mix
+	of TAB and whitespace used. Updated usage output.
+
 2014-06-24  Ben Chaco  <bchaco@x3-c.com>
 
 	* install-sdk.sh:
