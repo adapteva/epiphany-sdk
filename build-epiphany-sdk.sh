@@ -48,7 +48,7 @@ if ! bash ./download-toolchain.sh --clone; then
 	printf "Failed to get the download-toolchain script from "
 	printf "https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh\n"
 	printf "\nAborting...\n"
-		exit 1
+	exit 1
 fi
 
 # Get the additional GCC modules that we need
@@ -141,11 +141,19 @@ fi
 echo "Copying the toolchain into ../esdk/tools/${GNUNAME}"
 mv ../INSTALL/* ../esdk/tools/${GNUNAME}/
 
+# Clone the parallella Linux source tree
+if ! git clone https://github.com/parallella/parallella-linux-adi.git; then
+	printf "The Epiphany SDK build failed!\n"
+	printf "\nAborting...\n"
+fi
+
+export PARALLELLA_LINUX_HOME=$EPIPHANY_BUILD_HOME/parallella-linux-adi
+
 # build the epiphany-libs and install the SDK
 if ! ./install-sdk.sh; then
-		printf "The Epiphany SDK build failed!\n"
-		printf "\nAborting...\n"
-		exit 1
+	printf "The Epiphany SDK build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
 fi
 
 popd >& /dev/null
