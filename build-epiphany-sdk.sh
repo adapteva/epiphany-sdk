@@ -147,7 +147,7 @@ if ! git clone https://github.com/parallella/parallella-linux-adi.git; then
 	printf "\nAborting...\n"
 fi
 
-export PARALLELLA_LINUX_HOME=$EPIPHANY_BUILD_HOME/parallella-linux-adi
+export PARALLELLA_LINUX_HOME=$PWD/parallella-linux-adi
 
 # build the epiphany-libs and install the SDK
 if ! ./install-sdk.sh; then
