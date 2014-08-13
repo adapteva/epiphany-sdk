@@ -371,6 +371,7 @@ cp -f src/epiphany-hal.h				  ${HOST}/include
 cp -f src/epiphany-hal-data.h			  ${HOST}/include
 cp -f src/epiphany-hal-data-local.h		  ${HOST}/include
 cp -f src/epiphany-hal-api.h			  ${HOST}/include
+cp -f src/epiphany-shm-manager.h		  ${HOST}/include
 ln -sTf epiphany-hal.h					  ${HOST}/include/e-hal.h
 ln -sTf epiphany-hal.h					  ${HOST}/include/e_hal.h
 cd ../../
