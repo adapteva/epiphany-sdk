@@ -404,6 +404,7 @@ cp -f e-write/Debug/e-write	  ${HOST}/bin/e-write.e
 cp -f e-write/e-write.sh	  ${HOST}/bin/e-write
 cp -f e-hw-rev/e-hw-rev		  ${HOST}/bin/e-hw-rev.e
 cp -f e-hw-rev/e-hw-rev.sh	  ${HOST}/bin/e-hw-rev
+cp -f e-trace/include/a_trace.h	  ${HOST}/include
 cp -f e-objcopy				  ${HOST}/bin
 cd ../../
 
