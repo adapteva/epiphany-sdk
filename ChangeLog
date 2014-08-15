@@ -1,3 +1,9 @@
+2014-08-13  Andreas Olofsson <andreasd@adapteva.com>
+
+	* build-epiphany-sdk.sh:
+	Major integration/merge branch. Need to add 'tag' and 'branch'
+	script arguments to build script to enable slicing across repos.
+
 2014-07-17  Ben Chaco  <bchaco@x3-c.com>
 
 	* build-epiphany-sdk.sh:
