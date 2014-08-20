@@ -116,8 +116,8 @@ topdir=`(cd "$d/.." && pwd)`
 # Path to location of eSDK installation (must be an absolute path)
 ESDKPATH="${topdir}"	 # In user account, adjacent directory
 
-# Revision number of new eSDK build
-REV="5.13.09.10"
+# Default Revision number of new eSDK build
+REV="DevBuild"
 export REV
 
 # Host machine architecture
@@ -130,13 +130,16 @@ BSP="parallella_E16G3_1GB"
 # Default location of epiphany-libs.
 ESDK_LIBS="${topdir}/sdk/epiphany-libs"
 
+# The default branch for cloning/checkout
+BRANCH="master"
+
 # Default version to install
 BLD_VERSION=Release
 
 # Parse options
-getopt_string=`getopt -n build-sdk -o a:b:drl:p:h -l arch:,host: \
+getopt_string=`getopt -n install-sdk -o a:b:drl:p:n:x:h -l arch:,host: \
 				   -l arm,x86 -l debug,release -l help -l version \
-				   -l bsp: -l esdklibs: -l esdkpath:,prefix: \
+				   -l bsp: -l bldname: -l branch: -l esdklibs: -l esdkpath:,prefix: \
 				   -s sh -- "$@"`
 eval set -- "$getopt_string"
 
@@ -185,7 +188,16 @@ do
 		export CROSS_COMPILE=$1;
 		;;
 
+    -n| --bldname)
+		shift
+		REV=$1
+		;;
 
+    -x| --branch)
+		shift
+		BRANCH=$1
+		;;
+		
 	-h|--help)
 		echo "Epiphany SDK version ${REV}"
 		echo "Usage: ./build-sdk.sh [-a | --arch | --host <arch>]"
@@ -195,12 +207,15 @@ do
 			echo "						[-l | --esdklibs <path> ]"
 			echo "						[-p | --esdkpath | --prefix <path>]"
 			echo "						[-t | --toolprfx]"
+			echo "						[-n | --bldname]"
+			echo "						[-x | --branch]"
 			echo "						[-h | --help]"
 			echo "						[--version]"
 			echo ""
 			echo "The arguments provided above will override the values of "
 			echo "the following environment variables:"
 			echo ""
+			echo "\tBSP"
 			echo "\tARCH"
 			echo "\tBSP"
 			echo "\tBLD_VERSION"
@@ -289,6 +304,7 @@ echo "=============================================="
 echo "Build Settings:								"
 echo "												"
 echo "Build Rev		= $REV							"
+echo "Branch		= $BRANCH						"
 echo "EPIPHANY_HOME = $EPIPHANY_HOME				"
 echo "ESDK			= $ESDK							"
 echo "HOSTNAME		= $HOSTNAME						"
@@ -324,7 +340,7 @@ fi
 
 if [ ! -d "${ESDK_LIBS}" ]; then
 	# Clone the epiphany-libs repository
-	if ! git clone https://github.com/adapteva/epiphany-libs.git; then
+	if ! git clone https://github.com/adapteva/epiphany-libs.git -b $BRANCH; then
 		printf "Failed to clone the epiphany-libs repository and no "
 		printf "ESDKLIBS pat was provided on the command line\n"
 		exit 1

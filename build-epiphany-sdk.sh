@@ -3,8 +3,11 @@
 # Host machine architecture
 ARCH="armv7l"
 
-# Revision number of Epiphany SDK (see sdk/install-sdk.sh)
-REV="5.13.09.10"
+# Revision number of Epiphany SDK
+REV=${1:-"DevBuild"}
+
+# Git branch name for build
+BRANCH=${2:-"master"}
 
 ESDK="${EPIPHANY_BUILD_HOME}/esdk.${REV}"
 HOSTNAME="host.${ARCH}"
@@ -43,7 +46,6 @@ fi
 
 
 # Clone the github repositories
-#bash ./download-toolchain-xcube.sh --clone
 if ! bash ./download-toolchain.sh --clone; then
 	printf "Failed to get the download-toolchain script from "
 	printf "https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh\n"
@@ -150,7 +152,7 @@ fi
 export PARALLELLA_LINUX_HOME=$PWD/parallella-linux-adi
 
 # build the epiphany-libs and install the SDK
-if ! ./install-sdk.sh; then
+if ! ./install-sdk.sh -n $REV -x $BRANCH; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
