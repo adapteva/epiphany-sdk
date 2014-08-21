@@ -144,12 +144,12 @@ echo "Copying the toolchain into ../esdk/tools/${GNUNAME}"
 mv ../INSTALL/* ../esdk/tools/${GNUNAME}/
 
 # Clone the parallella Linux source tree
-if ! git clone https://github.com/parallella/parallella-linux-adi.git; then
+if ! git clone https://github.com/parallella/parallella-linux.git -b main; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
 fi
 
-export PARALLELLA_LINUX_HOME=$PWD/parallella-linux-adi
+export PARALLELLA_LINUX_HOME=$PWD/parallella-linux
 
 # build the epiphany-libs and install the SDK
 if ! ./install-sdk.sh -n $REV -x $BRANCH; then
