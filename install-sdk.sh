@@ -303,14 +303,14 @@ echo ""
 echo "=============================================="
 echo "Build Settings:								"
 echo "												"
-echo "Build Rev		= $REV							"
-echo "Branch		= $BRANCH						"
+echo "Build Rev     = $REV							"
+echo "Branch        = $BRANCH						"
 echo "EPIPHANY_HOME = $EPIPHANY_HOME				"
-echo "ESDK			= $ESDK							"
-echo "HOSTNAME		= $HOSTNAME						"
-echo "GNUNAME		= $GNUNAME						"
-echo "GNU			= $GNU							"
-echo "PATH			= $PATH							"
+echo "ESDK          = $ESDK							"
+echo "HOSTNAME      = $HOSTNAME						"
+echo "GNUNAME       = $GNUNAME						"
+echo "GNU           = $GNU							"
+echo "PATH          = $PATH							"
 echo "=============================================="
 echo ""
 
@@ -410,18 +410,21 @@ cd ../../
 # Install the Epiphnay Utilities
 echo "-- Installing eUtilities"
 cd src/e-utils
-cp -f e-reset/e-reset		  ${HOST}/bin/e-reset.e
-cp -f e-reset/e-reset.sh	  ${HOST}/bin/e-reset
-cp -f e-loader/Debug/e-loader ${HOST}/bin/e-loader.e
-cp -f e-loader/e-loader.sh	  ${HOST}/bin/e-loader
-cp -f e-read/Debug/e-read	  ${HOST}/bin/e-read.e
-cp -f e-read/e-read.sh		  ${HOST}/bin/e-read
-cp -f e-write/Debug/e-write	  ${HOST}/bin/e-write.e
-cp -f e-write/e-write.sh	  ${HOST}/bin/e-write
-cp -f e-hw-rev/e-hw-rev		  ${HOST}/bin/e-hw-rev.e
-cp -f e-hw-rev/e-hw-rev.sh	  ${HOST}/bin/e-hw-rev
+cp -f e-reset/e-reset    		  ${HOST}/bin/e-reset.e
+cp -f e-reset/e-reset.sh    	  ${HOST}/bin/e-reset
+cp -f e-loader/Debug/e-loader     ${HOST}/bin/e-loader.e
+cp -f e-loader/e-loader.sh  	  ${HOST}/bin/e-loader
+cp -f e-read/Debug/e-read   	  ${HOST}/bin/e-read.e
+cp -f e-read/e-read.sh  		  ${HOST}/bin/e-read
+cp -f e-write/Debug/e-write 	  ${HOST}/bin/e-write.e
+cp -f e-write/e-write.sh	      ${HOST}/bin/e-write
+cp -f e-hw-rev/e-hw-rev	    	  ${HOST}/bin/e-hw-rev.e
+cp -f e-hw-rev/e-hw-rev.sh	      ${HOST}/bin/e-hw-rev
 cp -f e-trace/include/a_trace.h	  ${HOST}/include
-cp -f e-objcopy				  ${HOST}/bin
+cp -f e-objcopy				      ${HOST}/bin
+cp -f e-trace-dump/${BLD_VERSION}/e-trace-dump ${HOST}/bin
+cp -f e-trace-server/${BLD_VERSION}/e-trace-server ${HOST}/bin 
+cp -f e-clear-shmtable/${BLD_VERSION}/e-clear-shmtable ${HOST}/bin
 cd ../../
 
 # Install the Epiphnay Runtime Library
