@@ -31,6 +31,7 @@
 #     ./build-sdk.sh [-a | --arch | --host <arch>]
 #                    [--arm | --x86 ]
 #                    [-b | --bsp <bsp_name> ]
+#                    [-c | --clean ]
 #                    [-d | --debug | -r | --release]
 #                    [-l | --esdklibs <path> ]
 #                    [-p | --esdkpath | --prefix <path>]
