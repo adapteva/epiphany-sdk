@@ -1,3 +1,13 @@
+2014-08-22  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	Rewrite of the download script to deal properly with GCC
+	components.
+
+	* define-release.sh: Created.
+	* download-toolchain.sh: Make arguments comprehensive. Provide for
+	download of all GCC components from official mirrors. Clean up
+	shell functions.
+
 2014-08-13  Andreas Olofsson <andreasd@adapteva.com>
 
 	* build-epiphany-sdk.sh:
