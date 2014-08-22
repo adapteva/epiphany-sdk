@@ -147,7 +147,7 @@ fi
 echo "Copying the toolchain into ../esdk/tools/${GNUNAME}"
 mv ../INSTALL/* ../esdk/tools/${GNUNAME}/
 
-if [ ! -d $PARALLELLA_LINUX_HOME ]; then
+if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 	# Clone the parallella Linux source tree
 	if ! git clone https://github.com/parallella/parallella-linux.git -b main; then
 		printf "The Epiphany SDK build failed!\n"
