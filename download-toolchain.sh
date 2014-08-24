@@ -23,7 +23,7 @@
 
 # ./download-toolchain [--force | --no-force]
 #                      [--clone | --download]
-#                      [--infra_url <url> | --infra-us |
+#                      [--infra-url <url> | --infra-us |
 #                       --infra-uk | --infra-jp]
 #                      [--gmp | --no-gmp]
 #                      [--mpfr | --no-mpfr]
@@ -44,7 +44,7 @@
 #     --download is specified, attempt to download a ZIP file of the
 #     repository.  Default --download.
 
-# --infra_url <url>
+# --infra-url <url>
 
 #     Set the URL of the GCC infrastructure downloads. Default
 #     http://www.netgull.com/gcc/infrastructure.
@@ -63,7 +63,7 @@
 
 #     Download, or (with the --no- prefix) don't download the corresponding GCC
 #     infrastructure component. The components are downloaded from the
-#     infrastructure URL, which may be changed by the --infra_url option. By
+#     infrastructure URL, which may be changed by the --infra-url option. By
 #     default all components are downloaded.
 
 # --help | -h
@@ -279,7 +279,7 @@ case ${opt} in
 	clone="false"
 	;;
 
-    --infra_url)
+    --infra-url)
 	shift
 	infra_url="$1"
 	;;
@@ -339,7 +339,7 @@ case ${opt} in
     ?*)
 	echo "Usage: ./download-toolchain [--force | --no-force]"
 	echo "                            [--clone | --download]"
-	echo "                            [--infra_url <url> | --infra-us |"
+	echo "                            [--infra-url <url> | --infra-us |"
 	echo "                             --infra-uk | --infra-jp]"
 	echo "                            [--gmp | --no-gmp]"
 	echo "                            [--mpfr | --no-mpfr]"
