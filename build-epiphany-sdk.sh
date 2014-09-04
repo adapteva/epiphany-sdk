@@ -39,7 +39,7 @@ if [ -z "$git_branch" ] ; then
   git_branch="master"
 fi
 
-user_repo="$(cd sdk && git remote show origin | awk '/Fetch URL/{print $3}' | sed -e 's/^[a-z@:\/]*github\.com\/\(.*\)$/\1/')"
+user_repo="$(cd sdk && git remote show origin | awk '/Fetch URL/{print $3}' | sed -e 's/^[a-z@:\/]*github\.com[:\/]\([a-zA-Z\/\-]*\)\(.*\)$/\1/')"
 if [ -n "$user_repo" ] ; then
   git_user="$(echo "$user_repo" | awk -F/ '{print $1}')"
   git_repo="$(echo "$user_repo" | awk -F/ '{print $2}')"
