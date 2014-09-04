@@ -45,7 +45,7 @@ download_tool() {
 	    echo "Skipping ${tool} already exists..." | tee -a ${log}
 	else
 	    echo "Cloning ${tool}..."
-	    if ! git clone -q -b ${branch} git://github.com/${user}/${repo} ${tool} \
+	    if ! git clone -q -b ${branch} https://github.com/${user}/${repo} ${tool} \
 	        >> ${log} 2>&1
 	    then
 		echo "Unable to clone ${tool}" | tee -a ${log}
