@@ -34,9 +34,26 @@ fi
 cd $EPIPHANY_BUILD_HOME
 
 ## Get the toolchain download script
-if ! wget https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh; then
+git_branch="$(cd sdk && git branch | awk '/^\*/{print $2}')"
+if [ -z "$git_branch" ] ; then
+  git_branch="master"
+fi
+
+user_repo="$(cd sdk && git remote show origin | awk '/Fetch URL/{print $3}' | sed -e 's/^[a-z@:\/]*github\.com[:\/]\([a-zA-Z\/\-]*\)\(.*\)$/\1/')"
+if [ -n "$user_repo" ] ; then
+  git_user="$(echo "$user_repo" | awk -F/ '{print $1}')"
+  git_repo="$(echo "$user_repo" | awk -F/ '{print $2}')"
+else
+  git_user="adapteva"
+  git_repo="epiphany-sdk"
+fi
+
+script_file="download-toolchain.sh"
+script_url="https://raw.github.com/$git_user/$git_repo/$git_branch/$script_file"
+
+if ! wget -O $script_file $script_url; then
 	printf "Failed to get the download-toolchain script from "
-	printf "https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh\n"
+	printf "$script_url\n"
 	printf "\nAborting...\n"
 	exit 1
 fi
