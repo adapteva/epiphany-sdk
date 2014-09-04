@@ -54,21 +54,21 @@ fi
 # Get the additional GCC modules that we need
 pushd gcc >& /dev/null
 
-if ! wget http://multiprecision.org/mpc/download/mpc-1.0.1.tar.gz; then
+if ! wget -N http://multiprecision.org/mpc/download/mpc-1.0.1.tar.gz; then
 		printf "Failed to get the mpc package from "
 		printf "http://multiprecision.org/mpc/download/mpc-1.0.1.tar.gz\n"
 		printf "\nAborting...\n"
 		exit 1
 fi
 
-if ! wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz; then
+if ! wget -N http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz; then
 		printf "Failed to get the mpfr package from "
 		printf "wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz\n"
 		printf "\nAborting...\n"
 		exit 1
 fi
 
-if ! wget ftp://ftp.gmplib.org/pub/gmp-5.1.2/gmp-5.1.2.tar.lz; then
+if ! wget -N ftp://ftp.gmplib.org/pub/gmp-5.1.2/gmp-5.1.2.tar.lz; then
 		printf "Failed to get the gmp package from "
 		printf "\nftp://ftp.gmplib.org/pub/gmp-5.1.2/gmp-5.1.2.tar.lz"
 		printf "\nAborting...\n"
