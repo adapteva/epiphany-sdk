@@ -1,0 +1,39 @@
+# Tool component versions to use
+
+# Copyright (C) 2014, Embecosm Limited.
+
+# Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 3 of the License, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# NOTE. This is a data file.
+
+# Format of each line is <component_dir>:<branch_or_tag_name>
+
+# Comments and blank lines are ignored.
+
+# Main components
+gcc:epiphany-gcc-4.8-software-cache
+binutils:epiphany-binutils-2.23-software-cache
+gdb:epiphany-gdb-7.6
+newlib:epiphany-newlib-1.20
+cgen:epiphany-cgen-1.1
+
+# At present we don't worry about the GCC infrastructure components being
+# pulled from git. Versions recorded as comments here.
+# gmp:gmp-4.3.2
+# mpfr:mpfr-2.4.2
+# mpc:mpc-0.8.1
+# isl:isl-0.12.2
+# cloog:cloog-0.18.1

@@ -21,16 +21,16 @@
 
 # Usage:
 
-# ./download-toolchain [--force | --no-force]
-#                      [--clone | --download]
-#                      [--infra-url <url> | --infra-us |
-#                       --infra-uk | --infra-jp]
-#                      [--gmp | --no-gmp]
-#                      [--mpfr | --no-mpfr]
-#                      [--mpc | --no-mpc]
-#                      [--isl | --no-isl]
-#                      [--cloog | --no-cloog]
-#                      [--help | -h]
+# ./download-toolchain.sh [--force | --no-force]
+#                         [--clone | --download]
+#                         [--infra-url <url> | --infra-us |
+#                          --infra-uk | --infra-jp]
+#                         [--gmp | --no-gmp]
+#                         [--mpfr | --no-mpfr]
+#                         [--mpc | --no-mpc]
+#                         [--isl | --no-isl]
+#                         [--cloog | --no-cloog]
+#                         [--help | -h]
 
 # --force | --no-force
 
@@ -113,7 +113,7 @@ clone_tool() {
     # Clone git repository if it does not already exist
     if [ -e ${tool} ]
     then
-	echo "${tool} already clone." | tee -a ${log}
+	echo "${tool} already cloned." | tee -a ${log}
     else
 	echo "Cloning ${tool}..."
 	if ! git clone -q -o adapteva -b ${branch} ${repo_url} ${tool} \
@@ -154,7 +154,7 @@ download_tool() {
     # Download and unzip source if it does not already exist
     if [ -e ${tool} ]
     then
-	echo "Skipping ${tool}, already exists..." | tee -a ${log}
+	echo "${tool} already downloaded." | tee -a ${log}
     else
 	echo "Downloading ${tool}..."
 	if ! wget ${archive_url}/${branch} \
@@ -223,7 +223,16 @@ gcc_component () {
     file=$2
     packed_name=${file}.$3
 
+    if ! mkdir -p gcc-infrastructure
+    then
+	echo "ERROR: Unable to create gcc-infrastructure directory" \
+	    | tee -a ${log}
+	exit 1
+    fi
+
+    cd gcc-infrastructure
     download_tool "${tool}" "${infra_url}" "tar xf" "${packed_name}" "${file}"
+    cd ..
 }
 
 
@@ -250,14 +259,16 @@ absolutedir() {
 #                                                                              #
 ################################################################################
 
+# Defaults
+
 force="false"
 clone="false"
 infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
-do_gmp="true"
-do_mpfr="true"
-do_mpc="true"
-do_isl="true"
-do_cloog="true"
+do_gmp="--do-gmp"
+do_mpfr="--do-mpfr"
+do_mpc="--do-mpc"
+do_isl="--do-isl"
+do_cloog="--do-cloog"
 
 until
 opt=$1
@@ -296,44 +307,24 @@ case ${opt} in
 	infra_url="http://ftp.tsukuba.wide.ad.jp/software/gcc/infrastructure"
 	;;
 
-    --gmp)
-	do_gmp="true"
+    --gmp | --no-gmp)
+	do_gmp="$1"
 	;;
 
-    --no-gmp)
-	do_gmp="false"
+    --mpfr | --no-mpfr)
+	do_mpfr="$1"
 	;;
 
-    --mpfr)
-	do_mpfr="true"
+    --mpc | --no-mpc)
+	do_mpc="$1"
 	;;
 
-    --no-mpfr)
-	do_mpfr="false"
+    --isl | --no-isl)
+	do_isl="$1"
 	;;
 
-    --mpc)
-	do_mpc="true"
-	;;
-
-    --no-mpc)
-	do_mpc="false"
-	;;
-
-    --isl)
-	do_isl="true"
-	;;
-
-    --no-isl)
-	do_isl="false"
-	;;
-
-    --cloog)
-	do_cloog="true"
-	;;
-
-    --no-cloog)
-	do_cloog="false"
+    --cloog | --no-cloog)
+	do_cloog="$1"
 	;;
 
     ?*)
@@ -357,6 +348,7 @@ esac
 do
     shift
 done
+
 
 ################################################################################
 #                                                                              #
@@ -392,27 +384,27 @@ github_tool newlib   epiphany-newlib   epiphany-newlib-1.20   || res="failed"
 github_tool cgen     epiphany-cgen     epiphany-cgen-1.1      || res="failed"
 
 # Download optional GCC components
-if [ "${do_gmp}" = "true" ]
+if [ "${do_gmp}" = "--do-gmp" ]
 then
     gcc_component "gmp" "gmp-4.3.2" "tar.bz2" || res="failed"
 fi
 
-if [ "${do_mpfr}" = "true" ]
+if [ "${do_mpfr}" = "--do-mpfr" ]
 then
     gcc_component "mpfr" "mpfr-2.4.2" "tar.bz2" || res="failed"
 fi
 
-if [ "${do_mpc}" = "true" ]
+if [ "${do_mpc}" = "--do-mpc" ]
 then
     gcc_component "mpc" "mpc-0.8.1" "tar.gz" || res="failed"
 fi
 
-if [ "${do_isl}" = "true" ]
+if [ "${do_isl}" = "--do-isl" ]
 then
     gcc_component "isl" "isl-0.12.2" "tar.bz2" || res="failed"
 fi
 
-if [ "${do_cloog}" = "true" ]
+if [ "${do_cloog}" = "--do-cloog" ]
 then
     gcc_component "cloog" "cloog-0.18.1" "tar.gz" || res="failed"
 fi

@@ -1,3 +1,16 @@
+2014-09-07  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-toolchain.sh: Rewritten to support all new features
+	requested by customers, except (in this verision) Canadian cross
+	compilation.
+	* component-versions: Created.
+	* download-toolchain.sh: Put GCC infrastructure components in
+	their own source directory.
+	* get-versions.sh: Created.
+	* rel-rpaths.sh: Created.
+	* symlink-all: Deleted.
+	* symlink-all.sh: Created.
+
 2014-08-24  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* download-toolchain.sh: Change options --infra_url to --infra-url
