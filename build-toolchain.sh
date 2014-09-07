@@ -587,7 +587,7 @@ fi
 
 # We need to force a clean build if there was not a previous successful
 # configure.
-if [ "${do_clean}" == "--no-clean" ]
+if [ "${do_clean}" = "--no-clean" ]
 then
     if [ -d ${build_dir} -a -e ${build_dir}/config.log ]
     then
