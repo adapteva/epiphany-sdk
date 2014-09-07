@@ -1,5 +1,10 @@
 2014-09-07  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* build-toolchain.sh: Added support for Canadian Cross with --host
+	argument.
+
+2014-09-07  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* build-toolchain.sh: Fix typo using == instead of = for test
 	equality.
 

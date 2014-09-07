@@ -26,11 +26,12 @@
 # Invocation:
 
 #     ./build-toolchain.sh [--build-dir <dir>]
+#                          [--host <host-triplet>]
 #                          [--install-dir <dir> ]
 #                          [--symlink-dir <dir>]
 #                          [--datestamp-install]
 #                          [--clean | --no-clean]
-#                          |--preserve-unisrc | --rebuild-unisrc]
+#                          [--preserve-unisrc | --rebuild-unisrc]
 #                          [--unified-dir <dir>]
 #                          [--auto-pull | --no-auto-pull]
 #                          [--auto-checkout | --no-auto-checkout]
@@ -57,6 +58,16 @@
 
 #     The directory in which the build directory will be created.  The default
 #     is  builds/bd-epiphany-$RELEASE in the base directory.
+
+# --host <host-triplet>
+
+#     If specified, the tool chain will be built to run on the designated
+#     host.  This is of most value to users wishing to build the toolchain on
+#     a PC, but to run on the Parallella board.  Useful values are
+#     "arm-linux-gnu" on Fedora/Red Hat systems "arm-linux-gnueabihf" or
+#     "arm-linux-gnueabihf" on Ubuntu (the hf at the end signifying hardware
+#     floating point support, which Parallella has, and will yield a faster
+#     compiler).
 
 # --install-dir <install_dir>
 
@@ -283,6 +294,7 @@ echo "Logging to ${logfile}"
 
 # Defaults
 build_dir=${basedir}/builds/bd-epiphany-${RELEASE}
+host=
 install_dir=${basedir}/INSTALL
 symlink_dir=
 datestamp=
@@ -320,6 +332,11 @@ case ${opt} in
     --build-dir)
 	shift
 	build_dir=`absdir "$1"`
+	;;
+
+    --host)
+	shift
+	host="$1"
 	;;
 
     --install-dir)
@@ -421,6 +438,7 @@ case ${opt} in
     ?*)
         echo "Usage: ./build-toolchain.sh [--build-dir <dir>]"
         echo "             [--install-dir <dir> ]"
+        echo "             [--host <host-triplet>]"
         echo "             [--symlink-dir <dir>]"
         echo "             [--datestamp-install]"
         echo "             |--preserve-unisrc | --rebuild-unisrc]"
@@ -476,8 +494,9 @@ parallel="-j ${jobs} -l ${load}"
 logterm "START BUILD: $(date)"
 
 logonly "Build Directory:          ${build_dir}"
+logonly "Host:                     ${host}"
 logonly "Install Directory:        ${install_dir}"
-logonly "SymlinkeDirectory:        ${symlink_dir}"
+logonly "Symlink Directory:        ${symlink_dir}"
 logonly "Datestamp:                ${datestamp}"
 logonly "Clean:                    ${do_clean}"
 logonly "Automatic pull:           ${auto_pull}"
@@ -509,6 +528,20 @@ if ! cd ${basedir}
 then
     logterm "ERROR: Unable to change to base directory ${basedir}."
     failedbuild
+fi
+
+# Sanity check if we are trying to build a Canadian cross
+if [ "x" != "x${host}" ]
+then
+    if ! which ${host}-gcc >> ${logfile} 2>&1
+    then
+	logterm "ERROR: No cross-compiler for ${host} found"
+	failedbuild
+    fi
+
+    host_str="--host ${host}"
+else
+    host_str=""
 fi
 
 # Sanity check that we have everything we need. Take the opportunity to set up
@@ -667,7 +700,7 @@ if [ ${do_clean} = "--clean" ]
 then
     logterm "Configuring tool chain..."
     export CFLAGS_FOR_TARGET
-    if ! "${unisrc_dir}/configure" --target=epiphany-elf \
+    if ! "${unisrc_dir}/configure" --target=epiphany-elf ${host_str} \
 	--with-pkgversion="Epiphany toolchain ${RELEASE}" \
 	--with-bugurl=support-sdk@adapteva.com \
 	--enable-fast-install=N/A \
