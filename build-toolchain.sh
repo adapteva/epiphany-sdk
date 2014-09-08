@@ -623,7 +623,7 @@ fi
 if [ "${do_clean}" = "--no-clean" ]
 then
     if [ -d ${build_dir} -a -e ${build_dir}/config.log \
-             -a -e ${build_dir}/configure]
+             -a -e ${build_dir}/configure ]
     then
         # We did have a previous successful config we can reuse. This then
 	# overrides any specified install directory.
