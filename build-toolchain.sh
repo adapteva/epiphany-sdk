@@ -622,18 +622,14 @@ fi
 # configure.
 if [ "${do_clean}" = "--no-clean" ]
 then
-    if [ -d ${build_dir} -a -e ${build_dir}/config.log ]
+    if [ -d ${build_dir} -a -e ${build_dir}/config.log \
+             -a -e ${build_dir}/configure]
     then
-	if grep -q "configure: exit 0" ${build_dir}/config.log
-	then
-	    # We did have a previous successful config we can reuse. This then
-	    # overrides any specified install directory.
-	    install_dir=`sed -n -e 's/^.*\-\-prefix=\([^ \t\n]*\).*$/\1/p' \
-                             < ${build_dir}/config.log | head -1`
-	    logterm "Reusing previous build and installing at ${install_dir}."
-	else
-	    do_clean="--clean"
-	fi
+        # We did have a previous successful config we can reuse. This then
+	# overrides any specified install directory.
+	install_dir=`sed -n -e 's/^.*\-\-prefix=\([^ \t\n]*\).*$/\1/p' \
+                         < ${build_dir}/config.log | head -1`
+	logterm "Reusing previous build and installing at ${install_dir}."
     else
 	do_clean="--clean"
     fi

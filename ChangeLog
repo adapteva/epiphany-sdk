@@ -1,3 +1,8 @@
+2014-09-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-toolchain.sh: Check for configure existing as indication
+	of previous successful configure.
+
 2014-09-07  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-toolchain.sh: Added support for Canadian Cross with --host
