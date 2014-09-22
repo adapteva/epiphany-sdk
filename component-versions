@@ -24,8 +24,8 @@
 # Comments and blank lines are ignored.
 
 # Main components
-gcc:epiphany-gcc-4.8-software-cache
-binutils:epiphany-binutils-2.23-software-cache
+gcc:epiphany-gcc-4.8
+binutils:epiphany-binutils-2.23
 gdb:epiphany-gdb-7.6
 newlib:epiphany-newlib-1.20
 cgen:epiphany-cgen-1.1

@@ -377,36 +377,36 @@ echo "Logging to ${log}"
 
 # Clone repositories from GitHub
 res="ok"
-github_tool gcc      epiphany-gcc      epiphany-gcc-4.8       || res="failed"
-github_tool binutils epiphany-binutils epiphany-binutils-2.23 || res="failed"
-github_tool gdb      epiphany-gdb      epiphany-gdb-7.6       || res="failed"
-github_tool newlib   epiphany-newlib   epiphany-newlib-1.20   || res="failed"
-github_tool cgen     epiphany-cgen     epiphany-cgen-1.1      || res="failed"
+github_tool gcc      epiphany-gcc          epiphany-gcc-4.8       || res="fail"
+github_tool binutils epiphany-binutils-gdb epiphany-binutils-2.23 || res="fail"
+github_tool gdb      epiphany-binutils-gdb epiphany-gdb-7.6       || res="fail"
+github_tool newlib   epiphany-newlib       epiphany-newlib-1.20   || res="fail"
+github_tool cgen     epiphany-cgen         epiphany-cgen-1.1      || res="fail"
 
 # Download optional GCC components
 if [ "${do_gmp}" = "--do-gmp" ]
 then
-    gcc_component "gmp" "gmp-4.3.2" "tar.bz2" || res="failed"
+    gcc_component "gmp" "gmp-4.3.2" "tar.bz2" || res="fail"
 fi
 
 if [ "${do_mpfr}" = "--do-mpfr" ]
 then
-    gcc_component "mpfr" "mpfr-2.4.2" "tar.bz2" || res="failed"
+    gcc_component "mpfr" "mpfr-2.4.2" "tar.bz2" || res="fail"
 fi
 
 if [ "${do_mpc}" = "--do-mpc" ]
 then
-    gcc_component "mpc" "mpc-0.8.1" "tar.gz" || res="failed"
+    gcc_component "mpc" "mpc-0.8.1" "tar.gz" || res="fail"
 fi
 
 if [ "${do_isl}" = "--do-isl" ]
 then
-    gcc_component "isl" "isl-0.12.2" "tar.bz2" || res="failed"
+    gcc_component "isl" "isl-0.12.2" "tar.bz2" || res="fail"
 fi
 
 if [ "${do_cloog}" = "--do-cloog" ]
 then
-    gcc_component "cloog" "cloog-0.18.1" "tar.gz" || res="failed"
+    gcc_component "cloog" "cloog-0.18.1" "tar.gz" || res="fail"
 fi
 
 if [ "${res}" = "ok" ]

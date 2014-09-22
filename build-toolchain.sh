@@ -23,14 +23,61 @@
 
 # This is a convenience wrapper for the GNU toolchain build files.
 
+# There are two possible ways of using this script
+
+# 1.  The compiler is intended to run on the same machine on which it is built
+#     (typically an Intel based PC or the ARM based Parallella board). The
+#     compiler will generate code for the Epiphany processor.  Since the code
+#     is to run on a different machine to the platform on which the compiler
+#     is run, this is known as a *cross compiler*.
+
+# 2.  The compiler is intended to run on a *different* machine (known as the
+#     host) to that on which it is built.  For Parallella this is invariably
+#     done on an Intel based PC to create a compiler which will run on the ARM
+#     based Parallella board where it will generate code for the Epiphany
+#     processor.  The compiler is built on one machine to be hosted on a
+#     second machine to generate code for a third machine.  This is known as a
+#     *Canadian cross compiler".
+
+# In this script method 2 is trigged by setting the --host parameter to
+# something other than the build architecture.
+
+# When reading the comments in this script it is useful to be clear about
+# three terms:
+
+# build machine
+
+#     The platform on which this script is being run to build the compiler.
+
+# host machine
+
+#     The platform on which the generated compiler will be run (invariably the
+#     Parallella ARM platform).
+
+# target machine
+
+#     The platform for which the compiler will generate code. In this case for
+#     the Epiphany processor.
+
+# On this notation, method 1 of using this script has build and host machines
+# identical.
+
 # Invocation:
 
 #     ./build-toolchain.sh [--build-dir <dir>]
+#                          [--build-dir-build <dir>]
+#                          [--build-dir-host <dir>]
 #                          [--host <host-triplet>]
-#                          [--install-dir <dir> ]
+#                          [--install-dir <dir>]
+#                          [--install-dir-build <dir>]
+#                          [--install-dir-host <dir>]
 #                          [--symlink-dir <dir>]
 #                          [--datestamp-install]
+#                          [--datestamp-install-build]
+#                          [--datestamp-install-host]
 #                          [--clean | --no-clean]
+#                          [--clean-build | --no-clean-build]
+#                          [--clean-host | --no-clean-host]
 #                          [--preserve-unisrc | --rebuild-unisrc]
 #                          [--unified-dir <dir>]
 #                          [--auto-pull | --no-auto-pull]
@@ -54,10 +101,19 @@
 # RELEASE.  The meanings of the various options and their defaults are as
 # follows.
 
-# --build-dir <build_dir>
+# --build-dir <dir>
+# --build-dir-build <dir>
 
-#     The directory in which the build directory will be created.  The default
-#     is  builds/bd-epiphany-$RELEASE in the base directory.
+#     The directory in which the tool chain to run on the *build* machine will
+#     be built.  The default is builds/bd-epiphany-$RELEASE in the base
+#     directory.
+
+# --build-dir-host <dir>
+
+#     The directory in which the tool chain to run on the *host* machine will
+#     be built if needed.  The default is builds/bd-epiphany-host-$RELEASE in
+#     the base directory.  This argument is only relevant if --host is set to
+#     a triplet whose architecture differs from the build machine.
 
 # --host <host-triplet>
 
@@ -69,34 +125,63 @@
 #     floating point support, which Parallella has, and will yield a faster
 #     compiler).
 
-# --install-dir <install_dir>
+#     An Epiphany cross-compiler for the build machine is still needed (to
+#     build libraries). This will trigger building of GCC and binutils for the
+#     host unless those tools have been previously built, or are found in the
+#     existing search path.
 
-#     The directory in which the tool chain should be installed. If not
-#     specified, it will be installed in the INSTALL sub-directory of the
-#     base directory.
+# --install-dir <install_dir>
+# --install-dir-build <install_dir>
+
+#     The directory in which the tool chain to run on the *build* machine
+#     should be installed. If not specified, it will be installed in the
+#     /opt/adapteva/edsk.$RELEASE/tools/e-gnu.<build-arch> directory, where
+#     <build-arch> is the architecture name of the *build* machine (so should
+#     be one of x86, x86_64 or armv7l).
+
+# --install-dir-host <install_dir>
+
+#     The directory in which the tool chain to run on the *host* machine
+#     should be installed if needed. If not specified, it will be installed in
+#     the /opt/adapteva/edsk.$RELEASE/tools/e-gnu.<host-arch> directory, where
+#     <host-arch> is the architecture name of the *host* machine (so should
+#     usually be armv7l).  This argument is only relevant if --host is set to
+#     a triplet whose architecture differs from the build machine.
 
 # --symlink-dir <symlink_dir>
 
 #     If specified, the install directory will be symbolically linked to this
-#     directory.
-
-#     For example it may prove useful to install in a directory named with the
-#     date and time when the tools were built, and then symbolically link to a
-#     directory with a fixed name. By using the symbolic link in the users
-#     PATH, the latest version of the tool chain will be used, while older
-#     versions of the tool chains remain available under the dated
-#     directories.
+#     directory.  It must be a plain relative directory name (no
+#     hierarchy). It defaults to e-gnu.  If a hierarchy is given, only the
+#     basename will be used.
 
 # --datestamp-install
+# --datestamp-install-build
 
-#     If specified, this will append a date and timestamp to the install
-#     directory name.  See the comments under --symlink-dir above for reasons
-#     why this might be useful.
+#     If specified, this will insert a date and timestamp in the install
+#     directory name for the *build* architecture.  If the install directory
+#     has the default name, the datestamp will be inserted after the $RELEASE,
+#     otherwise it will be appended to the name.
+
+# --datestamp-install-host
+
+#     If specified, this will insert a date and timestamp in the install
+#     directory name for the *host* architecture.  If the install directory
+#     has the default name, the datestamp will be inserted after the $RELEASE,
+#     otherwise it will be appended to the name.
+
+# --clean-build | --no-clean-build
+
+#     If --clean-build is specified, delete any previous build directory for
+#     the *build* machine. Default --no-clean-build.
 
 # --clean | --no-clean
+# --clean-host | --no-clean-host
 
-#     If --clean is specified, delete any previous build directory. Default
-#     --no-clean.
+#     If --clean or --clean-host is specified, delete any previous host
+#     directory for the *host* machine. Default --no-clean-host.  This
+#     argument is only relevant if --host is set to a triplet whose
+#     architecture differs from the build machine.
 
 # --auto-pull | --no-auto-pull
 
@@ -267,6 +352,25 @@ logonly () {
 }
 
 
+# Get the architecture from a triplet.
+
+# This is the first field up to -, but with "arm" translated to "armv7".
+
+# @param[in] $1  triplet
+# @return  The architecture of the triplet, but with arm translated to armv7.
+getarch () {
+    triplet=$1
+
+    arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
+    if [ "x${arch}" = "xarm" ]
+    then
+	arch="armv7"
+    fi
+
+    echo ${arch}
+}
+
+
 # Convenience function to exit with a suitable message.
 failedbuild () {
   echo "Build failed. See ${logfile} for details."
@@ -293,12 +397,16 @@ rm -f "${logfile}"
 echo "Logging to ${logfile}"
 
 # Defaults
-build_dir=${basedir}/builds/bd-epiphany-${RELEASE}
+bd_build=
+bd_host=
 host=
-install_dir=${basedir}/INSTALL
-symlink_dir=
-datestamp=
-do_clean="--no-clean"
+id_host=
+id_host=${basedir}/install-host
+symlink_dir=e-gnu
+ds_build=
+ds_host=
+do_clean_build="--no-clean-build"
+do_clean_host="--no-clean-host"
 auto_pull="--auto-pull"
 auto_checkout="--auto-checkout"
 rebuild_unisrc="--preserve-unisrc"
@@ -329,9 +437,14 @@ until
 opt=$1
 case ${opt} in
 
-    --build-dir)
+    --build-dir | --build-dir-build)
 	shift
-	build_dir=`absdir "$1"`
+	bd_build=`absdir "$1"`
+	;;
+
+    --build-dir-host)
+	shift
+	bd_host=`absdir "$1"`
 	;;
 
     --host)
@@ -339,26 +452,44 @@ case ${opt} in
 	host="$1"
 	;;
 
-    --install-dir)
+    --install-dir | --install-dir-build)
 	shift
-	install_dir=`absdir "$1"`
+	id_build=`absdir "$1"`
+	;;
+
+    --install-dir-host)
+	shift
+	id_host=`absdir "$1"`
 	;;
 
     --symlink-dir)
 	shift
-	symlink_dir=`absdir "$1"`
+	# Force it to be simple name
+	symlink_dir="`basename $1`"
 	;;
 
-    --datestamp-install)
-	datestamp=`date -u +%F-%H%M`
+    --datestamp-install | --datestamp-install-build)
+	ds_build=-`date -u +%F-%H%M`
+	;;
+
+    --datestamp-install-host)
+	ds_host=-`date -u +%F-%H%M`
+	;;
+
+    --clean-build | --no-clean-build)
+	do_clean_build="$1"
 	;;
 
     --clean)
-	do_clean="$1"
+	do_clean_host="--clean-host"
 	;;
 
     --no-clean)
-	do_clean="$1"
+	do_clean_host="--no-clean-host"
+	;;
+
+    --clean-host | --no-clean-host)
+	do_clean_host="$1"
 	;;
 
     --preserve-unisrc | --rebuild-unisrc)
@@ -428,7 +559,7 @@ case ${opt} in
 	;;
 
     --disable-werror | --enable-werror)
-	config_extra="${config_extra} $1"
+	disable_werror="$1"
 	;;
 
     --enable-cgen-maint)
@@ -437,10 +568,19 @@ case ${opt} in
 
     ?*)
         echo "Usage: ./build-toolchain.sh [--build-dir <dir>]"
-        echo "             [--install-dir <dir> ]"
+        echo "             [--build-dir-build <dir>]"
+        echo "             [--build-dir-host <dir>]"
         echo "             [--host <host-triplet>]"
+        echo "             [--install-dir <dir> ]"
+        echo "             [--install-dir-build <dir> ]"
+        echo "             [--install-dir-host <dir> ]"
         echo "             [--symlink-dir <dir>]"
         echo "             [--datestamp-install]"
+        echo "             [--datestamp-install-build]"
+        echo "             [--datestamp-install-host]"
+        echo "             [--clean | --no-clean]"
+        echo "             [--clean-build | --no-clean-build]"
+        echo "             [--clean-host | --no-clean-host]"
         echo "             |--preserve-unisrc | --rebuild-unisrc]"
         echo "             [--unified-dir <dir>]"
         echo "             [--auto-pull | --no-auto-pull]"
@@ -468,15 +608,92 @@ do
     shift
 done
 
-# Add the datestamp to the install dir if set
-if [ "x$datestamp" != "x" ]
+# Sort out Canadian cross stuff. First is it really a canadian cross
+build_triplet=`${basedir}/gcc/config.guess`
+build_arch=`getarch ${build_triplet}`
+
+if [ "x" != "x${host}" ]
 then
-    install_dir="${install_dir}-${datestamp}"
+    host_arch=`getarch ${host}`
+    if [ "x${host_arch}" = "x${build_arch}" ]
+    then
+	# Not really a Canadian Cross
+	host=
+    fi
+else
+    host_arch=${build_arch}
 fi
 
-# Default parallellism if none set
-make_load="`(echo processor; cat /proc/cpuinfo 2>/dev/null echo processor) \
+# Create build directory names if needed.
+if [ "x${bd_build}" = "x" ]
+then
+    bd_build=${basedir}/builds/bd-${build_arch}-${RELEASE}
+fi
+if [ "x${bd_host}" = "x" ]
+then
+    bd_host=${basedir}/builds/bd-${host_arch}-${RELEASE}
+fi
+
+# Set up install dirs. Four cases each time according to whether and install
+# dir and a datestamp have been set.
+if [ "x${id_build}" = "x" ]
+then
+    if [ "x${ds_build}" = "x" ]
+    then
+	# Default install directory without datestamp
+	id_build="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}"
+    else
+	# Default install directory with datestamp
+	id_build="/opt/adapteva/esdk.${RELEASE}-${ds_build}/tools/e-gnu.${build_arch}"
+    fi
+else
+    if [ "x${ds_build}" = "x" ]
+    then
+	# Custom install directory without datestamp
+	# No nothing
+	true
+    else
+	# Custom install directory with datestamp
+	id_build="${id_build}-${ds_build}"
+    fi
+fi
+
+if [ "x${id_host}" = "x" ]
+then
+    if [ "x${ds_host}" = "x" ]
+    then
+	# Default install directory without datestamp
+	id_host="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${host_arch}"
+    else
+	# Default install directory with datestamp
+	id_host="/opt/adapteva/esdk.${RELEASE}-${ds_host}/tools/e-gnu.${host_arch}"
+    fi
+else
+    if [ "x${ds_host}" = "x" ]
+    then
+	# Custom install directory without datestamp
+	# No nothing
+	true
+    else
+	# Custom install directory with datestamp
+	id_host="${id_host}-${ds_host}"
+    fi
+fi
+
+# Add ${disable_werror} to ${config_extra}. Note that this argument takes
+# precedence, so don't try setting disable-werror in config_extra.
+config_extra="${config_extra} ${disable_werror}"
+
+# Default parallellism if none set.
+mem=`sed < /proc/meminfo -n -e 's/MemTotal:[ \n\t] *\([0-9]*\).*$/\1/p'`
+if [ "0${mem}" -le 2097152 ]
+then
+    # No parallelism if memory is small.
+    make_load=1
+else
+    make_load="`(echo processor; cat /proc/cpuinfo 2>/dev/null echo processor) \
            | grep -c processor`"
+fi
 
 if [ "x${jobs}" = "x" ]
 then
@@ -490,29 +707,39 @@ fi
 
 parallel="-j ${jobs} -l ${load}"
 
+# If we are building a cross-compiler, we should look in the build install
+# directory to see if they already exist. So add this dir to the search PATH.
+PATH="${PATH}:${id_build}"
+export PATH
 
 logterm "START BUILD: $(date)"
 
-logonly "Build Directory:          ${build_dir}"
-logonly "Host:                     ${host}"
-logonly "Install Directory:        ${install_dir}"
-logonly "Symlink Directory:        ${symlink_dir}"
-logonly "Datestamp:                ${datestamp}"
-logonly "Clean:                    ${do_clean}"
-logonly "Automatic pull:           ${auto_pull}"
-logonly "Automatic checkout:       ${auto_checkout}"
-logonly "Rebuild unified source:   ${rebuild_unisrc}"
-logonly "Unified source directory: ${unisrc_dir}"
-logonly "Maximum jobs:             ${jobs}"
-logonly "Maximum load:             ${load}"
-logonly "Use GMP source:           ${do_gmp}"
-logonly "Use MPFR source:          ${do_mpfr}"
-logonly "Use MPC source:           ${do_mpc}"
-logonly "Use ISL source:           ${do_isl}"
-logonly "Use Cloog source:         ${do_cloog}"
-logonly "Use relative RPATH:       ${do_rel_rpaths}"
-logonly "Target CFLAGS:            ${CFLAGS_FOR_TARGET}"
-logonly "Extra config flags:       ${config_extra}"
+logonly "Build directory (build arch):   ${bd_build}"
+logonly "Build directory (host arch):    ${bd_host}"
+logonly "Build architecture:             ${build_arch}"
+logonly "Host:                           ${host}"
+logonly "Host architecture:              ${host_arch}"
+logonly "Install directory (build arch): ${id_build}"
+logonly "Install directory (host arch):  ${id_host}"
+logonly "Symlink directory:              ${symlink_dir}"
+logonly "Datestamp (build arch):         ${ds_build}"
+logonly "Datestamp (host arch):          ${ds_host}"
+logonly "Clean (build arch):             ${do_clean_build}"
+logonly "Clean (host arch):              ${do_clean_host}"
+logonly "Automatic pull:                 ${auto_pull}"
+logonly "Automatic checkout:             ${auto_checkout}"
+logonly "Rebuild unified source:         ${rebuild_unisrc}"
+logonly "Unified source directory:       ${unisrc_dir}"
+logonly "Maximum jobs:                   ${jobs}"
+logonly "Maximum load:                   ${load}"
+logonly "Use GMP source:                 ${do_gmp}"
+logonly "Use MPFR source:                ${do_mpfr}"
+logonly "Use MPC source:                 ${do_mpc}"
+logonly "Use ISL source:                 ${do_isl}"
+logonly "Use Cloog source:               ${do_cloog}"
+logonly "Use relative RPATH:             ${do_rel_rpaths}"
+logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
+logonly "Extra config flags:             ${config_extra}"
 
 
 ################################################################################
@@ -620,32 +847,32 @@ fi
 
 # We need to force a clean build if there was not a previous successful
 # configure.
-if [ "${do_clean}" = "--no-clean" ]
+if [ "${do_clean_host}" = "--no-clean-host" ]
 then
-    if [ -d ${build_dir} -a -e ${build_dir}/config.log \
-             -a -e ${build_dir}/configure ]
+    if [ -d ${bd_build} -a -e ${bd_build}/config.log \
+             -a -e ${bd_build}/configure ]
     then
         # We did have a previous successful config we can reuse. This then
 	# overrides any specified install directory.
-	install_dir=`sed -n -e 's/^.*\-\-prefix=\([^ \t\n]*\).*$/\1/p' \
-                         < ${build_dir}/config.log | head -1`
-	logterm "Reusing previous build and installing at ${install_dir}."
+	id_host=`sed -n -e 's/^.*\-\-prefix=\([^ \t\n]*\).*$/\1/p' \
+                         < ${bd_build}/config.log | head -1`
+	logterm "Reusing previous build and installing at ${id_host}."
     else
-	do_clean="--clean"
+	logterm "Forcing clean build"
+	do_clean_host="--clean-host"
     fi
 fi
 
-# Clean up old build directory if specified.
-if [ "${do_clean}" = "--clean" ]
+# Clean up old build directories if specified.
+if [ "${do_clean_build}" = "--cleanbuild" ]
 then
-    rm -rf "${build_dir}"
+    rm -rf "${bd_build}"
 fi
 
-# Ensure the build directory exists
-if ! mkdir -p "${build_dir}"
+# Clean up old build directories if specified.
+if [ "${do_clean_host}" = "--clean-host" ]
 then
-    logterm "ERROR: Failed to create build directory ${build_dir}."
-    failedbuild
+    rm -rf "${bd_host}"
 fi
 
 # Blow away the unified source directory if requested
@@ -676,15 +903,101 @@ fi
 
 ################################################################################
 #                                                                              #
-#		 Configure, build and install the tool chain                   #
+#   Make sure we have an epiphany tool chain on the build machine if needed    #
+#                                                                              #
+################################################################################
+
+if [ "x${host}" != "x" ]
+then
+    if  which epiphany-elf-gcc && which epiphany-elf-as \
+	&& which epiphany-elf-ld && which epiphany-elf-ar
+    then
+	logterm "Epiphany tools found on build machine"
+    else
+        # A cross compiler also needs a compiler on the build machine to build
+        # libraries.
+
+        # Ensure the build directory exists. We don't do fancy stuff about
+	# trying to preserve previous builds. If we get here, by definition
+	# they were no good.
+	rm -rf "${bd_build}"
+	if ! mkdir -p "${bd_build}"
+	then
+	    logterm "ERROR: Failed to create build directory ${bd_build}."
+	    failedbuild
+	fi
+
+        # Change to the build directory
+	if ! cd ${bd_build}
+	then
+	    logterm "ERROR: Could not change to build directory ${bd_build}."
+	    failedbuild
+	fi
+
+        # Configure the required components of the tool chain. We only need
+        # binutils, as, ld and gcc. We need to temporarily move
+        # CFLAGS_FOR_TARGET out of the way.
+	logterm "Configuring build machine tool chain..."
+	OLD_CFLAGS_FOR_TARGET=${CFLAGS_FOR_TARGET}
+	CFLAGS_FOR_TARGET=
+	if ! "${unisrc_dir}/configure" --target=epiphany-elf \
+	    --with-pkgversion="Epiphany toolchain ${RELEASE}" \
+	    --with-bugurl=support-sdk@adapteva.com \
+	    --enable-fast-install=N/A \
+	    --enable-languages=c,c++ --prefix="${id_build}" \
+	    --with-newlib --disable-gdbtk ${config_extra} >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Tool chain configuration for build machine failed."
+	    failedbuild
+	fi
+
+        # Build the parts of the tool chain we need: binutils and GCC
+	logterm "Building build machine tool chain..."
+	if ! make ${parallel} all-build all-binutils all-gas all-ld all-gcc \
+             >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Tool chain build for build machine failed."
+	    failedbuild
+	fi
+
+        # Install binutils, GCC, newlib and GDB
+	logterm "Installing build machine tool chain..."
+	if ! make install-binutils install-gas install-ld install-gcc \
+            >> "${logfile}" 2>&1
+	then
+	    logterm "Error: Tool chain installation for build machine failed."
+	    failedbuild
+	fi
+
+        # Sanity check that we now do really have the tools we need.
+	if ! ( which epiphany-elf-gcc && which epiphany-elf-as \
+	    && which epiphany-elf-ld && which epiphany-elf-ar )
+	then
+	    logterm "Error: Failed to created tools for build machine."
+	    failedbuild
+	fi
+    fi
+fi
+
+
+################################################################################
+#                                                                              #
+#	       Configure, build and install the host tool chain                #
 #                                                                              #
 ################################################################################
 
 
-# Change to the build directory
-if ! cd ${build_dir}
+# Ensure the build directory exists. We build in the host build directory.
+if ! mkdir -p "${bd_host}"
 then
-    logterm "ERROR: Could not change to build directory ${build_dir}."
+    logterm "ERROR: Failed to create build directory ${bd_host}."
+    failedbuild
+fi
+
+# Change to the build directory
+if ! cd ${bd_host}
+then
+    logterm "ERROR: Could not change to build directory ${bd_host}."
     failedbuild
 fi
 
@@ -692,7 +1005,7 @@ fi
 
 # @todo Should we enable Python support in GDB? If so do we need to check
 #       Python is available?
-if [ ${do_clean} = "--clean" ]
+if [ ${do_clean_host} = "--clean-host" ]
 then
     logterm "Configuring tool chain..."
     export CFLAGS_FOR_TARGET
@@ -700,10 +1013,10 @@ then
 	--with-pkgversion="Epiphany toolchain ${RELEASE}" \
 	--with-bugurl=support-sdk@adapteva.com \
 	--enable-fast-install=N/A \
-	--enable-languages=c,c++ --prefix="${install_dir}" \
+	--enable-languages=c,c++ --prefix="${id_host}" \
 	--with-newlib --disable-gdbtk ${config_extra} >> "${logfile}" 2>&1
     then
-	logterm "ERROR: Tool chain configuration failed."
+	logterm "ERROR: Tool chain configuration for host machine failed."
 	failedbuild
     fi
 fi
@@ -714,7 +1027,7 @@ if ! make ${parallel} all-build all-binutils all-gas all-ld all-gcc \
         all-target-libgcc all-target-libgloss all-target-newlib \
         all-target-libstdc++-v3 all-gdb all-sim >> "${logfile}" 2>&1
 then
-  logterm "ERROR: Tool chain build failed."
+  logterm "ERROR: Tool chain build for host machine failed."
   failedbuild
 fi
 
@@ -724,7 +1037,7 @@ if ! make install-binutils install-gas install-ld install-gcc \
         install-target-libgcc install-target-libgloss install-target-newlib \
         install-target-libstdc++-v3 install-gdb install-sim >> "${logfile}" 2>&1
 then
-  logterm "Error: Tool chain installation failed."
+  logterm "Error: Tool chain installation for host machine failed."
   failedbuild
 fi
 
@@ -752,9 +1065,9 @@ fi
 # pages.
 logterm "Creating symbolic links for tools"
 
-if ! cd "${install_dir}/bin"
+if ! cd "${id_host}/bin"
 then
-    logterm "ERROR: Unable to select bin directory in ${install_dir}"
+    logterm "ERROR: Unable to select bin directory in ${id_host}"
     failedbuild
 fi
 
@@ -770,9 +1083,9 @@ done
 
 logterm "Creating symbolic links for man pages"
 
-if ! cd "${install_dir}/share/man/man1"
+if ! cd "${id_host}/share/man/man1"
 then
-    logterm "ERROR: Unable to select share/man/man1 directory in ${install_dir}"
+    logterm "ERROR: Unable to select share/man/man1 directory in ${id_host}"
     failedbuild
 fi
 
@@ -790,14 +1103,22 @@ done
 # directory.
 if [ "x${symlink_dir}" = "x" ]
 then
-    report_dir="${install_dir}"
+    report_dir="${id_host}"
 else
     echo "Setting up the main symlink directory..."
-    report_dir="${symlink_dir}"
-    rm -f ${symlink_dir}
-    ln -s ${install_dir} ${symlink_dir}
+    id_base=`basename ${id_host}`
+    cd "${id_host}/.."
+    report_dir="`pwd`/${symlink_dir}"
+    rm -f "${symlink_dir}"
+    ln -s ${id_base} "${symlink_dir}"
 fi
 
+# Make the top level link. This is hard-coded.
+cd /opt/adapteva
+rm -f esdk
+ln -s "`basename ${report_dir}`" esdk
+
+logterm "Top level /opt/adapteva/esdk linked to /opt/adapteva/`basename ${report_dir}`"
 logterm "Tools installed at ${report_dir}/bin"
 logterm "Manual pages installed at ${report_dir}/share/man"
 logterm "Ensure these directories are in your PATH and MANPATH"
