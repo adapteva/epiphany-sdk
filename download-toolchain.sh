@@ -377,11 +377,11 @@ echo "Logging to ${log}"
 
 # Clone repositories from GitHub
 res="ok"
-github_tool gcc      epiphany-gcc          epiphany-gcc-4.8       || res="fail"
-github_tool binutils epiphany-binutils-gdb epiphany-binutils-2.23 || res="fail"
+github_tool gcc      epiphany-gcc          epiphany-gcc-4.8-software-cache       || res="fail"
+github_tool binutils epiphany-binutils-gdb epiphany-binutils-2.23-software-cache || res="fail"
 github_tool gdb      epiphany-binutils-gdb epiphany-gdb-7.6       || res="fail"
-github_tool newlib   epiphany-newlib       epiphany-newlib-1.20   || res="fail"
-github_tool cgen     epiphany-cgen         epiphany-cgen-1.1      || res="fail"
+github_tool newlib   epiphany-newlib       epiphany-newlib-1.20-software-cache   || res="fail"
+github_tool cgen     epiphany-cgen         epiphany-cgen-1.1-software-cache      || res="fail"
 
 # Download optional GCC components
 if [ "${do_gmp}" = "--do-gmp" ]
