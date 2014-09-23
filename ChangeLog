@@ -1,3 +1,8 @@
+2014-09-23  Simon Cook  <simon.cook@embecosm.com>
+
+	* build-toolchain.sh: Build ncurses when Canadian Cross compiling.
+	Add native build to path between stages when Canadian Cross compiling.
+
 2014-09-22  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-toolchain.sh: Extend to support Canadian Cross building
