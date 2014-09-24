@@ -766,7 +766,7 @@ then
 	failedbuild
     fi
 
-    host_str="--host ${host}"
+    host_str="--host=${host}"
 else
     host_str=""
 fi
@@ -969,6 +969,9 @@ then
 	    failedbuild
 	fi
 
+	# Ensure the newly built toolchain is in our PATH
+	PATH=${id_build}/bin:$PATH
+
         # Sanity check that we now do really have the tools we need.
 	if ! ( which epiphany-elf-gcc && which epiphany-elf-as \
 	    && which epiphany-elf-ld && which epiphany-elf-ar )
@@ -976,6 +979,50 @@ then
 	    logterm "Error: Failed to created tools for build machine."
 	    failedbuild
 	fi
+    fi
+
+    # We also first build ncurses in the case of cross compilation such a
+    # suitable termcap library is available for GDB.
+    if [ -d "${basedir}/gcc-infrastructure/ncurses" ]
+    then
+	rm -rf "${bd_host}-ncurses"
+	if ! mkdir -p "${bd_host}-ncurses"
+	then
+	    logterm "ERROR: Failed to create ncurses build directory."
+	fi
+
+	if ! cd "${bd_host}-ncurses"; then
+	    logterm "ERROR: Could not change to build directory ${bd_host}."
+	    failedbuild
+	fi
+
+	logterm "Building ncurses for host..."
+
+	if ! "${unisrc_dir}/ncurses/configure" ${host_str} --prefix="${id_host}" \
+	    >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to configure ncurses for host"
+	    failedbuild
+	fi
+
+	if ! make >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to build ncurses for host"
+	    failedbuild
+	fi
+
+	if ! make install >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to install ncurses for host"
+	    failedbuild
+	fi
+
+	# We add the include and library paths to CFLAGS/LDFLAGS respectively to
+	# make them available for the real build.
+	CFLAGS="-I${id_host}/include $CFLAGS"
+	LDFLAGS="-L${id_host}/lib $LDFLAGS"
+	export CFLAGS
+	export LDFLAGS
     fi
 fi
 

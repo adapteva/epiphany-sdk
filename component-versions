@@ -24,11 +24,11 @@
 # Comments and blank lines are ignored.
 
 # Main components
-gcc:epiphany-gcc-4.8
-binutils:epiphany-binutils-2.23
+gcc:epiphany-gcc-4.8-software-cache
+binutils:epiphany-binutils-2.23-software-cache
 gdb:epiphany-gdb-7.6
-newlib:epiphany-newlib-1.20
-cgen:epiphany-cgen-1.1
+newlib:epiphany-newlib-1.20-software-cache
+cgen:epiphany-cgen-1.1-software-cache
 
 # At present we don't worry about the GCC infrastructure components being
 # pulled from git. Versions recorded as comments here.
