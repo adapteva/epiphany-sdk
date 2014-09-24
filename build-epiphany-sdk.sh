@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
 
+# Copyright (C) 2009-2014 Adapteva Inc
+
+# Contributor Ben Chaco <bchaco@x3-c.com>
+# Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+# This file is a script to download toolchain source.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 3 of the License, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Host machine architecture
 ARCH="armv7l"
 
@@ -36,89 +55,21 @@ fi
 
 cd $EPIPHANY_BUILD_HOME
 
-if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-	## Get the toolchain download script
-	if ! wget https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh; then
-		printf "Failed to get the download-toolchain script from "
-		printf "https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-
-	# Clone the github repositories
-	if ! bash ./download-toolchain.sh --clone; then
-		printf "Failed to get the download-toolchain script from "
-		printf "https://raw.github.com/adapteva/epiphany-sdk/master/download-toolchain.sh\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	# Get the additional GCC modules that we need
-	pushd gcc >& /dev/null
-
-	if ! wget http://multiprecision.org/mpc/download/mpc-1.0.1.tar.gz; then
-		printf "Failed to get the mpc package from "
-		printf "http://multiprecision.org/mpc/download/mpc-1.0.1.tar.gz\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	if ! wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz; then
-		printf "Failed to get the mpfr package from "
-		printf "wget http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	if ! wget ftp://ftp.gmplib.org/pub/gmp-5.1.2/gmp-5.1.2.tar.lz; then
-		printf "Failed to get the gmp package from "
-		printf "\nftp://ftp.gmplib.org/pub/gmp-5.1.2/gmp-5.1.2.tar.lz"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	##
-	## Untar the GCC modules
-	##
-
-	if ! tar xf mpc-1.0.1.tar.gz; then
-		printf "Failed to untar the mpc package. Please ensure that\n"
-		printf "the gzip package is installed on the host\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	if ! tar xf mpfr-3.1.2.tar.xz; then
-		printf "Failed to untar the mpfr package. Please ensure that\n"
-		printf "the xzip package is installed on the host\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	if ! tar xf gmp-5.1.2.tar.lz; then
-		printf "Failed to untar the gmp package. Please ensure that\n"
-		printf "the lzip package is installed on the host\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
-	# Symlink the modules (the build expects them without version numbers)
-	ln -sf ./mpc-1.0.1 ./mpc
-	ln -sf ./mpfr-3.1.2 ./mpfr
-	ln -sf ./gmp-5.1.2 ./gmp
-	popd >& /dev/null
-fi
-
 pushd sdk >& /dev/null
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
+    # Run the download script
+    if ! ./download-toolchain.sh --clone; then
+	## If we fail, download script will report failure
+	printf "\nAborting...\n"
+	exit 1
+    fi
 	#Build the toolchain (this will take a while)
-	if ! ./build-toolchain.sh; then
-		printf "The toolchain build failed!\n"
-		printf "\nAborting...\n"
-		exit 1
-	fi
+    if ! ./build-toolchain.sh; then
+	printf "The toolchain build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
+    fi
 fi
 
 if [ ! -d ../esdk/tools/${GNUNAME}/ ]; then
@@ -137,15 +88,11 @@ if [ ! -d ../esdk/tools/${GNUNAME}/ ]; then
 	mkdir -p ${GNU}
 	ln -s ${HOSTNAME} ${ESDK}/tools/host
 	ln -s ${GNUNAME}  ${ESDK}/tools/e-gnu
-	
+
 	mkdir -p ${HOST}/lib
 	mkdir -p ${HOST}/include
 	mkdir -p ${HOST}/bin
 fi
-
-# Copy the toolchain
-echo "Copying the toolchain into ../esdk/tools/${GNUNAME}"
-mv ../INSTALL/* ../esdk/tools/${GNUNAME}/
 
 if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 	# Clone the parallella Linux source tree
