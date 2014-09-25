@@ -1,3 +1,8 @@
+2014-09-24  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-toolchain.sh: Correct synonyms of build-dir, install-dir
+	and datestamp-install to refer to the host.
+
 2014-09-23  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* component-versions: Changed to software-cache versions of

@@ -101,13 +101,13 @@
 # RELEASE.  The meanings of the various options and their defaults are as
 # follows.
 
-# --build-dir <dir>
 # --build-dir-build <dir>
 
 #     The directory in which the tool chain to run on the *build* machine will
 #     be built.  The default is builds/bd-epiphany-$RELEASE in the base
 #     directory.
 
+# --build-dir <dir>
 # --build-dir-host <dir>
 
 #     The directory in which the tool chain to run on the *host* machine will
@@ -130,7 +130,6 @@
 #     host unless those tools have been previously built, or are found in the
 #     existing search path.
 
-# --install-dir <install_dir>
 # --install-dir-build <install_dir>
 
 #     The directory in which the tool chain to run on the *build* machine
@@ -139,6 +138,7 @@
 #     <build-arch> is the architecture name of the *build* machine (so should
 #     be one of x86, x86_64 or armv7l).
 
+# --install-dir <install_dir>
 # --install-dir-host <install_dir>
 
 #     The directory in which the tool chain to run on the *host* machine
@@ -155,7 +155,6 @@
 #     hierarchy). It defaults to e-gnu.  If a hierarchy is given, only the
 #     basename will be used.
 
-# --datestamp-install
 # --datestamp-install-build
 
 #     If specified, this will insert a date and timestamp in the install
@@ -163,6 +162,7 @@
 #     has the default name, the datestamp will be inserted after the $RELEASE,
 #     otherwise it will be appended to the name.
 
+# --datestamp-install
 # --datestamp-install-host
 
 #     If specified, this will insert a date and timestamp in the install
@@ -437,12 +437,12 @@ until
 opt=$1
 case ${opt} in
 
-    --build-dir | --build-dir-build)
+    --build-dir-build)
 	shift
 	bd_build=`absdir "$1"`
 	;;
 
-    --build-dir-host)
+    --build-dir | --build-dir-host)
 	shift
 	bd_host=`absdir "$1"`
 	;;
@@ -452,12 +452,12 @@ case ${opt} in
 	host="$1"
 	;;
 
-    --install-dir | --install-dir-build)
+    --install-dir-build)
 	shift
 	id_build=`absdir "$1"`
 	;;
 
-    --install-dir-host)
+    --install-dir | --install-dir-host)
 	shift
 	id_host=`absdir "$1"`
 	;;
@@ -468,11 +468,11 @@ case ${opt} in
 	symlink_dir="`basename $1`"
 	;;
 
-    --datestamp-install | --datestamp-install-build)
+    --datestamp-install-build)
 	ds_build=-`date -u +%F-%H%M`
 	;;
 
-    --datestamp-install-host)
+    --datestamp-install | --datestamp-install-host)
 	ds_host=-`date -u +%F-%H%M`
 	;;
 
