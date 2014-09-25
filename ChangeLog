@@ -1,3 +1,8 @@
+2014-09-25  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-toolchain.sh: Fix problems with directory naming and
+	linking.
+
 2014-09-24  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-toolchain.sh: Correct synonyms of build-dir, install-dir
