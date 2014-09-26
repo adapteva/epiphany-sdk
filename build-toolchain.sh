@@ -400,8 +400,8 @@ echo "Logging to ${logfile}"
 bd_build=
 bd_host=
 host=
+id_build=
 id_host=
-id_host=${basedir}/install-host
 symlink_dir=e-gnu
 ds_build=
 ds_host=
@@ -1160,14 +1160,22 @@ else
     ln -s ${id_base} "${symlink_dir}"
 fi
 
-# Make the top level link. This is hard-coded.
-cd /opt/adapteva
-rm -f esdk
-ln -s "`basename ${report_dir}`" esdk
-
-logterm "Top level /opt/adapteva/esdk linked to /opt/adapteva/`basename ${report_dir}`"
 logterm "Tools installed at ${report_dir}/bin"
 logterm "Manual pages installed at ${report_dir}/share/man"
 logterm "Ensure these directories are in your PATH and MANPATH"
+
+# Make the top level link if appropriate
+release_dir="esdk.${RELEASE}"
+if [ -d "/opt/adapteva/${release_dir}" ]
+then
+    cd /opt/adapteva
+
+    if rm -f esdk && ln -s "${release_dir}" esdk
+    then
+	logterm "Top level /opt/adapteva/esdk linked to /opt/adapteva/${release_dir}"
+    else
+	logterm "Unable to create link to /opt/adapteva/esdk"
+    fi
+fi
 
 logterm "BUILD COMPLETE: $(date)"
