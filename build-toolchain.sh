@@ -849,13 +849,13 @@ fi
 # configure.
 if [ "${do_clean_host}" = "--no-clean-host" ]
 then
-    if [ -d ${bd_build} -a -e ${bd_build}/config.log \
-             -a -e ${bd_build}/configure ]
+    if [ -d ${bd_host} -a -e ${bd_host}/config.log ] \
+	&& grep "configure: exit 0" ${bd_host}/config.log > /dev/null 2>&1
     then
         # We did have a previous successful config we can reuse. This then
 	# overrides any specified install directory.
 	id_host=`sed -n -e 's/^.*\-\-prefix=\([^ \t\n]*\).*$/\1/p' \
-                         < ${bd_build}/config.log | head -1`
+                         < ${bd_host}/config.log | head -1`
 	logterm "Reusing previous build and installing at ${id_host}."
     else
 	logterm "Forcing clean build"
@@ -1166,7 +1166,8 @@ logterm "Ensure these directories are in your PATH and MANPATH"
 
 # Make the top level link if appropriate
 release_dir="esdk.${RELEASE}"
-if [ -d "/opt/adapteva/${release_dir}" ]
+if `echo ${id_host} | grep /opt/adapteva/${release_dir} > /dev/null 2>&1` &&
+    [ -d "/opt/adapteva/${release_dir}" ]
 then
     cd /opt/adapteva
 
