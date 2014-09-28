@@ -315,21 +315,23 @@ echo "=============================================="
 echo ""
 
 # Create the SDK tree and set default symlinks
-echo "Creating the eSDK directory tree..."
+if [ ! -d ${ESDK} ]; then
+	echo "Creating the eSDK directory tree..."
 
-mkdir -p ${ESDK}
-ln -sTf "esdk.${REV}" ${ESDKPATH}/esdk
-mkdir -p ${ESDK}/bsps
-mkdir -p ${ESDK}/tools
+	mkdir -p ${ESDK}/bsps ${ESDK}/tools
 
-mkdir -p ${HOST}
-mkdir -p ${GNU}
-ln -sTf ${HOSTNAME} ${ESDK}/tools/host
-ln -sTf ${GNUNAME}	${ESDK}/tools/e-gnu
+	ln -sTf "esdk.${REV}" ${ESDKPATH}/esdk
+	ln -sTf ${HOSTNAME} ${ESDK}/tools/host
+	ln -sTf ${GNUNAME}	${ESDK}/tools/e-gnu
+fi
 
-mkdir -p ${HOST}/lib
-mkdir -p ${HOST}/include
-mkdir -p ${HOST}/bin
+if [ ! -d ${HOST} ]; then
+	mkdir -p ${HOST}/lib ${HOST}/include ${HOST}/bin
+fi
+
+if [ ! -d ${GNU} ]; then
+	mkdir -p ${GNU}
+fi
 
 # Check prerequisites
 if [ ! -d "${ESDK}/tools/e-gnu/epiphany-elf/lib" ]; then
@@ -347,7 +349,6 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 	fi
 fi
 
-
 # Copy top files
 cp -d ./README	  ${ESDK}
 cp -d ./COPYING	  ${ESDK}
@@ -358,6 +359,8 @@ cp -d ./setup.csh ${ESDK}
 # in the epiphany libraries directory.
 echo "Building eSDK libraries..."
 cd ${ESDK_LIBS} > /dev/null 2>&1
+echo $PATH
+which epiphany-elf-gcc
 if ! ./build-libs.sh -a ; then
 	echo "epiphany-libs failed to build"
 	exit 1
@@ -431,9 +434,9 @@ cd ../../
 echo "-- Installing eLib"
 cd src/e-lib
 cp ${BLD_VERSION}/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
-cp include/*.h		  ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
+cp include/*.h		  ${ESDK}/tools/e-gnu/epiphany-elf/include/
 ln -sTf libe-lib.a	  ${ESDK}/tools/e-gnu/epiphany-elf/lib/libelib.a
-ln -sTf e_lib.h		  ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/e-lib.h
+ln -sTf e_lib.h		  ${ESDK}/tools/e-gnu/epiphany-elf/include/e-lib.h
 cd ../../
 
 

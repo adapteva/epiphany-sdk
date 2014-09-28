@@ -1,3 +1,9 @@
+2014-09-28  Ben Chaco  <bchaco@x3-c.com>
+	* build-epiphany-sdk.sh:
+	* install-sdk.sh:
+	Updates to support latest Epiphany Toolchain build.
+
+
 2014-09-25  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-toolchain.sh: Only link /opt/adapteva/esdk if it is part

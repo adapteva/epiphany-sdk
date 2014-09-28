@@ -2,6 +2,7 @@
 
 # Copyright (C) 2009-2014 Adapteva Inc
 
+# Contributor Yaniv Sapir <ysapir@adapteva.com>
 # Contributor Ben Chaco <bchaco@x3-c.com>
 # Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
 
@@ -19,14 +20,60 @@
 
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
-# Host machine architecture
-ARCH="armv7l"
 
-# Revision number of Epiphany SDK
-REV=${1:-"DevBuild"}
+# Host machine architecture default
+ARCH="arm7l"
 
-# Git branch name for build
-BRANCH=${2:-"master"}
+# Revision number of Epiphany SDK default
+REV="RevUndefined"
+
+# Git branch name for build default
+BRANCH="master"
+
+while getopts :a:r:t:h arg; do
+	case $arg in
+
+	a)
+		ARCH=$OPTARG
+		;;
+
+	r)
+		REV=$OPTARG
+		;;
+
+	l)
+		ESDK_LIBS=$OPTARG
+		;;
+		
+	t)
+		BRANCH=$OPTARG
+		;;
+
+	h)
+		echo "Usage: ./build-epiphany-sdk.sh "
+		echo "    [-a <target arch>]: The target architecure. Default $ARCH"
+		echo "    [-r <revision>]: The revision string for the SDK. Default $REV"
+		echo "    [-t <tag_name>]: The tag name (or branch name) for the SDK sources. Default $BRANCH"
+		echo "    [-h]: Show usage"
+		echo ""
+		exit 0
+		;;
+
+	\?)
+		echo "Invalid Argument; $1"
+		exit 1
+		;;
+	esac
+done
+
+shift $((OPTIND-1))
+
+if [ z $EPIPHANY_BUILD_HOME ]; then
+
+	d=$(dirname "$0")
+	export EPIPHANY_BUILD_HOME=$(cd "$d/.." && pwd)
+
+fi
 
 ESDK="${EPIPHANY_BUILD_HOME}/esdk.${REV}"
 HOSTNAME="host.${ARCH}"
@@ -46,52 +93,44 @@ echo "    EPIPHANY_BUILD_HOME=$EPIPHANY_BUILD_HOME"
 echo "    EPIPHANY_HOME=$EPIPHANY_HOME"
 echo "    ESDK=$ESDK"
 echo ""
-
-if [ -z $EPIPHANY_BUILD_HOME ]; then
-	echo "Please define the environment variable EPIPHANY_BUILD_HOME and "
-	echo "rerun the build-epiphany-sdk.sh script."
-	exit 1
-fi
+echo "Build settings:"
+echo ""
+echo "    Target architecture:          ${ARCH}"
+echo "    Build Revision:               ${REV}"
+echo "    Build from branch or tag:     ${BRANCH}"
+echo ""
 
 cd $EPIPHANY_BUILD_HOME
 
 pushd sdk >& /dev/null
 
-if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-    # Run the download script
-    if ! ./download-toolchain.sh --clone; then
-	## If we fail, download script will report failure
-	printf "\nAborting...\n"
-	exit 1
-    fi
-	#Build the toolchain (this will take a while)
-    if ! ./build-toolchain.sh; then
-	printf "The toolchain build failed!\n"
-	printf "\nAborting...\n"
-	exit 1
-    fi
-fi
-
 if [ ! -d ../esdk/tools/${GNUNAME}/ ]; then
-	# Create the SDK tree and set default symlinks
-	# Note the install-sdk.sh script will attempt to create
-	# this toolchain tree but it does not Install the
-	# toolchain!!
+	# Create the SDK tree
 	echo "Creating the eSDK directory tree..."
 
-	mkdir -p ${ESDK}
-	ln -sT "esdk.${REV}" ${EPIPHANY_BUILD_HOME}/esdk
-	mkdir -p ${ESDK}/bsps
-	mkdir -p ${ESDK}/tools
-
-	mkdir -p ${HOST}
+	mkdir -p ${ESDK} ${ESDK}/bsps ${ESDK}/tools
+	mkdir -p ${HOST}/lib ${HOST}/include ${HOST}/bin
 	mkdir -p ${GNU}
-	ln -s ${HOSTNAME} ${ESDK}/tools/host
-	ln -s ${GNUNAME}  ${ESDK}/tools/e-gnu
+fi
 
-	mkdir -p ${HOST}/lib
-	mkdir -p ${HOST}/include
-	mkdir -p ${HOST}/bin
+# Create toolchain symbolic links (force overwrite if exists)
+ln -sTf "esdk.${REV}" ${EPIPHANY_BUILD_HOME}/esdk
+ln -sTf ${HOSTNAME} ${ESDK}/tools/host
+ln -sTf ${GNUNAME}  ${ESDK}/tools/e-gnu
+
+if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
+	if ! ./download-toolchain.sh --clone; then
+
+		printf "\nAborting...\n"
+		exit 1
+	fi
+
+	#Build the toolchain (this will take a while)
+    if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} --host ${ARCH}; then
+		printf "The toolchain build failed!\n"
+		printf "\nAborting...\n"
+		exit 1
+	fi
 fi
 
 if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
