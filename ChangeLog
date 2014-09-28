@@ -1,5 +1,10 @@
 2014-09-25  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* build-toolchain.sh: Only link /opt/adapteva/esdk if it is part
+	of install directory. Correct test for forcing a clean build
+
+2014-09-25  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* build-toolchain.sh: Fix problems with directory naming and
 	linking.
 
