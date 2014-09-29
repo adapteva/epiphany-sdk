@@ -232,6 +232,7 @@
 # --mpc | --no-mpc
 # --isl | --no-isl
 # --cloog | --no-cloog
+# --ncurses | --no-ncurses
 
 #     Indicate that the corresponding GCC infrastructure component exists as a
 #     source directory within the base directory and should be linked into the
@@ -245,9 +246,11 @@
 #     corresponding developer package is not available will cause tool chain
 #     building to fail. Specifying --no-isl or --no-cloog when the developer
 #     package is not available will cause some GCC optimizatiosn to be
-#     omitted.
+#     omitted.  Specifying --no-ncurses when the developer cross-compiled
+#     package is not available will cause a Canadian Cross build (i.e. with
+#     different build and host architectures) to fail.
 
-#     Defaults --gmp --mpfr --mpc --isl --cloog.
+#     Defaults --gmp --mpfr --mpc --isl --cloog --ncurses.
 
 # --rel-rpaths | --no-rel-rpaths
 
@@ -354,10 +357,10 @@ logonly () {
 
 # Get the architecture from a triplet.
 
-# This is the first field up to -, but with "arm" translated to "armv7".
+# This is the first field up to -, but with "arm" translated to "armv7l".
 
 # @param[in] $1  triplet
-# @return  The architecture of the triplet, but with arm translated to armv7.
+# @return  The architecture of the triplet, but with arm translated to armv7l.
 getarch () {
     triplet=$1
 
@@ -418,6 +421,7 @@ do_mpfr="--mpfr"
 do_mpc="--mpc"
 do_isl="--isl"
 do_cloog="--cloog"
+do_ncurses="--ncurses"
 
 if [ `which patchelf` > /dev/null 2>&1 ]
 then
@@ -544,6 +548,10 @@ case ${opt} in
 	do_cloog="$1"
 	;;
 
+    --ncurses | --no-ncurses)
+	do_ncurses="$1"
+	;;
+
     --rel-rpaths | --no-rel-rpaths)
 	do_rel_rpaths="$1"
 	;;
@@ -591,6 +599,7 @@ case ${opt} in
         echo "             [--mpc | --no-mpc]"
         echo "             [--isl | --no-isl]"
         echo "             [--cloog | --no-cloog]"
+        echo "             [--ncurses | --no-ncurses]"
         echo "             [--rel-rpaths | --no-rel-rpaths]"
         echo "             [--target-cflags <flags>]"
         echo "             [--config-extra <flags>]"
@@ -737,6 +746,7 @@ logonly "Use MPFR source:                ${do_mpfr}"
 logonly "Use MPC source:                 ${do_mpc}"
 logonly "Use ISL source:                 ${do_isl}"
 logonly "Use Cloog source:               ${do_cloog}"
+logonly "Use ncurses source:             ${do_ncurses}"
 logonly "Use relative RPATH:             ${do_rel_rpaths}"
 logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
 logonly "Extra config flags:             ${config_extra}"
@@ -830,6 +840,14 @@ else
     infra_exclude="cloog ${infra_exclude}"
 fi
 
+if [ "${do_ncurses}" = "--ncurses" ]
+then
+    check_dir_exists "gcc-infrastructure/ncurses" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="ncurses ${infra_exclude}"
+fi
+
 if [ "${res}" != "success" ]
 then
     failedbuild
@@ -907,6 +925,10 @@ fi
 #                                                                              #
 ################################################################################
 
+# Put the build directory toolchain on our PATH. Then we will find it
+# if we have already built it.
+PATH=${id_build}/bin:$PATH
+
 if [ "x${host}" != "x" ]
 then
     if  which epiphany-elf-gcc && which epiphany-elf-as \
@@ -969,9 +991,6 @@ then
 	    failedbuild
 	fi
 
-	# Ensure the newly built toolchain is in our PATH
-	PATH=${id_build}/bin:$PATH
-
         # Sanity check that we now do really have the tools we need.
 	if ! ( which epiphany-elf-gcc && which epiphany-elf-as \
 	    && which epiphany-elf-ld && which epiphany-elf-ar )
@@ -983,16 +1002,17 @@ then
 
     # We also first build ncurses in the case of cross compilation such a
     # suitable termcap library is available for GDB.
-    if [ -d "${basedir}/gcc-infrastructure/ncurses" ]
+    if [ "${do_ncurses}" = "--ncurses" ]
     then
-	rm -rf "${bd_host}-ncurses"
-	if ! mkdir -p "${bd_host}-ncurses"
+	bd_ncurses="${bd_host}-ncurses"
+	rm -rf "${bd_ncurses}"
+	if ! mkdir -p "${bd_ncurses}"
 	then
 	    logterm "ERROR: Failed to create ncurses build directory."
 	fi
 
-	if ! cd "${bd_host}-ncurses"; then
-	    logterm "ERROR: Could not change to build directory ${bd_host}."
+	if ! cd "${bd_ncurses}"; then
+	    logterm "ERROR: Could not change to build directory ${bd_ncurses}."
 	    failedbuild
 	fi
 
@@ -1032,7 +1052,6 @@ fi
 #	       Configure, build and install the host tool chain                #
 #                                                                              #
 ################################################################################
-
 
 # Ensure the build directory exists. We build in the host build directory.
 if ! mkdir -p "${bd_host}"
