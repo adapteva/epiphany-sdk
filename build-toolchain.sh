@@ -364,7 +364,7 @@ getarch () {
     arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
     if [ "x${arch}" = "xarm" ]
     then
-	arch="armv7"
+	arch="armv7l"
     fi
 
     echo ${arch}
