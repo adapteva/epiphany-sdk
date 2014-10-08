@@ -30,6 +30,7 @@
 #                         [--mpc | --no-mpc]
 #                         [--isl | --no-isl]
 #                         [--cloog | --no-cloog]
+#                         [--ncurses | --no-ncurses]
 #                         [--help | -h]
 
 # --force | --no-force
@@ -60,6 +61,7 @@
 # --mpc | --no-mpc
 # --isl | --no-isl
 # --cloog | --no-cloog
+# --ncurses | --no-ncurses
 
 #     Download, or (with the --no- prefix) don't download the corresponding GCC
 #     infrastructure component. The components are downloaded from the
@@ -236,6 +238,33 @@ gcc_component () {
 }
 
 
+# Function to download any other component
+
+# @param[in] $1 Component name
+# @param[in] $2 File name with version
+# @param[in] $3 Compressed file suffix
+# @param[in] $4 URL for the download
+
+# @return  The result of the underlying call to download a tool.
+other_component () {
+    tool=$1
+    file=$2
+    packed_name=${file}.$3
+    url=$4
+
+    if ! mkdir -p gcc-infrastructure
+    then
+	echo "ERROR: Unable to create gcc-infrastructure directory" \
+	    | tee -a ${log}
+	exit 1
+    fi
+
+    cd gcc-infrastructure
+    download_tool "${tool}" "${url}" "tar xf" "${packed_name}" "${file}"
+    cd ..
+}
+
+
 # Function to check for relative directory and makes it absolute
 
 # @param[in] $1  The directory to make absolute if necessary.
@@ -269,6 +298,7 @@ do_mpfr="--do-mpfr"
 do_mpc="--do-mpc"
 do_isl="--do-isl"
 do_cloog="--do-cloog"
+do_ncurses="--do-ncurses"
 
 until
 opt=$1
@@ -327,6 +357,10 @@ case ${opt} in
 	do_cloog="$1"
 	;;
 
+    --ncurses | --no-ncurses)
+	do_ncurses="$1"
+	;;
+
     ?*)
 	echo "Usage: ./download-toolchain [--force | --no-force]"
 	echo "                            [--clone | --download]"
@@ -337,6 +371,7 @@ case ${opt} in
 	echo "                            [--mpc | --no-mpc]"
 	echo "                            [--isl | --no-isl]"
 	echo "                            [--cloog | --no-cloog]"
+	echo "                            [--ncurses | --no-ncurses]"
 	echo "                            [--help | -h]"
 	exit 1
 	;;
@@ -407,6 +442,12 @@ fi
 if [ "${do_cloog}" = "--do-cloog" ]
 then
     gcc_component "cloog" "cloog-0.18.1" "tar.gz" || res="fail"
+fi
+
+if [ "${do_ncurses}" = "--do-ncurses" ]
+then
+    other_component "ncurses" "ncurses-5.9" "tar.gz" \
+	"http://ftp.gnu.org/pub/gnu/ncurses" || res="fail"
 fi
 
 if [ "${res}" = "ok" ]

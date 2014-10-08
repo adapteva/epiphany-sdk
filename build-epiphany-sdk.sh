@@ -152,10 +152,7 @@ fi
 
 if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 	# Clone the parallella Linux source tree
-	if ! git clone https://github.com/parallella/parallella-linux.git -b main; then
-		printf "The Epiphany SDK build failed!\n"
-		printf "\nAborting...\n"
-	fi
+	git clone https://github.com/parallella/parallella-linux.git -b main
 
 	export PARALLELLA_LINUX_HOME=$PWD/parallella-linux
 fi
