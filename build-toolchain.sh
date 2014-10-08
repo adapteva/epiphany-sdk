@@ -354,10 +354,10 @@ logonly () {
 
 # Get the architecture from a triplet.
 
-# This is the first field up to -, but with "arm" translated to "armv7".
+# This is the first field up to -, but with "arm" translated to "armv7l".
 
 # @param[in] $1  triplet
-# @return  The architecture of the triplet, but with arm translated to armv7.
+# @return  The architecture of the triplet, but with arm translated to armv7l.
 getarch () {
     triplet=$1
 

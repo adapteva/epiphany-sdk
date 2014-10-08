@@ -22,7 +22,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Host machine architecture default
-ARCH="arm7l"
+ARCH="armv7l"
 
 # Revision number of Epiphany SDK default
 REV="RevUndefined"
@@ -30,11 +30,19 @@ REV="RevUndefined"
 # Git branch name for build default
 BRANCH="master"
 
-while getopts :a:r:t:h arg; do
+# Host architecture triplet for compiler tools
+# Likel value (with -c) if cross-building on Ubuntu is "arm-linux-gnueabihf"
+ARCH_TRIPLET=""
+
+while getopts :a:c:r:t:h arg; do
 	case $arg in
 
 	a)
 		ARCH=$OPTARG
+		;;
+
+	c)
+		ARCH_TRIPLET=$OPTARG
 		;;
 
 	r)
@@ -51,7 +59,8 @@ while getopts :a:r:t:h arg; do
 
 	h)
 		echo "Usage: ./build-epiphany-sdk.sh "
-		echo "    [-a <target arch>]: The target architecure. Default $ARCH"
+		echo "    [-a <host arch>]: The host architecture. Default $ARCH"
+		echo "    [-c <host triplet>]: The architecture triplet. Only needed for Canadian cross builds."
 		echo "    [-r <revision>]: The revision string for the SDK. Default $REV"
 		echo "    [-t <tag_name>]: The tag name (or branch name) for the SDK sources. Default $BRANCH"
 		echo "    [-h]: Show usage"
@@ -68,7 +77,7 @@ done
 
 shift $((OPTIND-1))
 
-if [ z $EPIPHANY_BUILD_HOME ]; then
+if [ -z $EPIPHANY_BUILD_HOME ]; then
 
 	d=$(dirname "$0")
 	export EPIPHANY_BUILD_HOME=$(cd "$d/.." && pwd)
@@ -125,8 +134,16 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 		exit 1
 	fi
 
+	# Sort out arg for Canadian cross
+	if [ "x${ARCH_TRIPLET}" = "x" ]
+	then
+	    host_str=""
+	else
+	    host_str="--host ${ARCH_TRIPLET}"
+	fi
+
 	#Build the toolchain (this will take a while)
-    if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} --host ${ARCH}; then
+	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} ${host_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
 		exit 1

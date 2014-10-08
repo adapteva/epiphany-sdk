@@ -1,3 +1,8 @@
+2014-10-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-epiphany-sdk.sh: Default ARCH is armv7l.  Allow
+	specification of host triplet and pass to compiler build.
+
 2014-09-25  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-toolchain.sh: ARM architecture changed to armv7l from armv7.
