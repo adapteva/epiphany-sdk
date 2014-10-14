@@ -618,8 +618,7 @@ do
 done
 
 # Sort out Canadian cross stuff. First is it really a canadian cross
-build_triplet=`${basedir}/gcc/config.guess`
-build_arch=`getarch ${build_triplet}`
+build_arch=`uname -m`
 
 if [ "x" != "x${host}" ]
 then
@@ -976,7 +975,7 @@ then
         # Build the parts of the tool chain we need: binutils and GCC
 	logterm "Building build machine tool chain..."
 	if ! make ${parallel} all-build all-binutils all-gas all-ld all-gcc \
-             >> "${logfile}" 2>&1
+	    all-target-newlib  >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Tool chain build for build machine failed."
 	    failedbuild
@@ -985,7 +984,7 @@ then
         # Install binutils, GCC, newlib and GDB
 	logterm "Installing build machine tool chain..."
 	if ! make install-binutils install-gas install-ld install-gcc \
-            >> "${logfile}" 2>&1
+	    install-target-newlib  >> "${logfile}" 2>&1
 	then
 	    logterm "Error: Tool chain installation for build machine failed."
 	    failedbuild

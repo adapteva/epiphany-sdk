@@ -1,3 +1,20 @@
+2014-10-14  Ola Jeppsson <ola@adapteva.com>
+
+	* install-sdk.sh: Remove the following flags: -a, --arch, --arm, --x86, -t
+	and --toolprfx. --host <arch-triplet> is sufficient now.
+	Use uname to figure out buildarch automatically.
+	Compare buildarch and hostarch to determine if we're cross-compiling. If we
+	are, make sure to set the right PATH so we use the buildarch->targetarch
+	compiler (and not hostarch->targetarch compiler).
+	Verify that buildarch->targetarch toolchain is present.
+	If we're doing Canadian cross, verify that buildarch->hostarch toolchain is
+	present.
+	* build-epiphany-sdk.sh: Pass hostarch triplet to install-sdk.sh when doing
+	Canadian cross compilation.
+	* build-toolchain.sh: Use uname to determine buildarch.
+	Install newlib for buildarch->targetarch compiler when doing Canadian cross
+	compilation. Some header files were missing (e.g. <sys/types.h>).
+
 2014-10-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-epiphany-sdk.sh: Default ARCH is armv7l.  Allow

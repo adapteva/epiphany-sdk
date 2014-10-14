@@ -28,39 +28,33 @@
 
 # Usage:
 #
-#	  ./install-sdk.sh [-a | --arch | --host <arch>]
-#					 [--arm | --x86 ]
+#	  ./install-sdk.sh [-c | --host <arch triplet>]
 #					 [-b | --bsp <bsp_name> ]
 #					 [-d | --debug | -r | --release]
 #					 [-l | --esdklibs <path> ]
 #					 [-p | --esdkpath | --prefix <path>]
-#					 [-t | --toolprfx]
 #					 [-h | --help]
 #					 [--version]
 
 # Some argument name alternatives are for consistency with autotools based
 # scripts.
 
-# -a <arch>
-# --arch <arch>
-# --host <arch>
-
-#	  The name of the architecture we are going to run on. Permitted names at
-#	  present are armv7l or x86_64.
-
-# --arm
-
-#	  A synonym for --arch armv7l
-
-# --x86
-
-#	  A synonym for --arch x86_64
 
 # -b <bsp_name>
 # --bsp <bsp_name>
 
 #	  The name of the BSP to use. This must be a valid directory in the bsps
 #	  subdirectory of epiphany-libs.
+
+
+# -c <arch triplet>
+# --host <arch triplet>
+
+#    Canonical host system name
+#    The ARM cross toolchain prefix. Usinng this option will override
+#    the CROSS_COMPILE environment varible.
+#    Likely value if cross-building on Ubuntu is "arm-linux-gnueabihf"
+
 
 # -d
 # --debug
@@ -83,11 +77,6 @@
 #	  Where the tools are installed. Follows the hierarchy described in the
 #	  user manual. Must be an absolute path.
 
-# -t <ARM toolchain prefix>
-# --toolprfx
-
-#    The ARM cross toolchain prefix. Usinng this option will override
-#    the CROSS_COMPILE environment varible.
 
 # -h
 # --help
@@ -101,6 +90,32 @@
 # Exit immediately if any command or pipe fails.
 set -e
 
+
+################################################################################
+#                                                                              #
+#                              Shell functions                                 #
+#                                                                              #
+################################################################################
+
+# Get the architecture from a triplet.
+
+# This is the first field up to -, but with "arm" translated to "armv7l".
+
+# @param[in] $1  triplet
+# @return  The architecture of the triplet, but with arm translated to armv7l.
+getarch () {
+    triplet=$1
+
+    arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
+    if [ "x${arch}" = "xarm" ]
+    then
+	arch="armv7l"
+    fi
+
+    echo ${arch}
+}
+
+
 # -----------------------------------------------------------------------------
 #
 #				   Argument parsing
@@ -109,12 +124,17 @@ set -e
 
 # Set the top level directory.
 d=`dirname "$0"`
-topdir=`(cd "$d/.." && pwd)`
+basedir=`(cd "$d/.." && pwd)`
+
+# Set the release parameters
+. ${basedir}/sdk/define-release.sh
+
+
 
 # Default values
 
 # Path to location of eSDK installation (must be an absolute path)
-ESDKPATH="${topdir}"	 # In user account, adjacent directory
+ESDKPATH="${basedir}"	 # In user account, adjacent directory
 
 # Default Revision number of new eSDK build
 REV="DevBuild"
@@ -128,7 +148,7 @@ BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
 BSP="parallella_E16G3_1GB"
 
 # Default location of epiphany-libs.
-ESDK_LIBS="${topdir}/sdk/epiphany-libs"
+ESDK_LIBS="${basedir}/sdk/epiphany-libs"
 
 # The default branch for cloning/checkout
 BRANCH="master"
@@ -137,8 +157,9 @@ BRANCH="master"
 BLD_VERSION=Release
 
 # Parse options
-getopt_string=`getopt -n install-sdk -o a:b:drl:p:n:x:h -l arch:,host: \
-				   -l arm,x86 -l debug,release -l help -l version \
+getopt_string=`getopt -n install-sdk -o b:c:drl:p:n:x:h \
+				   -l host: \
+				   -l debug,release -l help -l version \
 				   -l bsp: -l bldname: -l branch: -l esdklibs: -l esdkpath:,prefix: \
 				   -s sh -- "$@"`
 eval set -- "$getopt_string"
@@ -147,17 +168,10 @@ while true
 do
 	case $1 in
 
-	-a|--arch|--host)
+	-c|--host)
 		shift
-		ARCH=$1
-		;;
-
-	--arm)
-		ARCH=armv7l;
-		;;
-
-	--x86)
-		ARCH=x86_64
+		host=$1;
+		export CROSS_COMPILE=$1-
 		;;
 
 	-b|--bsp)
@@ -177,15 +191,10 @@ do
 		shift
 		ESDK_LIBS=$1
 		;;
-		
+
 	-p|--esdkpath|--prefix)
 		shift
 		ESDKPATH=$1
-		;;
-
-	-t|--toolprfx)
-		shift
-		export CROSS_COMPILE=$1;
 		;;
 
     -n| --bldname)
@@ -197,16 +206,14 @@ do
 		shift
 		BRANCH=$1
 		;;
-		
+
 	-h|--help)
 		echo "Epiphany SDK version ${REV}"
-		echo "Usage: ./build-sdk.sh [-a | --arch | --host <arch>]"
-			echo "						[--arm | --x86]"
+		echo "Usage: ./build-sdk.sh [-c | --host <arch triplet>]"
 			echo "						[-b | --bsp <bsp_name> ]"
 			echo "						[-d | --debug | -r | --release]"
 			echo "						[-l | --esdklibs <path> ]"
 			echo "						[-p | --esdkpath | --prefix <path>]"
-			echo "						[-t | --toolprfx]"
 			echo "						[-n | --bldname]"
 			echo "						[-x | --branch]"
 			echo "						[-h | --help]"
@@ -242,6 +249,21 @@ do
 	esac
 	shift
 done
+
+
+# Sort out Canadian cross stuff. First is it really a canadian cross
+build_arch=`uname -m`
+if [ "x" != "x${host}" ]
+then
+    host_arch=`getarch ${host}`
+    if [ "x${host_arch}" = "x${build_arch}" ]
+    then
+	# Not really a Canadian Cross
+	host=
+    fi
+else
+    host_arch=${build_arch}
+fi
 
 # Argument validation
 arch_valid="ERR"
@@ -280,16 +302,42 @@ fi
 
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
-HOSTNAME="host.${ARCH}"
+HOSTNAME="host.${host_arch}"
 HOST="${ESDK}/tools/${HOSTNAME}"
-GNUNAME="e-gnu.${ARCH}"
+GNUNAME="e-gnu.${host_arch}"
 GNU="${ESDK}/tools/${GNUNAME}"
 
 # Add Epiphany and host GNU tool to path
-PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
-PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
+# Make sure we include the path to the right tools if we do canadian cross.
+if [ "x${build_arch}" = "x${host_arch}" ]; then
+	PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
+	PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
+else
+	# Assume tools are installed here. This is what build-toolchain.sh does
+	PATH="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}/bin:${PATH}"
+fi
 
 export EPIPHANY_PREFIX EPIPHANY_HOME PATH
+
+
+# Check that we have all build tools
+if ! (which epiphany-elf-gcc && which epiphany-elf-as \
+    && which epiphany-elf-ld && which epiphany-elf-ar) > /dev/null
+then
+    echo "Epiphany toolchain not found on build machine"
+    exit 1
+fi
+
+if [ "x" != "x${CROSS_COMPILE}" ]; then
+    if ! (which ${CROSS_COMPILE}gcc && which ${CROSS_COMPILE}as \
+	&& which ${CROSS_COMPILE}ld && which ${CROSS_COMPILE}ar) > /dev/null
+    then
+	echo "Cross-compile toolchain not found on build machine"
+	exit 1
+    fi
+fi
+
+
 
 echo ""
 echo "==============================================="
@@ -360,7 +408,6 @@ cp -d ./setup.csh ${ESDK}
 echo "Building eSDK libraries..."
 cd ${ESDK_LIBS} > /dev/null 2>&1
 echo $PATH
-which epiphany-elf-gcc
 if ! ./build-libs.sh -a ; then
 	echo "epiphany-libs failed to build"
 	exit 1

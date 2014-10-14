@@ -127,19 +127,20 @@ ln -sTf "esdk.${REV}" ${EPIPHANY_BUILD_HOME}/esdk
 ln -sTf ${HOSTNAME} ${ESDK}/tools/host
 ln -sTf ${GNUNAME}  ${ESDK}/tools/e-gnu
 
+
+# Sort out arg for Canadian cross
+if [ "x${ARCH_TRIPLET}" = "x" ]; then
+	host_str=""
+else
+	host_str="--host ${ARCH_TRIPLET}"
+fi
+
+
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	if ! ./download-toolchain.sh --clone; then
 
 		printf "\nAborting...\n"
 		exit 1
-	fi
-
-	# Sort out arg for Canadian cross
-	if [ "x${ARCH_TRIPLET}" = "x" ]
-	then
-	    host_str=""
-	else
-	    host_str="--host ${ARCH_TRIPLET}"
 	fi
 
 	#Build the toolchain (this will take a while)
@@ -158,7 +159,7 @@ if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 fi
 
 # build the epiphany-libs and install the SDK
-if ! ./install-sdk.sh -n $REV -x $BRANCH; then
+if ! ./install-sdk.sh -n $REV -x $BRANCH ${host_str}; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
