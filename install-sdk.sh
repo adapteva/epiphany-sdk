@@ -474,6 +474,7 @@ cp -f e-trace/include/a_trace.h	  ${HOST}/include
 cp -f e-objcopy				      ${HOST}/bin
 cp -f e-trace-dump/${BLD_VERSION}/e-trace-dump ${HOST}/bin
 cp -f e-trace-server/${BLD_VERSION}/e-trace-server ${HOST}/bin 
+cp -f e-trace/${BLD_VERSION}/libe-trace.so ${HOST}/lib
 cp -f e-clear-shmtable/${BLD_VERSION}/e-clear-shmtable ${HOST}/bin
 cd ../../
 

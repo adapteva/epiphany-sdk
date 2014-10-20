@@ -1,3 +1,7 @@
+2014-10-20  Ola Jeppsson  <ola@adapteva.com>
+
+	* install-sdk.sh: Install 'libe-trace.so', needed by e-trace-server.
+
 2014-10-14  Ola Jeppsson <ola@adapteva.com>
 
 	* install-sdk.sh: Remove the following flags: -a, --arch, --arm, --x86, -t
