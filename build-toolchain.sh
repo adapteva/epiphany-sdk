@@ -1017,8 +1017,9 @@ then
 
 	logterm "Building ncurses for host..."
 
+	# TODO: ncurses doesn't find system's terminfo
 	if ! "${unisrc_dir}/ncurses/configure" ${host_str} --prefix="${id_host}" \
-	    >> "${logfile}" 2>&1
+	    --without-progs >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to configure ncurses for host"
 	    failedbuild

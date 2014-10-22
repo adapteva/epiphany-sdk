@@ -1,3 +1,7 @@
+2014-10-22  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Don't install programs from ncurses
+
 2014-10-20  Ola Jeppsson  <ola@adapteva.com>
 
 	* install-sdk.sh: Install 'libe-trace.so', needed by e-trace-server.
