@@ -1,3 +1,8 @@
+2014-10-24  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Add staging directory for things we need for
+	building but don't want to include in the SDK.
+
 2014-10-22  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Don't install programs from ncurses

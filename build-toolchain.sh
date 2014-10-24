@@ -405,6 +405,7 @@ bd_host=
 host=
 id_build=
 id_host=
+staging_host=
 symlink_dir=e-gnu
 ds_build=
 ds_host=
@@ -642,6 +643,11 @@ then
     bd_host=${basedir}/builds/bd-${host_arch}-${RELEASE}
 fi
 
+# Set up staging directory. This is where we install static libraries, include
+# files etc. that is needed for building, but we don't want in the SDK.
+staging_host=${bd_host}/staging
+
+
 # Set up install dirs. Four cases each time according to whether and install
 # dir and a datestamp have been set.
 if [ "x${id_build}" = "x" ]
@@ -699,7 +705,7 @@ then
     # No parallelism if memory is small.
     make_load=1
 else
-    make_load="`(echo processor; cat /proc/cpuinfo 2>/dev/null echo processor) \
+    make_load="`(echo processor; cat /proc/cpuinfo 2>/dev/null || echo processor) \
            | grep -c processor`"
 fi
 
@@ -890,6 +896,7 @@ fi
 if [ "${do_clean_host}" = "--clean-host" ]
 then
     rm -rf "${bd_host}"
+    rm -rf "${staging_host}"
 fi
 
 # Blow away the unified source directory if requested
@@ -915,6 +922,13 @@ then
       logterm "ERROR: Failed to build unified source tree in ${unisrc_dir}."
       failedbuild
   fi
+fi
+
+# Ensure the staging directory exists.
+if ! mkdir -p "$staging_host"
+then
+    logterm "ERROR: Failed to create staging directory ${staging_host}."
+    failedbuild
 fi
 
 
