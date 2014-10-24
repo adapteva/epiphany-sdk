@@ -5,6 +5,10 @@
 	Install ncurses to staging area so it doesn't end up in the SDK.
 	Skip building and installing things we don't need from ncurses.
 	Use system's terminfo path as fallback.
+	* build-epiphany-sdk.sh: Add two new flags, one (-d) for enabling debug
+	symbols and (-C) for cleaning before building. Make sure they propagate
+	throughout the whole build process.
+	* install-sdk.sh: Add clean flag (-C, --clean).
 
 2014-10-22  Ola Jeppsson  <ola@adapteva.com>
 

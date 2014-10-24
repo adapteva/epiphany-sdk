@@ -29,6 +29,7 @@
 # Usage:
 #
 #	  ./install-sdk.sh [-c | --host <arch triplet>]
+#					 [-C | --clean]
 #					 [-b | --bsp <bsp_name> ]
 #					 [-d | --debug | -r | --release]
 #					 [-l | --esdklibs <path> ]
@@ -55,6 +56,10 @@
 #    the CROSS_COMPILE environment varible.
 #    Likely value if cross-building on Ubuntu is "arm-linux-gnueabihf"
 
+# -C
+# --clean
+
+#	 Clean before building
 
 # -d
 # --debug
@@ -157,10 +162,11 @@ BRANCH="master"
 BLD_VERSION=Release
 
 # Parse options
-getopt_string=`getopt -n install-sdk -o b:c:drl:p:n:x:h \
+getopt_string=`getopt -n install-sdk -o b:c:Cdrl:p:n:x:h \
 				   -l host: \
 				   -l debug,release -l help -l version \
 				   -l bsp: -l bldname: -l branch: -l esdklibs: -l esdkpath:,prefix: \
+				   -l clean \
 				   -s sh -- "$@"`
 eval set -- "$getopt_string"
 
@@ -172,6 +178,10 @@ do
 		shift
 		host=$1;
 		export CROSS_COMPILE=$1-
+		;;
+
+	-c|--clean)
+		CLEAN=yes
 		;;
 
 	-b|--bsp)
@@ -211,6 +221,7 @@ do
 		echo "Epiphany SDK version ${REV}"
 		echo "Usage: ./build-sdk.sh [-c | --host <arch triplet>]"
 			echo "						[-b | --bsp <bsp_name> ]"
+			echo "						[-C | --clean ]"
 			echo "						[-d | --debug | -r | --release]"
 			echo "						[-l | --esdklibs <path> ]"
 			echo "						[-p | --esdkpath | --prefix <path>]"
@@ -338,7 +349,6 @@ if [ "x" != "x${CROSS_COMPILE}" ]; then
 fi
 
 
-
 echo ""
 echo "==============================================="
 echo "| NOTE: The default BSP is set to ${BSP}"
@@ -403,12 +413,20 @@ cp -d ./COPYING	  ${ESDK}
 cp -d ./setup.sh  ${ESDK}
 cp -d ./setup.csh ${ESDK}
 
+
 # Build the eSDK libraries from epiphany-libs repo. From this point on we are
 # in the epiphany libraries directory.
-echo "Building eSDK libraries..."
 cd ${ESDK_LIBS} > /dev/null 2>&1
+
+if [ "xyes" = "x$CLEAN" ]; then
+	build_elibs_flag="-c"
+else
+	build_elibs_flag="-a"
+fi
+
+echo "Building eSDK libraries..."
 echo $PATH
-if ! ./build-libs.sh -a ; then
+if ! ./build-libs.sh ${build_elibs_flag} ; then
 	echo "epiphany-libs failed to build"
 	exit 1
 fi

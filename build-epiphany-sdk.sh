@@ -34,7 +34,7 @@ BRANCH="master"
 # Likel value (with -c) if cross-building on Ubuntu is "arm-linux-gnueabihf"
 ARCH_TRIPLET=""
 
-while getopts :a:c:r:t:h arg; do
+while getopts :a:c:Cdr:t:h arg; do
 	case $arg in
 
 	a)
@@ -43,6 +43,14 @@ while getopts :a:c:r:t:h arg; do
 
 	c)
 		ARCH_TRIPLET=$OPTARG
+		;;
+
+	C)
+		CLEAN=yes
+		;;
+
+	d)
+		DEBUG=yes
 		;;
 
 	r)
@@ -61,6 +69,8 @@ while getopts :a:c:r:t:h arg; do
 		echo "Usage: ./build-epiphany-sdk.sh "
 		echo "    [-a <host arch>]: The host architecture. Default $ARCH"
 		echo "    [-c <host triplet>]: The architecture triplet. Only needed for Canadian cross builds."
+		echo "    [-C]: Clean before start building."
+		echo "    [-d]: Enable building with debug symbols."
 		echo "    [-r <revision>]: The revision string for the SDK. Default $REV"
 		echo "    [-t <tag_name>]: The tag name (or branch name) for the SDK sources. Default $BRANCH"
 		echo "    [-h]: Show usage"
@@ -135,6 +145,22 @@ else
 	host_str="--host ${ARCH_TRIPLET}"
 fi
 
+if [ "xyes" = "x$DEBUG" ]; then
+	export CFLAGS="-g ${CFLAGS}"
+	export CXXFLAGS="-g ${CXXFLAGS}"
+	sdk_debug_str="--debug"
+else
+	sdk_debug_str=""
+fi
+
+if [ "xyes" = "x$CLEAN" ]; then
+	toolchain_clean_str="--clean-build --clean-host"
+	sdk_clean_str="--clean"
+else
+	toolchain_clean_str=""
+	sdk_clean_str=""
+fi
+
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	if ! ./download-toolchain.sh --clone; then
@@ -144,7 +170,8 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 
 	#Build the toolchain (this will take a while)
-	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} ${host_str}; then
+	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
+		${host_str} ${toolchain_clean_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
 		exit 1
@@ -159,7 +186,8 @@ if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 fi
 
 # build the epiphany-libs and install the SDK
-if ! ./install-sdk.sh -n $REV -x $BRANCH ${host_str}; then
+if ! ./install-sdk.sh -n $REV -x $BRANCH ${host_str} ${sdk_debug_str} \
+	${sdk_clean_str}; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
