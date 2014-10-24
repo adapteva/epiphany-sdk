@@ -4,6 +4,7 @@
 	building but don't want to include in the SDK.
 	Install ncurses to staging area so it doesn't end up in the SDK.
 	Skip building and installing things we don't need from ncurses.
+	Use system's terminfo path as fallback.
 
 2014-10-22  Ola Jeppsson  <ola@adapteva.com>
 
