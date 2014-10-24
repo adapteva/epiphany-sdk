@@ -471,28 +471,22 @@ cd ../../
 # Install the Epiphnay GDB RSP Server
 echo "-- Installing eServer"
 cd src/e-server
-cp -f ${BLD_VERSION}/e-server ${HOST}/bin/e-server.e
-cp -f e-server.sh	   ${HOST}/bin/e-server
+cp -f ${BLD_VERSION}/e-server ${HOST}/bin/e-server
 cd ../../
 
 # Install the Epiphnay Utilities
 echo "-- Installing eUtilities"
 cd src/e-utils
-cp -f e-reset/e-reset    		  ${HOST}/bin/e-reset.e
-cp -f e-reset/e-reset.sh    	  ${HOST}/bin/e-reset
-cp -f e-loader/Debug/e-loader     ${HOST}/bin/e-loader.e
-cp -f e-loader/e-loader.sh  	  ${HOST}/bin/e-loader
-cp -f e-read/Debug/e-read   	  ${HOST}/bin/e-read.e
-cp -f e-read/e-read.sh  		  ${HOST}/bin/e-read
-cp -f e-write/Debug/e-write 	  ${HOST}/bin/e-write.e
-cp -f e-write/e-write.sh	      ${HOST}/bin/e-write
-cp -f e-hw-rev/e-hw-rev	    	  ${HOST}/bin/e-hw-rev.e
-cp -f e-hw-rev/e-hw-rev.sh	      ${HOST}/bin/e-hw-rev
-cp -f e-trace/include/a_trace.h	  ${HOST}/include
-cp -f e-objcopy				      ${HOST}/bin
-cp -f e-trace-dump/${BLD_VERSION}/e-trace-dump ${HOST}/bin
-cp -f e-trace-server/${BLD_VERSION}/e-trace-server ${HOST}/bin 
-cp -f e-trace/${BLD_VERSION}/libe-trace.so ${HOST}/lib
+cp -f e-reset/e-reset                                  ${HOST}/bin/
+cp -f e-loader/Debug/e-loader                          ${HOST}/bin/
+cp -f e-read/Debug/e-read                              ${HOST}/bin/
+cp -f e-write/Debug/e-write                            ${HOST}/bin/
+cp -f e-hw-rev/e-hw-rev                                ${HOST}/bin/
+cp -f e-trace/include/a_trace.h                        ${HOST}/include
+cp -f e-objcopy                                        ${HOST}/bin
+cp -f e-trace-dump/${BLD_VERSION}/e-trace-dump         ${HOST}/bin
+cp -f e-trace-server/${BLD_VERSION}/e-trace-server     ${HOST}/bin
+cp -f e-trace/${BLD_VERSION}/libe-trace.so             ${HOST}/lib
 cp -f e-clear-shmtable/${BLD_VERSION}/e-clear-shmtable ${HOST}/bin
 cd ../../
 
