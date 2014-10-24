@@ -1030,22 +1030,22 @@ then
 	fi
 
 	logterm "Building ncurses for host..."
-
-	# TODO: ncurses doesn't find system's terminfo
-	if ! "${unisrc_dir}/ncurses/configure" ${host_str} --prefix="${id_host}" \
-	    --without-progs >> "${logfile}" 2>&1
+	if ! "${unisrc_dir}/ncurses/configure" ${host_str} --prefix="${staging_host}" \
+	    --without-progs --without-ada --without-manpages --without-tests \
+	    --with-terminfo-dirs="${staging_host}/install/share/terminfo:/usr/share/terminfo"\
+	    >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to configure ncurses for host"
 	    failedbuild
 	fi
 
-	if ! make >> "${logfile}" 2>&1
+	if ! make ${parallel} >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to build ncurses for host"
 	    failedbuild
 	fi
 
-	if ! make install >> "${logfile}" 2>&1
+	if ! make install.libs install.includes >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to install ncurses for host"
 	    failedbuild
@@ -1053,8 +1053,8 @@ then
 
 	# We add the include and library paths to CFLAGS/LDFLAGS respectively to
 	# make them available for the real build.
-	CFLAGS="-I${id_host}/include $CFLAGS"
-	LDFLAGS="-L${id_host}/lib $LDFLAGS"
+	CFLAGS="-I${staging_host}/include -I${id_host}/include $CFLAGS"
+	LDFLAGS="-L${staging_host}/lib -L${id_host}/lib $LDFLAGS"
 	export CFLAGS
 	export LDFLAGS
     fi
