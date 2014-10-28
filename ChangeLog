@@ -1,5 +1,9 @@
 2014-10-24  Ola Jeppsson  <ola@adapteva.com>
 
+	* install-sdk.sh: Don't install sudo wrapper scripts
+
+2014-10-24  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Add staging directory for things we need for
 	building but don't want to include in the SDK.
 	Install ncurses to staging area so it doesn't end up in the SDK.
