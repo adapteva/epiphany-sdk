@@ -88,7 +88,6 @@
 #                          [--mpc | --no-mpc]
 #                          [--isl | --no-isl]
 #                          [--cloog | --no-cloog]
-#                          [--rel-rpaths | --no-rel-rpaths]
 #                          [--target-cflags <flags>]
 #                          [--config-extra <flags>]
 #                          [--disable-werror | --enable-werror]
@@ -252,14 +251,6 @@
 
 #     Defaults --gmp --mpfr --mpc --isl --cloog --ncurses.
 
-# --rel-rpaths | --no-rel-rpaths
-
-#     If --rel-rpaths is specified, the RPATHs of tools are set to be relative
-#     to the INSTALL directory and thus become portable, something that is not
-#     usually possible with GNU tool chains.  Note that this option requires
-#     patchelf to be installed.  Default --rel-paths if patchelf is installed
-#     and on the search path and --no-rel-paths otherwise.
-
 # --target-cflags <flags>
 
 #     Specify C flags to be used when building target libraries (libgcc.a,
@@ -296,9 +287,9 @@
 #     Print out a short message about usage.
 
 # The script returns 0 if the tool chain was successfully built, and 1
-# otherwise.  Note that some errors (for example in RPATH) do not prevent a
-# tool chain being built, so will generate warning messages in the log, but
-# the script will still return 0.
+# otherwise.  Note that some errors do not prevent a tool chain being built,
+# so will generate warning messages in the log, but the script will still
+# return 0.
 
 
 ################################################################################
@@ -424,13 +415,6 @@ do_isl="--isl"
 do_cloog="--cloog"
 do_ncurses="--ncurses"
 
-if [ `which patchelf` > /dev/null 2>&1 ]
-then
-    do_rel_rpaths="--rel-rpaths"
-else
-    do_rel_rpaths="--no-rel-rpaths"
-fi
-
 # The assembler and/or linker are broken so that constant merging doesn't
 # work.
 CFLAGS_FOR_TARGET="-O2 -g"
@@ -553,10 +537,6 @@ case ${opt} in
 	do_ncurses="$1"
 	;;
 
-    --rel-rpaths | --no-rel-rpaths)
-	do_rel_rpaths="$1"
-	;;
-
     --target-cflags)
 	shift
 	CFLAGS_FOR_TARGET="$1"
@@ -601,7 +581,6 @@ case ${opt} in
         echo "             [--isl | --no-isl]"
         echo "             [--cloog | --no-cloog]"
         echo "             [--ncurses | --no-ncurses]"
-        echo "             [--rel-rpaths | --no-rel-rpaths]"
         echo "             [--target-cflags <flags>]"
         echo "             [--config-extra <flags>]"
         echo "             [--disable-werror | --enable-werror]"
@@ -752,7 +731,6 @@ logonly "Use MPC source:                 ${do_mpc}"
 logonly "Use ISL source:                 ${do_isl}"
 logonly "Use Cloog source:               ${do_cloog}"
 logonly "Use ncurses source:             ${do_ncurses}"
-logonly "Use relative RPATH:             ${do_rel_rpaths}"
 logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
 logonly "Extra config flags:             ${config_extra}"
 
@@ -1128,18 +1106,6 @@ fi
 #                                                                              #
 ################################################################################
 
-
-# Patch RPATHs so they are relative
-logterm "Setting relative RPATHs..."
-if [ "x${rel_rpaths}" = "x--rel-rpaths" ]
-then
-    if ! "${basedir}"/sdk/rel-rpaths.sh >> "${logfile}" 2>&1
-    then
-	logterm "ERROR: Failed to set relative RPATHs"
-	failedbuild
-	exit 1
-    fi
-fi
 
 # Create symbolic links in install directory for epiphany executables and man
 # pages.
