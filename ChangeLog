@@ -1,3 +1,15 @@
+2014-10-29  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Download and build Epiphany multicore
+	simulator by default.
+	* build-toolchain.sh: Support building and installing the
+	multicore simulator so that it doesn't conflict with GDB from the
+	toolchain.
+	* component-versions: Track the Epiphany multicore simulator
+	branch.
+	* download-toolchain.sh: Add option to download multi-core
+	simulator.
+
 2014-10-28  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* build-toolchain.sh: Remove RPATH functionality. Irrelevant to a

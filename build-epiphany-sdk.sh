@@ -161,9 +161,14 @@ else
 	sdk_clean_str=""
 fi
 
+# TODO: We only want multicore-sim for x86_64 but we don't have the
+# infrastructure for checking host arch in this file yet. However,
+# 'build-toolchain.sh' will emit a warning and refuse to build it for hosts
+# other than x86_64. So we'll rely on that for the time being.
+multicore_sim_str="--multicore-sim"
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-	if ! ./download-toolchain.sh --clone; then
+	if ! ./download-toolchain.sh ${multicore_sim_str} --clone; then
 
 		printf "\nAborting...\n"
 		exit 1
@@ -171,7 +176,7 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 
 	#Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
-		${host_str} ${toolchain_clean_str}; then
+		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
 		exit 1

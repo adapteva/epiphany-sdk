@@ -68,6 +68,15 @@
 #     infrastructure URL, which may be changed by the --infra-url option. By
 #     default all components are downloaded.
 
+# --multicore-sim | --no-multicore-sim
+
+#     Download, or (with the --no- prefix) don't download the GDB based
+#     experimental multi-core simulator.
+#     The components are downloaded from the
+#     infrastructure URL, which may be changed by the --infra-url option. By
+#     default all components are downloaded.
+
+
 # --help | -h
 
 #     Print out a brief help about this script and return with an error code.
@@ -299,6 +308,7 @@ do_mpc="--do-mpc"
 do_isl="--do-isl"
 do_cloog="--do-cloog"
 do_ncurses="--do-ncurses"
+do_multicore_sim="--multicore-sim"
 
 until
 opt=$1
@@ -361,6 +371,10 @@ case ${opt} in
 	do_ncurses="$1"
 	;;
 
+    --multicore-sim | --no-multicore-sim)
+	do_multicore_sim="$1"
+	;;
+
     ?*)
 	echo "Usage: ./download-toolchain [--force | --no-force]"
 	echo "                            [--clone | --download]"
@@ -372,6 +386,7 @@ case ${opt} in
 	echo "                            [--isl | --no-isl]"
 	echo "                            [--cloog | --no-cloog]"
 	echo "                            [--ncurses | --no-ncurses]"
+	echo "                            [--multicore-sim | --no-multicore-sim]"
 	echo "                            [--help | -h]"
 	exit 1
 	;;
@@ -448,6 +463,11 @@ if [ "${do_ncurses}" = "--do-ncurses" ]
 then
     other_component "ncurses" "ncurses-5.9" "tar.gz" \
 	"http://ftp.gnu.org/pub/gnu/ncurses" || res="fail"
+fi
+
+if [ "${do_multicore_sim}" = "--multicore-sim" ]
+then
+    github_tool gdb-multicore-sim epiphany-binutils-gdb epiphany-gdb-7.6-multicore-sim || res="fail"
 fi
 
 if [ "${res}" = "ok" ]
