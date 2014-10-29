@@ -177,7 +177,6 @@ do
 	-c|--host)
 		shift
 		host=$1;
-		export CROSS_COMPILE=$1-
 		;;
 
 	-c|--clean)
@@ -267,10 +266,13 @@ build_arch=`uname -m`
 if [ "x" != "x${host}" ]
 then
     host_arch=`getarch ${host}`
+
     if [ "x${host_arch}" = "x${build_arch}" ]
     then
 	# Not really a Canadian Cross
 	host=
+    else
+	export CROSS_COMPILE=${host}-
     fi
 else
     host_arch=${build_arch}

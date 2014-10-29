@@ -1,5 +1,9 @@
 2014-10-29  Ola Jeppsson  <ola@adapteva.com>
 
+	* install-sdk.sh: Don't export CROSS_COMPILE unless it's necessary
+
+2014-10-29  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Download and build Epiphany multicore
 	simulator by default.
 	* build-toolchain.sh: Support building and installing the
