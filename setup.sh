@@ -15,10 +15,12 @@ else
 	PATH=${EPIPHANY_HOME}/tools/host/bin:${PATH}
 	LD_LIBRARY_PATH=${EPIPHANY_HOME}/tools/host/lib:${LD_LIBRARY_PATH}
 	EPIPHANY_HDF=${EPIPHANY_HOME}/bsps/current/platform.hdf
+	MANPATH=${EPIPHANY_HOME}/tools/e-gnu/share/man:${MANPATH}
 
 	export PATH
 	export LD_LIBRARY_PATH
 	export EPIPHANY_HOME
 	export EPIPHANY_HDF
+	export MANPATH
 fi
 

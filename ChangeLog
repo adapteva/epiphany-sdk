@@ -1,3 +1,8 @@
+2014-10-30  Ola Jeppsson  <ola@adapteva.com>
+
+	* setup.sh: Add MANPATH
+	* setup.csh: Likewise
+
 2014-10-29  Ola Jeppsson  <ola@adapteva.com>
 
 	* install-sdk.sh: Don't export CROSS_COMPILE unless it's necessary

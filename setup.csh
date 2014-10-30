@@ -18,6 +18,7 @@ endif
 setenv PATH ${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}
 setenv PATH ${EPIPHANY_HOME}/tools/host/bin:${PATH}
 setenv EPIPHANY_HDF ${EPIPHANY_HOME}/bsps/current/platform.hdf
+setenv MANPATH ${EPIPHANY_HOME}/tools/e-gnu/share/man:${MANPATH}
 
 if ( $?LD_LIBRARY_PATH  ) then 
 	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host/lib:${LD_LIBRARY_PATH}
