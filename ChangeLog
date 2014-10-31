@@ -1,3 +1,13 @@
+2014-10-31  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-epiphany-sdk.sh: Remove use of --release for
+	download-toolchain.sh and build-toolchain.sh.
+	* build-toolchain.sh: Remove --release.
+	* define-release.sh: Remove RELEASE_TAG.
+	* download-toolchain.sh: Remove --release
+	* get-versions.sh: Remove --release.
+	* tag-release.sh: Created.
+
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
 
 	* get-versions.sh: Fix arbitrary branch checkout failures when

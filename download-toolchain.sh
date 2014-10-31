@@ -23,7 +23,6 @@
 
 # ./download-toolchain.sh [--force | --no-force]
 #                         [--clone | --download]
-#                         [--release | --no-release]
 #                         [--infra-url <url> | --infra-us |
 #                          --infra-uk | --infra-jp]
 #                         [--gmp | --no-gmp]
@@ -45,11 +44,6 @@
 #     If --clone is specified, attempt to clone the repository, otherwise if
 #     --download is specified, attempt to download a ZIP file of the
 #     repository.  Default --download.
-
-# --release | --no-release
-
-#     If --release is specified, use ${RELEASE_TAG} specified in
-#     define-release.sh for all package versions.
 
 # --infra-url <url>
 
@@ -220,15 +214,6 @@ github_tool () {
     tool=$1
     repo=$2
     branch=$3
-    release_prefix=$4
-
-    # If we're doing release we should use the release tags for all packages
-    # and since we use multiple heads in epiphany-binutils-gdb we need separate
-    # tags for each.
-    if [ "x--release" = "x${do_release}" ]
-    then
-	branch=${release_prefix}${RELEASE_TAG}
-    fi
 
     if [ ${clone} = "true" ]
     then
@@ -354,7 +339,6 @@ absolutedir() {
 
 force="false"
 clone="false"
-do_release="--no-release"
 infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
 do_gmp="--do-gmp"
 do_mpfr="--do-mpfr"
@@ -382,10 +366,6 @@ case ${opt} in
 
     --download)
 	clone="false"
-	;;
-
-    --release | --no-release)
-	do_release="$1"
 	;;
 
     --infra-url)
