@@ -178,17 +178,30 @@ do
     then
 	logterm "Fetching ${tool}"
 
-        # See note below why two expressions are requied.
+	# See note below why two expressions are required.
 	if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
 	then
-	    # Detached head. Checkout an arbitrary branch
-	    arb_br=`git branch | grep -v '^\*' | head -1 | tr -d " "`
-	    logonly "Note: detached HEAD, interim checkout of ${arb_br}"
-	    if ! git checkout ${arb_br} >> ${logfile} 2>&1
+	    # Try to guess a good branch with a working tree similar to the
+	    # tag's
+	    if [ "x${origbranch}" != "x${branch}" ]
 	    then
-		logterm "ERROR (versions): Failed interim checkout"
-		status="1"
-		continue
+		git checkout ${origbranch} >> ${logfile} 2>&1 || true
+	    fi
+
+	    # Check if repo is still in detached head
+	    if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
+	    then
+		# Detached head. Checkout an 'arbitrary' branch...
+		# ... but it cannot be a remote name, or HEAD etc. ...
+		arb_br=$(basename $(git branch -a | sed 's,^[ ]*,,g' \
+		    | cut -f1 -d " " | grep -v '^\*' | grep -v HEAD | head -1 ))
+		logonly "Note: detached HEAD, interim checkout of ${arb_br}"
+		if ! git checkout ${arb_br} >> ${logfile} 2>&1
+		then
+		    logterm "ERROR (versions): Failed interim checkout"
+		    status="1"
+		    continue
+		fi
 	    fi
 	fi
 
