@@ -23,6 +23,7 @@
 
 # ./download-toolchain.sh [--force | --no-force]
 #                         [--clone | --download]
+#                         [--release | --no-release]
 #                         [--infra-url <url> | --infra-us |
 #                          --infra-uk | --infra-jp]
 #                         [--gmp | --no-gmp]
@@ -44,6 +45,11 @@
 #     If --clone is specified, attempt to clone the repository, otherwise if
 #     --download is specified, attempt to download a ZIP file of the
 #     repository.  Default --download.
+
+# --release | --no-release
+
+#     If --release is specified, use ${RELEASE_TAG} specified in
+#     define-release.sh for all package versions.
 
 # --infra-url <url>
 
@@ -206,11 +212,23 @@ download_tool() {
 #               clone/download.
 # @param[in] $3 The branch to checkout/download.
 
+# @param[in] $4 The release prefix tag (if any) Needed when we checkout
+# multiple heads in one directory (epiphany-binutils-gdb)
+
 # @return  The result of the underlying call to clone or download a tool.
 github_tool () {
     tool=$1
     repo=$2
     branch=$3
+    release_prefix=$4
+
+    # If we're doing release we should use the release tags for all packages
+    # and since we use multiple heads in epiphany-binutils-gdb we need separate
+    # tags for each.
+    if [ "x--release" = "x${do_release}" ]
+    then
+	branch=${release_prefix}${RELEASE_TAG}
+    fi
 
     if [ ${clone} = "true" ]
     then
@@ -219,6 +237,41 @@ github_tool () {
 	download_tool "${tool}" "https://github.com/adapteva/${repo}/archive" \
 	              "unzip" "${branch}.zip" "${repo}-${branch}"
     fi
+}
+
+# Function that loops over all component versions and downloads them
+
+# @return 0 on success, anything else indicates failure
+download_components() {
+    # Clone repositories from GitHub
+    # TODO: ??? Move this to get-versions.sh
+    # TODO: Some components might be optional and unnecessary to download.
+
+    OLD_IFS=${IFS}
+    IFS="
+" # We only want the newline character
+
+    res="ok"
+    for line in `cat ${basedir}/sdk/toolchain-components | grep -v '^#' \
+		     | grep -v '^$'`
+    do
+	tool=`          echo ${line} | cut -d ':' -f 1`
+	branch=`        echo ${line} | cut -d ':' -f 2`
+	repo=`          echo ${line} | cut -d ':' -f 3`
+	release_prefix=`echo ${line} | cut -d ':' -f 4`
+
+	if ! github_tool ${tool} ${repo} ${branch} ${release_prefix}
+	then
+	    res="fail"
+	    break
+	fi
+    done
+
+
+    # Restore IFS before returning
+    IFS=${OLD_IFS}
+
+    [ "xok" = "x${res}" ]
 }
 
 
@@ -301,6 +354,7 @@ absolutedir() {
 
 force="false"
 clone="false"
+do_release="--no-release"
 infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
 do_gmp="--do-gmp"
 do_mpfr="--do-mpfr"
@@ -328,6 +382,10 @@ case ${opt} in
 
     --download)
 	clone="false"
+	;;
+
+    --release | --no-release)
+	do_release="$1"
 	;;
 
     --infra-url)
@@ -425,15 +483,17 @@ rm -f "${log}"
 
 echo "Logging to ${log}"
 
-# Clone repositories from GitHub
-res="ok"
-github_tool gcc      epiphany-gcc          epiphany-gcc-4.8-software-cache       || res="fail"
-github_tool binutils epiphany-binutils-gdb epiphany-binutils-2.23-software-cache || res="fail"
-github_tool gdb      epiphany-binutils-gdb epiphany-gdb-7.6       || res="fail"
-github_tool newlib   epiphany-newlib       epiphany-newlib-1.20-software-cache   || res="fail"
-github_tool cgen     epiphany-cgen         epiphany-cgen-1.1-software-cache      || res="fail"
+
+# Download all components defined in 'component-versions'
+if ! download_components
+then
+    echo "ERROR: Failed to download components" | tee -a ${log}
+    exit 1
+fi
 
 # Download optional GCC components
+# TODO: We want to define these outside of the download script, either in
+# 'toolchain-components' or 'gcc-components'.
 if [ "${do_gmp}" = "--do-gmp" ]
 then
     gcc_component "gmp" "gmp-4.3.2" "tar.bz2" || res="fail"
@@ -463,11 +523,6 @@ if [ "${do_ncurses}" = "--do-ncurses" ]
 then
     other_component "ncurses" "ncurses-5.9" "tar.gz" \
 	"http://ftp.gnu.org/pub/gnu/ncurses" || res="fail"
-fi
-
-if [ "${do_multicore_sim}" = "--multicore-sim" ]
-then
-    github_tool gdb-multicore-sim epiphany-binutils-gdb epiphany-gdb-7.6-multicore-sim || res="fail"
 fi
 
 if [ "${res}" = "ok" ]

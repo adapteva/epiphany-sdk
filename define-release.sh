@@ -38,8 +38,15 @@
 #     created within this directory.
 
 
-# The release number
-RELEASE=2014.08
+RELEASE_MAJOR="2014"
+RELEASE_MINOR="08"
+#RELEASE_PATCH=".0"
+RELEASE_RC="-rc1"
+
+# The full release version
+RELEASE="${RELEASE_MAJOR}.${RELEASE_MINOR}${RELEASE_PATCH}${RELEASE_RC}"
+
+RELEASE_TAG="esdk-${RELEASE}"
 
 # Create a common log directory for all logs in this and sub-scripts
 LOGDIR=${basedir}/logs/${RELEASE}
@@ -52,5 +59,6 @@ mkdir -p ${RESDIR}
 
 # Export the environment variables
 export RELEASE
+export RELEASE_TAG
 export LOGDIR
 export RESDIR

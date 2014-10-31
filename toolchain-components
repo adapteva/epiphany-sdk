@@ -19,19 +19,22 @@
 
 # NOTE. This is a data file.
 
-# Format of each line is <component_dir>:<branch_or_tag_name>
+# Format of each line is <component_dir>:<branch_or_tag_name>:<repository>:<release_tag_prefix>
+# We need the release tag prefix for components in repositories where we pull
+# from more than one head. Currently this is only the case for components in
+# epiphany-binutils-gdb.
 
 # Comments and blank lines are ignored.
 
 # Main components
-gcc:epiphany-gcc-4.8-software-cache
-binutils:epiphany-binutils-2.23-software-cache
-gdb:epiphany-gdb-7.6
-newlib:epiphany-newlib-1.20-software-cache
-cgen:epiphany-cgen-1.1-software-cache
+gcc:epiphany-gcc-4.8-software-cache:epiphany-gcc
+binutils:epiphany-binutils-2.23-software-cache:epiphany-binutils-gdb:binutils-
+gdb:epiphany-gdb-7.6:epiphany-binutils-gdb:gdb-
+newlib:epiphany-newlib-1.20-software-cache:epiphany-newlib
+cgen:epiphany-cgen-1.1-software-cache:epiphany-cgen
 
 # Epiphany Multicore simulator
-gdb-multicore-sim:epiphany-gdb-7.6-multicore-sim
+gdb-multicore-sim:epiphany-gdb-7.6-multicore-sim:epiphany-binutils-gdb:gdb-multicore-sim-
 
 # At present we don't worry about the GCC infrastructure components being
 # pulled from git. Versions recorded as comments here.

@@ -25,9 +25,10 @@
 # -----------------------------------------------------------------------------
 # Usage:
 
-#     get-versions.sh <basedir> <logfile>
+#     get-versions.sh <basedir> <componentfile> <logfile>
 #                     [--auto-checkout | --no-auto-checkout]
 #                     [--auto-pull | --no-auto-pull]
+#                     [--release | --no-release]
 
 # We checkout the desired branch for each tool, but only if it is a git
 # repository.
@@ -72,6 +73,7 @@ logonly () {
 }
 
 
+
 ################################################################################
 #                                                                              #
 #			       Parse arguments                                 #
@@ -81,10 +83,13 @@ logonly () {
 # Default options
 basedir=$1
 shift
+componentfile=$1
+shift
 logfile=$1
 shift
 autocheckout="--auto-checkout"
 autopull="--auto-pull"
+release="--no-release"
 
 # Parse options
 until
@@ -98,9 +103,14 @@ case ${opt} in
 	autopull=$1
 	;;
 
+    --release | --no-release)
+	release=$1
+	;;
+
     ?*)
 	echo "Usage: get-versions.sh  [--auto-checkout | --no-auto-checkout]"
         echo "                        [--auto-pull | --no-auto-pull]"
+        echo "                        [--release | --no-release]"
 	exit 1
 	;;
 
@@ -111,6 +121,14 @@ esac
 do
     shift
 done
+
+# If we're building in release mode we need to checkout the correct release
+# tag for all packages. This is defined in define-release.sh
+# Set the release parameters
+if [ "x--release" = "x${release}" ]
+then
+    . ${basedir}/sdk/define-release.sh
+fi
 
 
 ################################################################################
@@ -149,11 +167,19 @@ IFS="
 # the neck not to find all the repo problems in one run.
 status="0"
 
-for line in `cat ${basedir}/sdk/component-versions | grep -v '^#' \
+for line in `cat ${basedir}/${componentfile} | grep -v '^#' \
                  | grep -v '^$'`
 do
     tool=`echo ${line} | cut -d ':' -f 1`
     branch=`echo ${line} | cut -d ':' -f 2`
+    repo=`echo ${line} | cut -d ':' -f 3`
+    release_prefix=`echo ${line} | cut -d ':' -f 4`
+
+    # Adjust branch if we're in release mode
+    if [ "x--release" = "x${release}" ]
+    then
+	branch=${release_prefix}${RELEASE_TAG}
+    fi
 
     # Select the tool dir
     if ! cd ${basedir}/${tool}
@@ -179,7 +205,7 @@ do
 	if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
 	then
 	    # Detached head. Checkout an arbitrary branch
-	    arb_br=`git branch | grep -v '^\*' | head -1`
+	    arb_br=`git branch | grep -v '^\*' | head -1 | tr -d " "`
 	    logonly "Note: detached HEAD, interim checkout of ${arb_br}"
 	    if ! git checkout ${arb_br} >> ${logfile} 2>&1
 	    then

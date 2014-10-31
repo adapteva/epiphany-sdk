@@ -30,8 +30,9 @@
 #
 #	  ./install-sdk.sh [-c | --host <arch triplet>]
 #					 [-C | --clean]
-#					 [-b | --bsp <bsp_name> ]
-#					 [-d | --debug | -r | --release]
+#					 [-b | --bsp <bsp_name>]
+#					 [--debug | --no-debug]
+#					 [--release | --no-release]
 #					 [-l | --esdklibs <path> ]
 #					 [-p | --esdkpath | --prefix <path>]
 #					 [-h | --help]
@@ -61,12 +62,16 @@
 
 #	 Clean before building
 
-# -d
-# --debug
-# -r
-# --release
+
+# --debug | --no-debug
 
 #	 Install the debug or release versions of the tools (default is release).
+
+
+# --release | --no-release
+
+# Use release tags from define-version.sh
+
 
 # -l <path>
 # --esdklibs <path>
@@ -134,6 +139,10 @@ basedir=`(cd "$d/.." && pwd)`
 # Set the release parameters
 . ${basedir}/sdk/define-release.sh
 
+# Set up a clean log
+logfile=${LOGDIR}/build-$(date -u +%F-%H%M).log
+rm -f "${logfile}"
+echo "Logging to ${logfile}"
 
 
 # Default values
@@ -161,10 +170,14 @@ BRANCH="master"
 # Default version to install
 BLD_VERSION=Release
 
+# Checkout release tags from define-relase.sh
+do_release="--no-release"
+
 # Parse options
-getopt_string=`getopt -n install-sdk -o b:c:Cdrl:p:n:x:h \
+getopt_string=`getopt -n install-sdk -o b:c:Cl:p:n:x:h \
 				   -l host: \
-				   -l debug,release -l help -l version \
+				   -l debug -l no-debug -l help -l version \
+				   -l release -l no-release \
 				   -l bsp: -l bldname: -l branch: -l esdklibs: -l esdkpath:,prefix: \
 				   -l clean \
 				   -s sh -- "$@"`
@@ -188,12 +201,16 @@ do
 		BSP=$1
 		;;
 
-	-d|--debug)
+	--debug)
 		BLD_VERSION=Debug
 		;;
 
-	-r|--release)
+	--no-debug)
 		BLD_VERSION=Release
+		;;
+
+	--release | --no-release)
+		do_release="$1"
 		;;
 
 	-l|--esdklibs)
@@ -221,7 +238,7 @@ do
 		echo "Usage: ./build-sdk.sh [-c | --host <arch triplet>]"
 			echo "						[-b | --bsp <bsp_name> ]"
 			echo "						[-C | --clean ]"
-			echo "						[-d | --debug | -r | --release]"
+			echo "						[--debug | --no-debug]"
 			echo "						[-l | --esdklibs <path> ]"
 			echo "						[-p | --esdkpath | --prefix <path>]"
 			echo "						[-n | --bldname]"
@@ -407,6 +424,19 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 		printf "ESDKLIBS pat was provided on the command line\n"
 		exit 1
 	fi
+fi
+
+
+# Checkout and pull repos if necessary
+# TODO: Add flags for autopull and autocheckout
+# TODO: Move to basedir
+autopull="--auto-pull"
+autocheckout="--auto-checkout"
+if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/sdk-components \
+     ${logfile} ${auto_pull} ${auto_checkout} ${do_release}
+then
+    echo "ERROR: Could not get correct versions of tools"
+    exit 1
 fi
 
 # Copy top files

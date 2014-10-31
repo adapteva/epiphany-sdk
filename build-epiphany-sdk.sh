@@ -34,7 +34,10 @@ BRANCH="master"
 # Likel value (with -c) if cross-building on Ubuntu is "arm-linux-gnueabihf"
 ARCH_TRIPLET=""
 
-while getopts :a:c:Cdr:t:h arg; do
+# Whether we should check out release tags defined in define-release.sh
+do_release="--no-release"
+
+while getopts :a:c:Cdr:Rt:h arg; do
 	case $arg in
 
 	a)
@@ -54,14 +57,16 @@ while getopts :a:c:Cdr:t:h arg; do
 		;;
 
 	r)
+		have_rev_arg="yes"
 		REV=$OPTARG
 		;;
 
-	l)
-		ESDK_LIBS=$OPTARG
+	R)
+		do_release="--release"
 		;;
-		
+
 	t)
+		have_branch_arg="yes"
 		BRANCH=$OPTARG
 		;;
 
@@ -72,6 +77,7 @@ while getopts :a:c:Cdr:t:h arg; do
 		echo "    [-C]: Clean before start building."
 		echo "    [-d]: Enable building with debug symbols."
 		echo "    [-r <revision>]: The revision string for the SDK. Default $REV"
+		echo "    [-R]: Do release build. Use define-release.sh to get right tags"
 		echo "    [-t <tag_name>]: The tag name (or branch name) for the SDK sources. Default $BRANCH"
 		echo "    [-h]: Show usage"
 		echo ""
@@ -94,7 +100,37 @@ if [ -z $EPIPHANY_BUILD_HOME ]; then
 
 fi
 
-ESDK="${EPIPHANY_BUILD_HOME}/esdk.${REV}"
+# Define the basedir
+d=`dirname "$0"`
+basedir=`(cd "$d/.." && pwd)`
+
+
+# Check args.
+if [ "x--release" = "x${do_release}" ]
+then
+	if [ "xyes" = "x${have_rev_arg}" ]
+	then
+		echo "You cannot specify both release mode (-R) and revison (-r)"
+		exit 1
+	fi
+	if [ "xyes" = "x${have_branch_arg}" ]
+	then
+		echo "You cannot specify both release mode (-R) and branch (-t)"
+		exit 1
+	fi
+fi
+
+if [ "x--release" = "x${do_release}" ]
+then
+	# Set the release parameters
+	. ${basedir}/sdk/define-release.sh
+	BRANCH=${RELEASE_TAG}
+else
+	RELEASE=${REV}
+fi
+
+
+ESDK="${EPIPHANY_BUILD_HOME}/esdk.${RELEASE}"
 HOSTNAME="host.${ARCH}"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.${ARCH}"
@@ -115,7 +151,7 @@ echo ""
 echo "Build settings:"
 echo ""
 echo "    Target architecture:          ${ARCH}"
-echo "    Build Revision:               ${REV}"
+echo "    Build version:                ${RELEASE}"
 echo "    Build from branch or tag:     ${BRANCH}"
 echo ""
 
@@ -133,7 +169,7 @@ if [ ! -d ../esdk/tools/${GNUNAME}/ ]; then
 fi
 
 # Create toolchain symbolic links (force overwrite if exists)
-ln -sTf "esdk.${REV}" ${EPIPHANY_BUILD_HOME}/esdk
+ln -sTf "esdk.${RELEASE}" ${EPIPHANY_BUILD_HOME}/esdk
 ln -sTf ${HOSTNAME} ${ESDK}/tools/host
 ln -sTf ${GNUNAME}  ${ESDK}/tools/e-gnu
 
@@ -168,7 +204,7 @@ fi
 multicore_sim_str="--multicore-sim"
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-	if ! ./download-toolchain.sh ${multicore_sim_str} --clone; then
+	if ! ./download-toolchain.sh ${multicore_sim_str} ${do_release} --clone; then
 
 		printf "\nAborting...\n"
 		exit 1
@@ -176,6 +212,7 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 
 	#Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
+		${do_release} \
 		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
@@ -183,6 +220,7 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 fi
 
+# TODO: Move to basedir
 if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 	# Clone the parallella Linux source tree
 	git clone https://github.com/parallella/parallella-linux.git -b main
@@ -191,8 +229,10 @@ if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 fi
 
 # build the epiphany-libs and install the SDK
-if ! ./install-sdk.sh -n $REV -x $BRANCH ${host_str} ${sdk_debug_str} \
-	${sdk_clean_str}; then
+# TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH} when we say
+# --release.
+if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} ${do_release} \
+	${host_str} ${sdk_debug_str} ${sdk_clean_str}; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
 	exit 1

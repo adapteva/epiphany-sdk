@@ -1,3 +1,35 @@
+2014-10-31  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Add a release (-R) flag. This flag will
+	propagate (as --release) through the whole build and ensure that
+	the right release tag, defined in 'define-release.sh', is checked
+	out for all components.
+	* build-toolchain.sh: Support --release flag. Pass it on to
+	get-versions.sh. Also pass 'toolchain-components' to get-versions.sh
+	* component-versions: Rename to 'toolchain-components'.
+	* toolchain-components: Add more detailed definitions of
+	toolchain components.
+	* sdk-components: New file. Add definitions for epiphany-libs and
+	parallella-linux.
+	* define-release.sh: Slight change of version numbering. Add
+	comments. Export RELEASE_TAG.
+	* download-toolchain.sh: Support release flag. Replace hardcoded
+	component downloads with one call to new download_components
+	function.
+	(github_tool): Add (optional) release prefix paramater. Adjust for
+	tag release prefix parameter (if any) when "--release" is set.
+	We need to do this for repositories with multiple heads (currently
+	only 'epiphany-binutils-gdb'.
+	(download_components): New function. It will download all
+	toolchain components defined in 'toolchain-components'.
+	* get-versions.sh: Add mandatory componentfile argument. Support
+	release flag. Adjust release prefix parameter if needed when in
+	release mode.
+	* install-sdk.sh: Remove -d flag. Rename --release flag to
+	--no-debug. Add new --release flag for release mode. Use
+	get-components.sh to checkout right version SDK components defined
+	in 'sdk-components'.
+
 2014-10-30  Ola Jeppsson  <ola@adapteva.com>
 
 	* setup.sh: Add MANPATH
