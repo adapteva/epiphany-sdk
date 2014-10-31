@@ -175,6 +175,10 @@ do
     repo=`echo ${line} | cut -d ':' -f 3`
     release_prefix=`echo ${line} | cut -d ':' -f 4`
 
+    # We can use the original branch name as a hint if we're in detached head.
+    # It should be close to what we want and speed things up.
+    origbranch=${branch}
+
     # Adjust branch if we're in release mode
     if [ "x--release" = "x${release}" ]
     then
@@ -201,17 +205,30 @@ do
     then
 	logterm "Fetching ${tool}"
 
-        # See note below why two expressions are requied.
+	# See note below why two expressions are requied.
 	if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
 	then
-	    # Detached head. Checkout an arbitrary branch
-	    arb_br=`git branch | grep -v '^\*' | head -1 | tr -d " "`
-	    logonly "Note: detached HEAD, interim checkout of ${arb_br}"
-	    if ! git checkout ${arb_br} >> ${logfile} 2>&1
+	    # Try to guess a good branch with a working tree similar to the
+	    # tag's
+	    if [ "x${origbranch}" != "x${branch}" ]
 	    then
-		logterm "ERROR (versions): Failed interim checkout"
-		status="1"
-		continue
+		git checkout ${origbranch} >> ${logfile} 2>&1 || true
+	    fi
+
+	    # Check if repo is still in detached head
+	    if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
+	    then
+		# Detached head. Checkout an 'arbitrary' branch...
+		# ... but it cannot be a remote name, or HEAD etc. ...
+		arb_br=$(basename $(git branch -a | sed 's,^[ ]*,,g' \
+		    | cut -f1 -d " " | grep -v '^\*' | grep -v HEAD | head -1 ))
+		logonly "Note: detached HEAD, interim checkout of ${arb_br}"
+		if ! git checkout ${arb_br} >> ${logfile} 2>&1
+		then
+		    logterm "ERROR (versions): Failed interim checkout"
+		    status="1"
+		    continue
+		fi
 	    fi
 	fi
 

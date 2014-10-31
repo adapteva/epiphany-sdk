@@ -1,5 +1,13 @@
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
 
+	* get-versions.sh: Fix arbitrary branch checkout failures when
+	we're in detached state. If possible, use the original branch
+	name [which originates from a components definition file so it better
+	exist] before adjusting for release tag, as a first guess. That
+	should be better than checking out an arbitrary branch performance-wise.
+
+2014-10-31  Ola Jeppsson  <ola@adapteva.com>
+
 	* setup.csh: Fix undefined MANPATH warning
 
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
