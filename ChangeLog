@@ -1,5 +1,11 @@
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
 
+	* Create 2014.11 branch
+	* define-release.sh: Bump version
+	* sdk-components: Bump epiphany-libs branch
+
+2014-10-31  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Add a release (-R) flag. This flag will
 	propagate (as --release) through the whole build and ensure that
 	the right release tag, defined in 'define-release.sh', is checked
