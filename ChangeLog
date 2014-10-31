@@ -1,5 +1,9 @@
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
 
+	* setup.csh: Fix undefined MANPATH warning
+
+2014-10-31  Ola Jeppsson  <ola@adapteva.com>
+
 	* Create 2014.11 branch
 	* define-release.sh: Bump version
 	* sdk-components: Bump epiphany-libs branch
