@@ -137,6 +137,7 @@ GNUNAME="e-gnu.${ARCH}"
 GNU="${ESDK}/tools/${GNUNAME}"
 EPIPHANY_HOME=$ESDK
 
+
 echo '********************************************'
 echo '************ Epiphany SDK Build ************'
 echo '********************************************'
@@ -197,6 +198,21 @@ else
 	sdk_clean_str=""
 fi
 
+# If we're building for same host buildmachine the toolchain will naturally be
+# installed to ${GNU}. Otherwise install into builds/
+if [ "x${ARCH}" = "x$(uname -m)" ]
+then
+    id_buildarch_toolchain="${GNU}"
+    buildarch_install_dir_str=""
+else
+    id_buildarch_toolchain=${EPIPHANY_BUILD_HOME}/builds/id-$(uname -m)-${RELEASE}-toolchain
+    buildarch_install_dir_str="--install-dir-build ${id_buildarch_toolchain}"
+fi
+
+# install-sdk.sh must have an Epiphany toolchain in the PATH
+export PATH="${id_buildarch_toolchain}/bin:${PATH}"
+
+
 # TODO: We only want multicore-sim for x86_64 but we don't have the
 # infrastructure for checking host arch in this file yet. However,
 # 'build-toolchain.sh' will emit a warning and refuse to build it for hosts
@@ -210,8 +226,9 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 		exit 1
 	fi
 
-	#Build the toolchain (this will take a while)
+	# Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
+		${buildarch_install_dir_str} \
 		${do_release} \
 		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"
@@ -228,9 +245,11 @@ if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
 	export PARALLELLA_LINUX_HOME=$PWD/parallella-linux
 fi
 
+
 # build the epiphany-libs and install the SDK
 # TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH} when we say
 # --release.
+
 if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} ${do_release} \
 	${host_str} ${sdk_debug_str} ${sdk_clean_str}; then
 	printf "The Epiphany SDK build failed!\n"

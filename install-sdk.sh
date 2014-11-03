@@ -125,6 +125,18 @@ getarch () {
     echo ${arch}
 }
 
+# Check if toolchain is present.
+
+# @param[in] $1  Toolchain prefix
+# @return        Returns 0 on success. Anything else indicates failure.
+check_toolchain () {
+    local prefix
+    prefix=$1
+
+    (which ${prefix}gcc && which ${prefix}as &&
+     which ${prefix}ld  && which ${prefix}ar) >/dev/null
+}
+
 
 # -----------------------------------------------------------------------------
 #
@@ -340,27 +352,30 @@ GNU="${ESDK}/tools/${GNUNAME}"
 # Add Epiphany and host GNU tool to path
 # Make sure we include the path to the right tools if we do canadian cross.
 if [ "x${build_arch}" = "x${host_arch}" ]; then
-	PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
-	PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
+    PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
+    PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
 else
+    # Check if we have toolchain in path before we set PATH
+    if ! check_toolchain "epiphany-elf-" 2>/dev/null
+    then
+	echo "Warning: Epiphany toolchain not in PATH. Will try to guess..."
 	# Assume tools are installed here. This is what build-toolchain.sh does
 	PATH="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}/bin:${PATH}"
+    fi
 fi
 
 export EPIPHANY_PREFIX EPIPHANY_HOME PATH
 
 
 # Check that we have all build tools
-if ! (which epiphany-elf-gcc && which epiphany-elf-as \
-    && which epiphany-elf-ld && which epiphany-elf-ar) > /dev/null
+if ! check_toolchain "epiphany-elf-"
 then
     echo "Epiphany toolchain not found on build machine"
     exit 1
 fi
 
 if [ "x" != "x${CROSS_COMPILE}" ]; then
-    if ! (which ${CROSS_COMPILE}gcc && which ${CROSS_COMPILE}as \
-	&& which ${CROSS_COMPILE}ld && which ${CROSS_COMPILE}ar) > /dev/null
+    if ! check_toolchain "${CROSS_COMPILE}"
     then
 	echo "Cross-compile toolchain not found on build machine"
 	exit 1

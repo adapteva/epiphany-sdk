@@ -1,3 +1,18 @@
+2014-10-03  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: If we are cross compiling, instruct
+	'build-toolchain.sh' to install the build-host toolchain inside
+	the 'builds' directory. Do not install to '/opt/adapteva'. This
+	would break the build when the user did not have write permissions.
+	Also, ensure that the toolchain is in PATH so 'install-sdk.sh'
+	will find it.
+	* build-toolchain.sh: Remove an erroneous and effectively no-op PATH
+	statement.
+	* install-sdk.sh: Only guess Epiphany toolchain's path when it is
+	not already in the path.
+	(check_toolchain): Helper function. Checks if a specific toolchain is
+	available.
+
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
 
 	* get-versions.sh: Fix arbitrary branch checkout failures when

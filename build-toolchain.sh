@@ -718,11 +718,6 @@ fi
 
 parallel="-j ${jobs} -l ${load}"
 
-# If we are building a cross-compiler, we should look in the build install
-# directory to see if they already exist. So add this dir to the search PATH.
-PATH="${PATH}:${id_build}"
-export PATH
-
 logterm "START BUILD: $(date)"
 
 logonly "Build directory (build arch):   ${bd_build}"
@@ -944,6 +939,7 @@ fi
 # Put the build directory toolchain on our PATH. Then we will find it
 # if we have already built it.
 PATH=${id_build}/bin:$PATH
+export PATH
 
 if [ "x${host}" != "x" ]
 then
