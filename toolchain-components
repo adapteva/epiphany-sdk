@@ -27,14 +27,14 @@
 # Comments and blank lines are ignored.
 
 # Main components
-gcc:epiphany-gcc-4.8-software-cache:epiphany-gcc
-binutils:epiphany-binutils-2.23-software-cache:epiphany-binutils-gdb:binutils-
-gdb:epiphany-gdb-7.6:epiphany-binutils-gdb:gdb-
-newlib:epiphany-newlib-1.20-software-cache:epiphany-newlib
-cgen:epiphany-cgen-1.1-software-cache:epiphany-cgen
+gcc:epiphany-gcc-4.8-software-cache:epiphany-gcc:epiphany-gcc-
+binutils:epiphany-binutils-2.23-software-cache:epiphany-binutils-gdb:epiphany-binutils-
+gdb:epiphany-gdb-7.6:epiphany-binutils-gdb:epiphany-gdb-
+newlib:epiphany-newlib-1.20-software-cache:epiphany-newlib:epiphany-newlib-
+cgen:epiphany-cgen-1.1-software-cache:epiphany-cgen:epiphany-cgen-
 
 # Epiphany Multicore simulator
-gdb-multicore-sim:epiphany-gdb-7.6-multicore-sim:epiphany-binutils-gdb:gdb-multicore-sim-
+gdb-multicore-sim:epiphany-gdb-7.6-multicore-sim:epiphany-binutils-gdb:epiphany-gdb-multicore-sim-
 
 # At present we don't worry about the GCC infrastructure components being
 # pulled from git. Versions recorded as comments here.

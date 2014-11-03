@@ -1,3 +1,10 @@
+2014-11-03  Ola Jeppsson  <ola@adapteva.com>
+
+	* README: Update version numbers and URLs.
+	* define-release.sh: Bump to -rc2
+	* toolchain-components: Fix release tag prefixes
+	* sdk-components: Likewise
+
 2014-10-03  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh: If we are cross compiling, instruct
