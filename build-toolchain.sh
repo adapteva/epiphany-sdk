@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Copyright (C) 2009 - 2013 Embecosm Limited
+# Copyright (C) 2009 - 2014 Embecosm Limited
 
 # Contributor Joern Rennecke <joern.rennecke@embecosm.com>
 # Contributor Jeremy Bennett <jeremy.bennett@embecosm.com>
 # Contributor Simon Cook <simon.cook@embecosm.com>
 
-# This file is a script to build key elements of the Epiphany tool chain
+# This file is a script to build the Epiphany tool chain
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -19,213 +19,1302 @@
 # more details.
 
 # You should have received a copy of the GNU General Public License along
-# with this program.  If not, see <http://www.gnu.org/licenses/>.          
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Usage: ./build-toolchain.sh [ --build-dir <build_directory>]
-#                 [--enable-cgen-maint]
-#                 [ --unified-dir <unified_directory> ]
-#                 [ --install-dir <install_directory> ]
-#                 [ --preserve-unisrc ]
-# --build-dir: specify name for build directory.
-# --enable-cgen-maint: pass down to configure, for rebuilding
-#                    opcodes / binutils after a change to the cgen description.
-# --unified-dir: specify name for unified src directory.
-# --install-dir: specify name for install directory.
-# --preserve-unisrc: don't delete old unisrc directories.
+# This is a convenience wrapper for the GNU toolchain build files.
 
-# Check for relative directory and makes it absolute
-absolutedir() {
-  case ${1} in
-    /*) echo "${1}" ;;
-    *)  echo "${PWD}/${1}";;
-  esac
+# There are two possible ways of using this script
+
+# 1.  The compiler is intended to run on the same machine on which it is built
+#     (typically an Intel based PC or the ARM based Parallella board). The
+#     compiler will generate code for the Epiphany processor.  Since the code
+#     is to run on a different machine to the platform on which the compiler
+#     is run, this is known as a *cross compiler*.
+
+# 2.  The compiler is intended to run on a *different* machine (known as the
+#     host) to that on which it is built.  For Parallella this is invariably
+#     done on an Intel based PC to create a compiler which will run on the ARM
+#     based Parallella board where it will generate code for the Epiphany
+#     processor.  The compiler is built on one machine to be hosted on a
+#     second machine to generate code for a third machine.  This is known as a
+#     *Canadian cross compiler".
+
+# In this script method 2 is trigged by setting the --host parameter to
+# something other than the build architecture.
+
+# When reading the comments in this script it is useful to be clear about
+# three terms:
+
+# build machine
+
+#     The platform on which this script is being run to build the compiler.
+
+# host machine
+
+#     The platform on which the generated compiler will be run (invariably the
+#     Parallella ARM platform).
+
+# target machine
+
+#     The platform for which the compiler will generate code. In this case for
+#     the Epiphany processor.
+
+# On this notation, method 1 of using this script has build and host machines
+# identical.
+
+# Invocation:
+
+#     ./build-toolchain.sh [--build-dir <dir>]
+#                          [--build-dir-build <dir>]
+#                          [--build-dir-host <dir>]
+#                          [--host <host-triplet>]
+#                          [--release | --no-release]
+#                          [--install-dir <dir>]
+#                          [--install-dir-build <dir>]
+#                          [--install-dir-host <dir>]
+#                          [--symlink-dir <dir>]
+#                          [--datestamp-install]
+#                          [--datestamp-install-build]
+#                          [--datestamp-install-host]
+#                          [--clean | --no-clean]
+#                          [--clean-build | --no-clean-build]
+#                          [--clean-host | --no-clean-host]
+#                          [--preserve-unisrc | --rebuild-unisrc]
+#                          [--unified-dir <dir>]
+#                          [--auto-pull | --no-auto-pull]
+#                          [--auto-checkout | --no-auto-checkout]
+#                          [--jobs <count>] [--load <load>] [--single-thread]
+#                          [--gmp | --no-gmp]
+#                          [--mpfr | --no-mpfr]
+#                          [--mpc | --no-mpc]
+#                          [--isl | --no-isl]
+#                          [--cloog | --no-cloog]
+#                          [--target-cflags <flags>]
+#                          [--config-extra <flags>]
+#                          [--disable-werror | --enable-werror]
+#                          [--enable-cgen-maint]
+#                          [--help | -h]
+
+# A number of arguments specify directories relative to the base directory.
+# This is the parent directory of the directory containing this script.  Other
+# arguments use the release name, which is set up in the environment variable
+# RELEASE.  The meanings of the various options and their defaults are as
+# follows.
+
+# --build-dir-build <dir>
+
+#     The directory in which the tool chain to run on the *build* machine will
+#     be built.  The default is builds/bd-epiphany-$RELEASE in the base
+#     directory.
+
+# --build-dir <dir>
+# --build-dir-host <dir>
+
+#     The directory in which the tool chain to run on the *host* machine will
+#     be built if needed.  The default is builds/bd-epiphany-host-$RELEASE in
+#     the base directory.  This argument is only relevant if --host is set to
+#     a triplet whose architecture differs from the build machine.
+
+# --host <host-triplet>
+
+#     If specified, the tool chain will be built to run on the designated
+#     host.  This is of most value to users wishing to build the toolchain on
+#     a PC, but to run on the Parallella board.  Useful values are
+#     "arm-linux-gnu" on Fedora/Red Hat systems "arm-linux-gnueabihf" or
+#     "arm-linux-gnueabihf" on Ubuntu (the hf at the end signifying hardware
+#     floating point support, which Parallella has, and will yield a faster
+#     compiler).
+
+#     An Epiphany cross-compiler for the build machine is still needed (to
+#     build libraries). This will trigger building of GCC and binutils for the
+#     host unless those tools have been previously built, or are found in the
+#     existing search path.
+
+# --release | --no-release
+
+#     If --release is specified, use RELEASE_TAG specified define-release.sh
+#     for all packages. Default is --no-release
+
+
+# --install-dir-build <install_dir>
+
+#     The directory in which the tool chain to run on the *build* machine
+#     should be installed. If not specified, it will be installed in the
+#     /opt/adapteva/edsk.$RELEASE/tools/e-gnu.<build-arch> directory, where
+#     <build-arch> is the architecture name of the *build* machine (so should
+#     be one of x86, x86_64 or armv7l).
+
+# --install-dir <install_dir>
+# --install-dir-host <install_dir>
+
+#     The directory in which the tool chain to run on the *host* machine
+#     should be installed if needed. If not specified, it will be installed in
+#     the /opt/adapteva/edsk.$RELEASE/tools/e-gnu.<host-arch> directory, where
+#     <host-arch> is the architecture name of the *host* machine (so should
+#     usually be armv7l).  This argument is only relevant if --host is set to
+#     a triplet whose architecture differs from the build machine.
+
+# --symlink-dir <symlink_dir>
+
+#     If specified, the install directory will be symbolically linked to this
+#     directory.  It must be a plain relative directory name (no
+#     hierarchy). It defaults to e-gnu.  If a hierarchy is given, only the
+#     basename will be used.
+
+# --datestamp-install-build
+
+#     If specified, this will insert a date and timestamp in the install
+#     directory name for the *build* architecture.  If the install directory
+#     has the default name, the datestamp will be inserted after the $RELEASE,
+#     otherwise it will be appended to the name.
+
+# --datestamp-install
+# --datestamp-install-host
+
+#     If specified, this will insert a date and timestamp in the install
+#     directory name for the *host* architecture.  If the install directory
+#     has the default name, the datestamp will be inserted after the $RELEASE,
+#     otherwise it will be appended to the name.
+
+# --clean-build | --no-clean-build
+
+#     If --clean-build is specified, delete any previous build directory for
+#     the *build* machine. Default --no-clean-build.
+
+# --clean | --no-clean
+# --clean-host | --no-clean-host
+
+#     If --clean or --clean-host is specified, delete any previous host
+#     directory for the *host* machine. Default --no-clean-host.  This
+#     argument is only relevant if --host is set to a triplet whose
+#     architecture differs from the build machine.
+
+# --auto-pull | --no-auto-pull
+
+#     If specified, a "git pull" will be attempted in each component
+#     repository after checkout to ensure the latest code is in use.  Default
+#     is --auto-pull.  Note that pulling will only be attempted in components
+#     which are git repositories, so this may safely be used, even if some
+#     component trees are not git repositories.
+
+# --auto-checkout | --no-auto-checkout
+
+#     If specified, a "git checkout" will be attempted in each component
+#     repository to ensure the correct branch is checked out.  Default is
+#     --auto-checkout.  Note that checkout will only be attempted in
+#     components which are git repositories, so this may safely be used, even
+#     if some component trees are not git repositories.
+
+# --preserve-unisrc | --rebuild-unisrc
+
+#     If --preserve-unisrc is specified, use an existing unified source tree
+#     if it exists. If --rebuild-unisrc is specified blow away any existing
+#     source tree and rebuild it.  Default --preserve-unisrc.
+
+# --unified-dir <dir>
+
+#     Specify the name of the unified directory.  The default is
+#     unisrc-<release>, where release is the name of the release being built
+#     (defined by the branch of this repository) in the base directory.
+
+# --jobs <count>
+
+#     Specify that parallel make should run at most <count> jobs. The default
+#     is one more than the number of processor cores shown by /proc/cpuinfo.
+
+# --load <load>
+
+#     Specify that parallel make should not start a new job if the load
+#     average exceed <load>. The default is one more than the number of
+#     processor cores shown by /proc/cpuinfo.
+
+# --single-thread
+
+#     Equivalent to --jobs 1 --load 1000. Only run one job at a time, but run
+#     whatever the load average.
+
+# --gmp | --no-gmp
+# --mpfr | --no-mpfr
+# --mpc | --no-mpc
+# --isl | --no-isl
+# --cloog | --no-cloog
+# --ncurses | --no-ncurses
+
+#     Indicate that the corresponding GCC infrastructure component exists as a
+#     source directory within the base directory and should be linked into the
+#     unified source directory.  With the "--no-" versions, indicate the
+#     component is not available as a source directory, and that the compiler
+#     should rely on the installed developer package for the relevant headers
+#     and libraries.
+
+#     Note that in this case it is the *developer* version of the package that
+#     must be installed.  Specifiying --no-gmp, --no-mpfr or --no-mpc if the
+#     corresponding developer package is not available will cause tool chain
+#     building to fail. Specifying --no-isl or --no-cloog when the developer
+#     package is not available will cause some GCC optimizatiosn to be
+#     omitted.  Specifying --no-ncurses when the developer cross-compiled
+#     package is not available will cause a Canadian Cross build (i.e. with
+#     different build and host architectures) to fail.
+
+#     Defaults --gmp --mpfr --mpc --isl --cloog --ncurses.
+
+# --target-cflags <flags>
+
+#     Specify C flags to be used when building target libraries (libgcc.a,
+#     libc.a and libm.a).  For example specifying -Os -g would cause libraries
+#     to be built optimized for small size and suitable for debugging.
+
+#     The default "-O2 -g" is because constant merging in the assembler/linker
+#     does not work.
+
+# --config-extra <flags>
+
+#     This is an option for developers, allowing additional flags to be
+#     specified when configuring the tool chain.
+
+# --disable-werror | --enable-werror
+
+#     This is an option for developers, allowing them to compile the tool
+#     chain with the -Werror option.  This is generally good practice for such
+#     users, to ensures any new code is as robust as possible.  However it is
+#     not recommended for general use, since the wide variety and age of
+#     compilers used mean that errors will be triggered, just due to historic
+#     incompatibilities, but which have no impact on the quality of the
+#     compiler.
+
+# --enable-cgen-maint
+
+#     This is an option for developers allowing the CGEN tables to be
+#     rebuilt.  This is required after a change to the CGEN description, so
+#     the new specifications are included in the assembler/disassembler and
+#     simulator.
+
+# --help | -h
+
+#     Print out a short message about usage.
+
+# The script returns 0 if the tool chain was successfully built, and 1
+# otherwise.  Note that some errors do not prevent a tool chain being built,
+# so will generate warning messages in the log, but the script will still
+# return 0.
+
+
+################################################################################
+#                                                                              #
+#			       Shell functions                                 #
+#                                                                              #
+################################################################################
+
+# Function to check for relative directory and makes it absolute
+
+# @param[in] $1  The directory to make absolute if necessary.
+absdir() {
+    case ${1} in
+
+	/*)
+	    echo "${1}"
+	    ;;
+
+	*)
+	    echo "${PWD}/${1}"
+	    ;;
+    esac
 }
 
-# Find the absolute path of our directory
-basedir=`dirname "$0"`
-basedir=`(cd "${basedir}/.." && pwd)`
 
-# Ensure that everything has been downloaded correctly.
-ensure_directory_exists()
-{
-  if [ ! -d "${basedir}/${1}" ]; then
-    echo "Error: ${basedir}/${1} seems to be missing. Please check https://github.com/adapteva/epiphany-sdk/wiki/Downloading-the-SDK for instructions.";
-    exit 1;
-  fi
+# Check a component directory exists in the basedir
+
+# @param[in] $1 the directory to check
+
+# @return  0 (success) if the directory is there and readable, 1 (failure)
+#          otherwise.
+check_dir_exists () {
+    if [ ! -d "${basedir}/${1}" ]
+    then
+	logterm "ERROR: Component directory ${basedir}/${1} missing."
+	return;
+    fi
 }
 
-ensure_directory_exists "gcc"
-ensure_directory_exists "binutils"
-ensure_directory_exists "gcc/mpc"
-ensure_directory_exists "gcc/mpfr"
-ensure_directory_exists "gcc/gmp"
-ensure_directory_exists "gdb"
-ensure_directory_exists "newlib"
-ensure_directory_exists "cgen"
-ensure_directory_exists "sdk"
 
-component_dirs="${basedir}/gcc ${basedir}/binutils ${basedir}/gdb ${basedir}/newlib ${basedir}/cgen"
-unified_src="${basedir}/srcw"
-build_dir="${basedir}/bld-epiphany"
-install_dir="${basedir}/INSTALL"
-preserveunisrc=0
+# Convenience function to copy a message to the log and terminal
 
-# The assembler and/or linker are broken so that constant merging doesn't work.
-export CFLAGS_FOR_TARGET='-O2 -g'
-
-
-# Prints usage to terminal
-usage() {
-  echo " Usage: $0 [ --build-dir <build_directory>]"
-  echo "                 [--enable-cgen-maint]"
-  echo "                 [ --unified-dir <unified_directory> ]"
-  echo "                 [ --install-dir <install_directory> ]"
-  echo " --build-dir: specify name for build directory."
-  echo " --enable-cgen-maint: pass down to configure, for rebuilding"
-  echo "                    opcodes / binutils after a change to the cgen description."
-  echo " --unified-dir: specify name for unified src directory."
-  echo " --install-dir: specify name for install directory."
-  echo " --preserve-unisrc: don't delete unisrc directories."
+# @param[in] $1  The message to log
+logterm () {
+    echo $1 | tee -a ${logfile}
 }
 
-# Displays a message if the build fails
-failedbuild() {
-  echo " **************************************************"
-  echo " The SDK build has failed."
-  echo " The log for this build can be found at"
-  echo " ${logfile}"
-  echo " For support, visit the forums or documentation at:"
-  echo "  * http://forums.parallella.org/viewforum.php?f=13"
-  echo "  * https://github.com/adapteva/epiphany-sdk/wiki"
-  echo " **************************************************"
+
+# Convenience function to copy a message to the log only
+
+# @param[in] $1  The message to log
+logonly () {
+    echo $1 >> ${logfile}
 }
 
-# We choose the amount of parallelism to use depending on the architecture
-case $(uname -m 2>&1) in
-  x86_64|i?86)
-    make_load="-j -l `(echo processor;cat /proc/cpuinfo 2>/dev/null || echo processor)|grep -c processor`" ;;
-  armv*)
-    make_load="" ;;
-  ?*)
-    make_load="-j2 -l2" ;;
-esac
 
-CONFIG_EXTRA_OPTS=""
-# Parse Options
+# Get the architecture from a triplet.
+
+# This is the first field up to -, but with "arm" translated to "armv7l".
+
+# @param[in] $1  triplet
+# @return  The architecture of the triplet, but with arm translated to armv7l.
+getarch () {
+    triplet=$1
+
+    arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
+    if [ "x${arch}" = "xarm" ]
+    then
+	arch="armv7l"
+    fi
+
+    echo ${arch}
+}
+
+
+# Convenience function to exit with a suitable message.
+failedbuild () {
+  echo "Build failed. See ${logfile} for details."
+  exit 1
+}
+
+
+################################################################################
+#                                                                              #
+#			       Parse arguments                                 #
+#                                                                              #
+################################################################################
+
+# Define the basedir
+d=`dirname "$0"`
+basedir=`(cd "$d/.." && pwd)`
+
+# Set the release parameters
+. ${basedir}/sdk/define-release.sh
+
+# Set up a clean log
+logfile=${LOGDIR}/build-$(date -u +%F-%H%M).log
+rm -f "${logfile}"
+echo "Logging to ${logfile}"
+
+# Defaults
+bd_build=
+bd_host=
+host=
+id_build=
+id_host=
+staging_host=
+symlink_dir=e-gnu
+ds_build=
+ds_host=
+do_release="--no-release"
+do_clean_build="--no-clean-build"
+do_clean_host="--no-clean-host"
+auto_pull="--auto-pull"
+auto_checkout="--auto-checkout"
+rebuild_unisrc="--preserve-unisrc"
+unisrc_dir=${basedir}/unisrc-${RELEASE}
+jobs=
+load=
+do_gmp="--gmp"
+do_mpfr="--mpfr"
+do_mpc="--mpc"
+do_isl="--isl"
+do_cloog="--cloog"
+do_ncurses="--ncurses"
+
+do_multicore_sim="--no-multicore-sim"
+
+# The assembler and/or linker are broken so that constant merging doesn't
+# work.
+CFLAGS_FOR_TARGET="-O2 -g"
+config_extra=""
+disable_werror="--disable-werror"
+
+
 until
-  opt=$1
-  case ${opt} in
-    --build-dir)
-      build_dir=$(absolutedir "$2"); shift ;;
-    --enable-cgen-maint)
-      CONFIG_EXTRA_OPTS="$CONFIG_EXTRA_OPTS --enable-cgen-maint" ;;
+opt=$1
+case ${opt} in
+
+    --build-dir-build)
+	shift
+	bd_build=`absdir "$1"`
+	;;
+
+    --build-dir | --build-dir-host)
+	shift
+	bd_host=`absdir "$1"`
+	;;
+
+    --host)
+	shift
+	host="$1"
+	;;
+
+    --release | --no-release)
+	do_release="$1"
+	;;
+
+    --install-dir-build)
+	shift
+	id_build=`absdir "$1"`
+	;;
+
+    --install-dir | --install-dir-host)
+	shift
+	id_host=`absdir "$1"`
+	;;
+
+    --symlink-dir)
+	shift
+	# Force it to be simple name
+	symlink_dir="`basename $1`"
+	;;
+
+    --datestamp-install-build)
+	ds_build=-`date -u +%F-%H%M`
+	;;
+
+    --datestamp-install | --datestamp-install-host)
+	ds_host=-`date -u +%F-%H%M`
+	;;
+
+    --clean-build | --no-clean-build)
+	do_clean_build="$1"
+	;;
+
+    --clean)
+	do_clean_host="--clean-host"
+	;;
+
+    --no-clean)
+	do_clean_host="--no-clean-host"
+	;;
+
+    --clean-host | --no-clean-host)
+	do_clean_host="$1"
+	;;
+
+    --preserve-unisrc | --rebuild-unisrc)
+	rebuild_unisrc="$1"
+	;;
+
     --unified-dir)
-      unified_src=$(absolutedir "$2"); shift ;;
-    --install-dir)
-      install_dir=$(absolutedir "$2"); shift ;;
-    --preserve-unisrc)
-      preserveunisrc=1 ;;
+	shift
+	unisrc_dir="$1"
+	;;
+
+    --auto-pull | --no-auto-pull)
+	auto_pull="$1"
+	;;
+
+    --auto-checkout | --no-auto-checkout)
+	auto_checkout="$1"
+	;;
+
+    --jobs)
+	shift
+	jobs=$1
+	;;
+
+    --load)
+	shift
+	load=$1
+	;;
+
+    --single-thread)
+	jobs=1
+	load=1000
+	;;
+
+    --gmp | --no-gmp)
+	do_gmp="$1"
+	;;
+
+    --mpfr | --no-mpfr)
+	do_mpfr="$1"
+	;;
+
+    --mpc | --no-mpc)
+	do_mpc="$1"
+	;;
+
+    --isl | --no-isl)
+	do_isl="$1"
+	;;
+
+    --cloog | --no-cloog)
+	do_cloog="$1"
+	;;
+
+    --ncurses | --no-ncurses)
+	do_ncurses="$1"
+	;;
+
+    --multicore-sim | --no-multicore-sim)
+	do_multicore_sim="$1"
+	;;
+
+    --target-cflags)
+	shift
+	CFLAGS_FOR_TARGET="$1"
+	;;
+
+    --config-extra)
+	shift
+	config_extra="${config_extra} $1"
+	;;
+
+    --disable-werror | --enable-werror)
+	disable_werror="$1"
+	;;
+
+    --enable-cgen-maint)
+	config_extra="${config_extra} --enable-cgen-maint"
+	;;
+
     ?*)
-      usage; exit 0 ;;
+        echo "Usage: ./build-toolchain.sh [--build-dir <dir>]"
+        echo "             [--build-dir-build <dir>]"
+        echo "             [--build-dir-host <dir>]"
+        echo "             [--host <host-triplet>]"
+        echo "             [--install-dir <dir> ]"
+        echo "             [--install-dir-build <dir> ]"
+        echo "             [--install-dir-host <dir> ]"
+        echo "             [--symlink-dir <dir>]"
+        echo "             [--datestamp-install]"
+        echo "             [--datestamp-install-build]"
+        echo "             [--datestamp-install-host]"
+        echo "             [--clean | --no-clean]"
+        echo "             [--clean-build | --no-clean-build]"
+        echo "             [--clean-host | --no-clean-host]"
+        echo "             |--preserve-unisrc | --rebuild-unisrc]"
+        echo "             [--unified-dir <dir>]"
+        echo "             [--auto-pull | --no-auto-pull]"
+        echo "             [--auto-checkout | --no-auto-checkout]"
+        echo "             [--jobs <count>] [--load <load>] [--single-thread]"
+        echo "             [--gmp | --no-gmp]"
+        echo "             [--mpfr | --no-mpfr]"
+        echo "             [--mpc | --no-mpc]"
+        echo "             [--isl | --no-isl]"
+        echo "             [--cloog | --no-cloog]"
+        echo "             [--ncurses | --no-ncurses]"
+        echo "             [--target-cflags <flags>]"
+        echo "             [--config-extra <flags>]"
+        echo "             [--disable-werror | --enable-werror]"
+        echo "             [--enable-cgen-maint]"
+        echo "             [--help | -h]"
+	exit 0
+	;;
+
     *)
-      opt="";;
-  esac;
-  [ -z "${opt}" ]; do 
+	;;
+esac
+[ "x${opt}" = "x" ]
+do
     shift
 done
 
-# Clean up old builds
-rm -rf "${build_dir}"
+# Sort out Canadian cross stuff. First is it really a canadian cross
+build_arch=`uname -m`
 
-if test ${preserveunisrc} -eq 0; then
-  rm -rf "${unified_src}"
+if [ "x" != "x${host}" ]
+then
+    host_arch=`getarch ${host}`
+    if [ "x${host_arch}" = "x${build_arch}" ]
+    then
+	# Not really a Canadian Cross
+	host=
+    fi
+else
+    host_arch=${build_arch}
 fi
 
-# Set up a log
-logfile=${basedir}/build-$(date -u +%F-%H%M).log
-rm -f "${logfile}"
-
-echo "START BUILD: $(date)" >> ${logfile}
-echo "Build Started at $(date)"
-echo "Build Log: ${logfile}"
-echo " * This can be watched in another terminal via 'tail -f ${logfile}'"
-echo "Build Directory: ${build_dir}"
-echo "Install Directory: ${install_dir}"
-
-# Create unified source directory
-echo "Creating unified source" >> ${logfile}
-echo "=======================" >> ${logfile}
-echo "Creating unified source..."
-./symlink-all "${unified_src}" ${component_dirs} >> "${logfile}" 2>&1
-if [ $? != 0 ]; then
-  echo "Failed to create ${unified_src}."
-  failedbuild
-  exit 1
+# Create build directory names if needed.
+if [ "x${bd_build}" = "x" ]
+then
+    bd_build=${basedir}/builds/bd-${build_arch}-${RELEASE}
+fi
+if [ "x${bd_host}" = "x" ]
+then
+    bd_host=${basedir}/builds/bd-${host_arch}-${RELEASE}
 fi
 
-# Configure binutils, GCC, newlib and GDB
-echo "Configuring tools" >> "${logfile}"
-echo "=================" >> "${logfile}"
-echo "Configuring tools..."
-mkdir -p "${build_dir}" && cd "${build_dir}" \
-  && "${unified_src}/configure" --target=epiphany-elf \
-    --with-pkgversion="Epiphany toolchain (built `date +%Y%m%d`)" \
-    --with-bugurl=support-sdk@adapteva.com \
-    --enable-fast-install=N/A \
-    --enable-languages=c,c++ --prefix="${install_dir}" \
-    --with-headers="$(absolutedir ../newlib/newlib/libc/include)" \
-    --disable-gdbtk --disable-werror \
-    $CONFIG_EXTRA_OPTS >> "${logfile}" 2>&1
-if [ $? != 0 ]; then
-  echo "Error: Configure failed."
-  failedbuild
-  exit 1
+# Set up staging directory. This is where we install static libraries, include
+# files etc. that is needed for building, but we don't want in the SDK.
+staging_host=${bd_host}/staging
+
+
+# Set up install dirs. Four cases each time according to whether and install
+# dir and a datestamp have been set.
+if [ "x${id_build}" = "x" ]
+then
+    if [ "x${ds_build}" = "x" ]
+    then
+	# Default install directory without datestamp
+	id_build="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}"
+    else
+	# Default install directory with datestamp
+	id_build="/opt/adapteva/esdk.${RELEASE}-${ds_build}/tools/e-gnu.${build_arch}"
+    fi
+else
+    if [ "x${ds_build}" = "x" ]
+    then
+	# Custom install directory without datestamp
+	# No nothing
+	true
+    else
+	# Custom install directory with datestamp
+	id_build="${id_build}-${ds_build}"
+    fi
 fi
 
-# Build binutils, GCC, newlib and GDB
-echo "Building tools" >> "${logfile}"
-echo "==============" >> "${logfile}"
-echo "Building tools..."
-make $make_load all-build all-binutils all-gas all-ld all-gcc \
-    all-target-libgcc all-target-libgloss all-target-newlib \
-    all-target-libstdc++-v3 all-gdb all-sim >> "${logfile}" 2>&1
-if [ $? != 0 ]; then
-  echo "Error: Build failed."
+if [ "x${id_host}" = "x" ]
+then
+    if [ "x${ds_host}" = "x" ]
+    then
+	# Default install directory without datestamp
+	id_host="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${host_arch}"
+    else
+	# Default install directory with datestamp
+	id_host="/opt/adapteva/esdk.${RELEASE}-${ds_host}/tools/e-gnu.${host_arch}"
+    fi
+else
+    if [ "x${ds_host}" = "x" ]
+    then
+	# Custom install directory without datestamp
+	# No nothing
+	true
+    else
+	# Custom install directory with datestamp
+	id_host="${id_host}-${ds_host}"
+    fi
+fi
+
+# Add ${disable_werror} to ${config_extra}. Note that this argument takes
+# precedence, so don't try setting disable-werror in config_extra.
+config_extra="${config_extra} ${disable_werror}"
+
+# Default parallellism if none set.
+mem=`sed < /proc/meminfo -n -e 's/MemTotal:[ \n\t] *\([0-9]*\).*$/\1/p'`
+if [ "0${mem}" -le 2097152 ]
+then
+    # No parallelism if memory is small.
+    make_load=1
+else
+    make_load="`(echo processor; cat /proc/cpuinfo 2>/dev/null || echo processor) \
+           | grep -c processor`"
+fi
+
+if [ "x${jobs}" = "x" ]
+then
+    jobs=${make_load}
+fi
+
+if [ "x${load}" = "x" ]
+then
+    load=${make_load}
+fi
+
+parallel="-j ${jobs} -l ${load}"
+
+logterm "START BUILD: $(date)"
+
+logonly "Build directory (build arch):   ${bd_build}"
+logonly "Build directory (host arch):    ${bd_host}"
+logonly "Build architecture:             ${build_arch}"
+logonly "Release:                        ${do_release}"
+logonly "Host:                           ${host}"
+logonly "Host architecture:              ${host_arch}"
+logonly "Install directory (build arch): ${id_build}"
+logonly "Install directory (host arch):  ${id_host}"
+logonly "Symlink directory:              ${symlink_dir}"
+logonly "Datestamp (build arch):         ${ds_build}"
+logonly "Datestamp (host arch):          ${ds_host}"
+logonly "Clean (build arch):             ${do_clean_build}"
+logonly "Clean (host arch):              ${do_clean_host}"
+logonly "Automatic pull:                 ${auto_pull}"
+logonly "Automatic checkout:             ${auto_checkout}"
+logonly "Rebuild unified source:         ${rebuild_unisrc}"
+logonly "Unified source directory:       ${unisrc_dir}"
+logonly "Maximum jobs:                   ${jobs}"
+logonly "Maximum load:                   ${load}"
+logonly "Use GMP source:                 ${do_gmp}"
+logonly "Use MPFR source:                ${do_mpfr}"
+logonly "Use MPC source:                 ${do_mpc}"
+logonly "Use ISL source:                 ${do_isl}"
+logonly "Use Cloog source:               ${do_cloog}"
+logonly "Use ncurses source:             ${do_ncurses}"
+logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
+logonly "Extra config flags:             ${config_extra}"
+
+
+################################################################################
+#                                                                              #
+#	     Validate source and build unified source directory.               #
+#                                                                              #
+################################################################################
+
+
+# Work from the base directory.
+
+if ! cd ${basedir}
+then
+    logterm "ERROR: Unable to change to base directory ${basedir}."
+    failedbuild
+fi
+
+# Sanity check if we are trying to build a Canadian cross
+if [ "x" != "x${host}" ]
+then
+    if ! which ${host}-gcc >> ${logfile} 2>&1
+    then
+	logterm "ERROR: No cross-compiler for ${host} found"
+	failedbuild
+    fi
+
+    host_str="--host=${host}"
+else
+    host_str=""
+fi
+
+# Sanity check that we have everything we need. Take the opportunity to set up
+# the component lists at the same time. Note that later items in the list
+# override earlier items.
+
+# First the main components, which we *must* have.
+res="success"
+check_dir_exists "gcc" | res="failure"
+check_dir_exists "binutils" | res="failure"
+check_dir_exists "gdb" | res="failure"
+check_dir_exists "newlib" | res="failure"
+check_dir_exists "cgen" | res="failure"
+check_dir_exists "sdk" | res="failure"
+
+component_dirs="newlib gdb cgen binutils gcc"
+
+# Optional GCC infrastructure components
+infra_dir=""
+infra_exclude=""
+
+if [ "${do_gmp}" = "--do-gmp" ]
+then
+    check_dir_exists "gcc-infrastructure/gmp" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="gmp ${infra_exclude}"
+fi
+
+if [ "${do_mpfr}" = "--mpfr" ]
+then
+    check_dir_exists "gcc-infrastructure/mpfr" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="mpfr ${infra_exclude}"
+fi
+
+if [ "${do_mpc}" = "--mpc" ]
+then
+    check_dir_exists "gcc-infrastructure/mpc" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="mpc ${infra_exclude}"
+fi
+
+if [ "${do_isl}" = "--isl" ]
+then
+    check_dir_exists "gcc-infrastructure/isl" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="isl ${infra_exclude}"
+fi
+
+if [ "${do_cloog}" = "--cloog" ]
+then
+    check_dir_exists "gcc-infrastructure/cloog" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="cloog ${infra_exclude}"
+fi
+
+if [ "${do_ncurses}" = "--ncurses" ]
+then
+    check_dir_exists "gcc-infrastructure/ncurses" | res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="ncurses ${infra_exclude}"
+fi
+
+if [ "${do_multicore_sim}" = "--multicore-sim" ]
+then
+    check_dir_exists "gdb-multicore-sim" || res="failure"
+fi
+
+if [ "${res}" != "success" ]
+then
+    failedbuild
+fi
+
+component_dirs="${infra_dir} ${component_dirs}"
+
+# Checkout and pull repos if necessary
+if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/toolchain-components \
+                                    ${logfile} ${auto_pull} \
+                                    ${auto_checkout} ${do_release}
+then
+    logterm "ERROR: Could not get correct versions of tools"
+    failedbuild
+fi
+
+# We need to force a clean build if there was not a previous successful
+# configure.
+if [ "${do_clean_host}" = "--no-clean-host" ]
+then
+    if [ -d ${bd_host} -a -e ${bd_host}/config.log ] \
+	&& grep "configure: exit 0" ${bd_host}/config.log > /dev/null 2>&1
+    then
+        # We did have a previous successful config we can reuse. This then
+	# overrides any specified install directory.
+	id_host=`sed -n -e 's/^.*\-\-prefix=\([^ \t\n]*\).*$/\1/p' \
+                         < ${bd_host}/config.log | head -1`
+	logterm "Reusing previous build and installing at ${id_host}."
+    else
+	logterm "Forcing clean build"
+	do_clean_host="--clean-host"
+    fi
+fi
+
+# Clean up old build directories if specified.
+if [ "${do_clean_build}" = "--clean-build" ]
+then
+    rm -rf "${bd_build}"
+fi
+
+# Clean up old build directories if specified.
+if [ "${do_clean_host}" = "--clean-host" ]
+then
+    rm -rf "${bd_host}"
+    rm -rf "${staging_host}"
+fi
+
+# Blow away the unified source directory if requested
+if [ "${rebuild_unisrc}" = "--rebuild-unisrc" ]
+then
+    rm -rf "${unisrc_dir}" >> ${logfile} 2>&1
+fi
+
+# Create unified source directory if it doesn't exist
+if ! [ -d "${unisrc_dir}" ]
+then
+  # Create a unified source directory
+  if ! mkdir "${unisrc_dir}" >> ${logfile} 2>&1
+  then
+      logterm "ERROR: Could not create unified source dir ${unisrc_dir}."
+      failedbuild
+  fi
+
+  logterm "Creating unified source tree..."
+  if ! ${basedir}/sdk/symlink-all.sh "${basedir}" "${logfile}" \
+           "${infra_exclude}" "${unisrc_dir}" "${component_dirs}"
+  then
+      logterm "ERROR: Failed to build unified source tree in ${unisrc_dir}."
+      failedbuild
+  fi
+fi
+
+# Ensure the staging directory exists.
+if ! mkdir -p "$staging_host"
+then
+    logterm "ERROR: Failed to create staging directory ${staging_host}."
+    failedbuild
+fi
+
+
+################################################################################
+#                                                                              #
+#   Make sure we have an epiphany tool chain on the build machine if needed    #
+#                                                                              #
+################################################################################
+
+# Put the build directory toolchain on our PATH. Then we will find it
+# if we have already built it.
+PATH=${id_build}/bin:$PATH
+export PATH
+
+if [ "x${host}" != "x" ]
+then
+    if  which epiphany-elf-gcc && which epiphany-elf-as \
+	&& which epiphany-elf-ld && which epiphany-elf-ar
+    then
+	logterm "Epiphany tools found on build machine"
+    else
+        # A cross compiler also needs a compiler on the build machine to build
+        # libraries.
+
+        # Ensure the build directory exists. We don't do fancy stuff about
+	# trying to preserve previous builds. If we get here, by definition
+	# they were no good.
+	rm -rf "${bd_build}"
+	if ! mkdir -p "${bd_build}"
+	then
+	    logterm "ERROR: Failed to create build directory ${bd_build}."
+	    failedbuild
+	fi
+
+        # Change to the build directory
+	if ! cd ${bd_build}
+	then
+	    logterm "ERROR: Could not change to build directory ${bd_build}."
+	    failedbuild
+	fi
+
+        # Configure the required components of the tool chain. We only need
+        # binutils, as, ld and gcc. We need to temporarily move
+        # CFLAGS_FOR_TARGET out of the way.
+	logterm "Configuring build machine tool chain..."
+	OLD_CFLAGS_FOR_TARGET=${CFLAGS_FOR_TARGET}
+	CFLAGS_FOR_TARGET=
+	if ! "${unisrc_dir}/configure" --target=epiphany-elf \
+	    --with-pkgversion="Epiphany toolchain ${RELEASE}" \
+	    --with-bugurl=support-sdk@adapteva.com \
+	    --enable-fast-install=N/A \
+	    --enable-languages=c,c++ --prefix="${id_build}" \
+	    --with-newlib --disable-gdbtk ${config_extra} >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Tool chain configuration for build machine failed."
+	    failedbuild
+	fi
+
+        # Build the parts of the tool chain we need: binutils and GCC
+	logterm "Building build machine tool chain..."
+	if ! make ${parallel} all-build all-binutils all-gas all-ld all-gcc \
+	    all-target-newlib  >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Tool chain build for build machine failed."
+	    failedbuild
+	fi
+
+        # Install binutils, GCC, newlib and GDB
+	logterm "Installing build machine tool chain..."
+	if ! make install-binutils install-gas install-ld install-gcc \
+	    install-target-newlib  >> "${logfile}" 2>&1
+	then
+	    logterm "Error: Tool chain installation for build machine failed."
+	    failedbuild
+	fi
+
+        # Sanity check that we now do really have the tools we need.
+	if ! ( which epiphany-elf-gcc && which epiphany-elf-as \
+	    && which epiphany-elf-ld && which epiphany-elf-ar )
+	then
+	    logterm "Error: Failed to created tools for build machine."
+	    failedbuild
+	fi
+    fi
+
+    # We also first build ncurses in the case of cross compilation such a
+    # suitable termcap library is available for GDB.
+    if [ "${do_ncurses}" = "--ncurses" ]
+    then
+	bd_ncurses="${bd_host}-ncurses"
+	rm -rf "${bd_ncurses}"
+	if ! mkdir -p "${bd_ncurses}"
+	then
+	    logterm "ERROR: Failed to create ncurses build directory."
+	fi
+
+	if ! cd "${bd_ncurses}"; then
+	    logterm "ERROR: Could not change to build directory ${bd_ncurses}."
+	    failedbuild
+	fi
+
+	logterm "Building ncurses for host..."
+	if ! "${unisrc_dir}/ncurses/configure" ${host_str} --prefix="${staging_host}" \
+	    --without-progs --without-ada --without-manpages --without-tests \
+	    --with-terminfo-dirs="${staging_host}/install/share/terminfo:/usr/share/terminfo"\
+	    >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to configure ncurses for host"
+	    failedbuild
+	fi
+
+	if ! make ${parallel} >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to build ncurses for host"
+	    failedbuild
+	fi
+
+	if ! make install.libs install.includes >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to install ncurses for host"
+	    failedbuild
+	fi
+
+	# We add the include and library paths to CFLAGS/LDFLAGS respectively to
+	# make them available for the real build.
+	CFLAGS="-I${staging_host}/include -I${id_host}/include $CFLAGS"
+	LDFLAGS="-L${staging_host}/lib -L${id_host}/lib $LDFLAGS"
+	export CFLAGS
+	export LDFLAGS
+    fi
+fi
+
+
+################################################################################
+#                                                                              #
+#	       Configure, build and install the host tool chain                #
+#                                                                              #
+################################################################################
+
+# Ensure the build directory exists. We build in the host build directory.
+if ! mkdir -p "${bd_host}"
+then
+    logterm "ERROR: Failed to create build directory ${bd_host}."
+    failedbuild
+fi
+
+# Change to the build directory
+if ! cd ${bd_host}
+then
+    logterm "ERROR: Could not change to build directory ${bd_host}."
+    failedbuild
+fi
+
+# Configure the entire tool chain, but only if we are doing a clean build
+
+# @todo Should we enable Python support in GDB? If so do we need to check
+#       Python is available?
+if [ ${do_clean_host} = "--clean-host" ]
+then
+    logterm "Configuring tool chain..."
+    export CFLAGS_FOR_TARGET
+    if ! "${unisrc_dir}/configure" --target=epiphany-elf ${host_str} \
+	--with-pkgversion="Epiphany toolchain ${RELEASE}" \
+	--with-bugurl=support-sdk@adapteva.com \
+	--enable-fast-install=N/A \
+	--enable-languages=c,c++ --prefix="${id_host}" \
+	--with-newlib --disable-gdbtk ${config_extra} >> "${logfile}" 2>&1
+    then
+	logterm "ERROR: Tool chain configuration for host machine failed."
+	failedbuild
+    fi
+fi
+
+# Build the entire tool chain: binutils, GCC, newlib and GDB
+logterm "Building tool chain..."
+if ! make ${parallel} all-build all-binutils all-gas all-ld all-gcc \
+        all-target-libgcc all-target-libgloss all-target-newlib \
+        all-target-libstdc++-v3 all-gdb all-sim >> "${logfile}" 2>&1
+then
+  logterm "ERROR: Tool chain build for host machine failed."
   failedbuild
-  exit 1
 fi
 
 # Install binutils, GCC, newlib and GDB
-echo "Installing tools" >> "${logfile}"
-echo "================" >> "${logfile}"
-echo "Installing tools..."
-make install-binutils install-gas install-ld install-gcc \
-    install-target-libgcc install-target-libgloss install-target-newlib \
-    install-target-libstdc++-v3 install-gdb install-sim >> "${logfile}" 2>&1
-if [ $? != 0 ]; then
-  echo "Error: Install failed."
+logterm "Installing tool chain..."
+if ! make install-binutils install-gas install-ld install-gcc \
+        install-target-libgcc install-target-libgloss install-target-newlib \
+        install-target-libstdc++-v3 install-gdb install-sim >> "${logfile}" 2>&1
+then
+  logterm "Error: Tool chain installation for host machine failed."
   failedbuild
-  exit 1
 fi
 
-#
 
-# Create symbolic links in install directory for e-gcc, etc.
-cd "${install_dir}/bin"
-for i in epiphany-elf-*; do
-  ENAME=$(echo $i | sed 's/epiphany-elf-/e-/')
-  if ! [ -e $ENAME ]; then ln -s $i $ENAME; fi
-done
-cd "${install_dir}/share/man/man1"
-for i in epiphany-elf-*; do
-  ENAME=$(echo $i | sed 's/epiphany-elf-/e-/')
-  if ! [ -e $ENAME ]; then ln -s $i $ENAME; fi
+# If the toolchain was built for this arch we can now use it
+if [ "x${host_arch}" = "x${build_arch}" ]
+then
+    PATH=${id_host}/bin:$PATH
+    export PATH
+fi
+
+
+################################################################################
+#                                                                              #
+#                        Install Epiphany multicore simulator                  #
+#                                                                              #
+################################################################################
+if [ "x${do_multicore_sim}" != "x--multicore-sim" ]
+then
+    logterm "Skipping multicore simulator..."
+elif [ "yx86_64" != "y${host_arch}" ]
+then
+    logterm "Warning: Epiphany multi-core simulator is x86_64-only. Sorry."
+    logterm "Skipping multicore simulator..."
+else
+    logterm "Building Epiphany multicore simulator..."
+
+    bd_gdb_multicore_sim="${bd_host}-gdb-multicore-sim"
+    gdb_multicore_sim_dir="${basedir}/gdb-multicore-sim"
+    # Install into isolated directory so we don't clash with toolchain's GDB
+    id_gdb_multicore_sim="${bd_gdb_multicore_sim}-install"
+
+    # TODO: It is unnecessary to clean every time but we do need to check
+    # whether the previous configure was successful.
+    if ! rm -rf ${bd_gdb_multicore_sim}
+    then
+	logterm "ERROR: Could not remove build directory ${bd_multicore_sim}."
+	failedbuild
+    fi
+    mkdir -p ${bd_gdb_multicore_sim}
+
+    if ! rm -rf ${id_gdb_multicore_sim}
+    then
+	logterm "ERROR: Could not remove install directory ${id_multicore_sim}."
+	failedbuild
+    fi
+    mkdir -p ${id_gdb_multicore_sim}
+
+
+    # Change to the build directory
+    if ! cd ${bd_gdb_multicore_sim}
+    then
+	logterm "ERROR: Could not change to build directory ${bd_multicore_sim}."
+	failedbuild
+    fi
+
+
+    # Some flags we need, GDB doesn't seem to have nice way to specify per target
+    # flags so do it this way.
+    OLD_CFLAGS=${CFLAGS}
+    OLD_LDFLAGS=${LDFLAGS}
+    CFLAGS="-pthread -lrt -fPIC -fvisibility=hidden ${CFLAGS}"
+    LDFLAGS="-lrt ${LDFLAGS}"
+    export CFLAGS LDFLAGS
+
+    if ! "${gdb_multicore_sim_dir}/configure" ${host_str} --prefix="${id_gdb_multicore_sim}" \
+	--target=epiphany-elf --enable-emesh-sim --enable-sim-hardware >> "${logfile}" 2>&1
+    then
+	logterm "ERROR: Epiphany multicore simulator configuration for host machine failed."
+	failedbuild
+    fi
+
+    if ! make ${parallel} all-gdb all-sim >> "${logfile}" 2>&1
+    then
+	logterm "Error: Epiphany multicore simulator build failed."
+	failedbuild
+    fi
+
+    logterm "Installing multicore simulator..."
+    if ! make install-gdb install-sim >> "${logfile}" 2>&1
+    then
+	logterm "Error: Epiphany multicore simulator install failed."
+	failedbuild
+    fi
+
+    # Make simulator frontend use our stand-alone runner
+    if ! (sed -i 's,epiphany-elf-run,epiphany-elf-mrun,g' ${id_gdb_multicore_sim}/bin/epiphany-elf-sim)
+    then
+	logterm "Error: Failed to patch Epiphany multicore simulator frontend script"
+	failedbuild
+    fi
+
+    # And now we have the pleasure to manually copy files over to the build
+    # directory in a way so we don't clash with the toolchain's GDB.
+    if ! ( \
+	# GDB binaries
+	cp -f ${id_gdb_multicore_sim}/bin/epiphany-elf-gdb ${id_host}/bin/epiphany-elf-mgdb &&
+	cp -f ${id_gdb_multicore_sim}/bin/epiphany-elf-run ${id_host}/bin/epiphany-elf-mrun &&
+	# Frontend
+	cp -f ${id_gdb_multicore_sim}/bin/epiphany-elf-sim ${id_host}/bin/epiphany-elf-sim  &&
+	# Frontend dummy
+	mkdir -p ${id_host}/epiphany-elf/libexec &&
+	(cp -f ${id_gdb_multicore_sim}/epiphany-elf/libexec/epiphany-elf-sim-dummy \
+	    ${id_host}/epiphany-elf/libexec/epiphany-elf-sim-dummy ||
+	    logterm "Warning: Could not install multicore simulator dummy binary" \
+	) &&
+	ln -fsr ${id_host}/bin/epiphany-elf-sim ${id_host}/bin/e-sim
+	)
+    then
+	logterm "Error: Epiphany multicore simulator install failed."
+	failedbuild
+    fi
+
+    # Restore environment
+    CFLAGS=${OLD_CFLAGS}
+    LDFLAGS=${OLD_LDFLAGS}
+    export CFLAGS LDFLAGS
+
+fi # multicore_esim
+
+
+
+################################################################################
+#                                                                              #
+#			 Tidy up installed tool chain                          #
+#                                                                              #
+################################################################################
+
+
+# Create symbolic links in install directory for epiphany executables and man
+# pages.
+logterm "Creating symbolic links for tools"
+
+if ! cd "${id_host}/bin"
+then
+    logterm "ERROR: Unable to select bin directory in ${id_host}"
+    failedbuild
+fi
+
+for executable in epiphany-elf-*
+do
+    ename=`echo ${executable} | sed 's/epiphany-elf-/e-/'`
+    rm -f ${ename}
+    if ! ln -s ${executable} ${ename}
+    then
+	logterm "Warning: Unable to create symbolic link to ${ename}"
+    fi
 done
 
-echo "BUILD COMPLETE: $(date)" >> "${logfile}"
-echo "Build Complete at $(date)"
-echo " **************************************************"
-echo " The build is complete."
-echo " The tools have been installed at: ${install_dir}/bin"
-echo " Please ensure that this directory is in your PATH."
-echo " **************************************************"
+logterm "Creating symbolic links for man pages"
+
+if ! cd "${id_host}/share/man/man1"
+then
+    logterm "ERROR: Unable to select share/man/man1 directory in ${id_host}"
+    failedbuild
+fi
+
+for manpage in epiphany-elf-*
+do
+    ename=`echo ${manpage} | sed 's/epiphany-elf-/e-/'`
+    rm -f ${ename}
+    if ! ln -s ${manpage} ${ename}
+    then
+	logterm "Warning: Unable to create symbolic link to ${ename}"
+    fi
+done
+
+# Set up the symlink directory if specified. This will be the reporting
+# directory.
+if [ "x${symlink_dir}" = "x" ]
+then
+    report_dir="${id_host}"
+else
+    echo "Setting up the main symlink directory..."
+    id_base=`basename ${id_host}`
+    cd "${id_host}/.."
+    report_dir="`pwd`/${symlink_dir}"
+    rm -f "${symlink_dir}"
+    ln -s ${id_base} "${symlink_dir}"
+fi
+
+logterm "Tools installed at ${report_dir}/bin"
+logterm "Manual pages installed at ${report_dir}/share/man"
+logterm "Ensure these directories are in your PATH and MANPATH"
+
+# Make the top level link if appropriate
+release_dir="esdk.${RELEASE}"
+if `echo ${id_host} | grep /opt/adapteva/${release_dir} > /dev/null 2>&1` &&
+    [ -d "/opt/adapteva/${release_dir}" ]
+then
+    cd /opt/adapteva
+
+    if rm -f esdk && ln -s "${release_dir}" esdk
+    then
+	logterm "Top level /opt/adapteva/esdk linked to /opt/adapteva/${release_dir}"
+    else
+	logterm "Unable to create link to /opt/adapteva/esdk"
+    fi
+fi
+
+logterm "BUILD COMPLETE: $(date)"

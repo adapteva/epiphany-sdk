@@ -28,33 +28,19 @@
 
 # Usage:
 #
-#	  ./install-sdk.sh [-a | --arch | --host <arch>]
-#					 [--arm | --x86 ]
-#					 [-b | --bsp <bsp_name> ]
-#					 [-d | --debug | -r | --release]
+#	  ./install-sdk.sh [-c | --host <arch triplet>]
+#					 [-C | --clean]
+#					 [-b | --bsp <bsp_name>]
+#					 [--debug | --no-debug]
+#					 [--release | --no-release]
 #					 [-l | --esdklibs <path> ]
 #					 [-p | --esdkpath | --prefix <path>]
-#					 [-t | --toolprfx]
 #					 [-h | --help]
 #					 [--version]
 
 # Some argument name alternatives are for consistency with autotools based
 # scripts.
 
-# -a <arch>
-# --arch <arch>
-# --host <arch>
-
-#	  The name of the architecture we are going to run on. Permitted names at
-#	  present are armv7l or x86_64.
-
-# --arm
-
-#	  A synonym for --arch armv7l
-
-# --x86
-
-#	  A synonym for --arch x86_64
 
 # -b <bsp_name>
 # --bsp <bsp_name>
@@ -62,12 +48,30 @@
 #	  The name of the BSP to use. This must be a valid directory in the bsps
 #	  subdirectory of epiphany-libs.
 
-# -d
-# --debug
-# -r
-# --release
+
+# -c <arch triplet>
+# --host <arch triplet>
+
+#    Canonical host system name
+#    The ARM cross toolchain prefix. Usinng this option will override
+#    the CROSS_COMPILE environment varible.
+#    Likely value if cross-building on Ubuntu is "arm-linux-gnueabihf"
+
+# -C
+# --clean
+
+#	 Clean before building
+
+
+# --debug | --no-debug
 
 #	 Install the debug or release versions of the tools (default is release).
+
+
+# --release | --no-release
+
+# Use release tags from define-version.sh
+
 
 # -l <path>
 # --esdklibs <path>
@@ -83,11 +87,6 @@
 #	  Where the tools are installed. Follows the hierarchy described in the
 #	  user manual. Must be an absolute path.
 
-# -t <ARM toolchain prefix>
-# --toolprfx
-
-#    The ARM cross toolchain prefix. Usinng this option will override
-#    the CROSS_COMPILE environment varible.
 
 # -h
 # --help
@@ -101,6 +100,44 @@
 # Exit immediately if any command or pipe fails.
 set -e
 
+
+################################################################################
+#                                                                              #
+#                              Shell functions                                 #
+#                                                                              #
+################################################################################
+
+# Get the architecture from a triplet.
+
+# This is the first field up to -, but with "arm" translated to "armv7l".
+
+# @param[in] $1  triplet
+# @return  The architecture of the triplet, but with arm translated to armv7l.
+getarch () {
+    triplet=$1
+
+    arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
+    if [ "x${arch}" = "xarm" ]
+    then
+	arch="armv7l"
+    fi
+
+    echo ${arch}
+}
+
+# Check if toolchain is present.
+
+# @param[in] $1  Toolchain prefix
+# @return        Returns 0 on success. Anything else indicates failure.
+check_toolchain () {
+    local prefix
+    prefix=$1
+
+    (which ${prefix}gcc && which ${prefix}as &&
+     which ${prefix}ld  && which ${prefix}ar) >/dev/null
+}
+
+
 # -----------------------------------------------------------------------------
 #
 #				   Argument parsing
@@ -109,15 +146,24 @@ set -e
 
 # Set the top level directory.
 d=`dirname "$0"`
-topdir=`(cd "$d/.." && pwd)`
+basedir=`(cd "$d/.." && pwd)`
+
+# Set the release parameters
+. ${basedir}/sdk/define-release.sh
+
+# Set up a clean log
+logfile=${LOGDIR}/build-$(date -u +%F-%H%M).log
+rm -f "${logfile}"
+echo "Logging to ${logfile}"
+
 
 # Default values
 
 # Path to location of eSDK installation (must be an absolute path)
-ESDKPATH="${topdir}"	 # In user account, adjacent directory
+ESDKPATH="${basedir}"	 # In user account, adjacent directory
 
-# Revision number of new eSDK build
-REV="5.13.09.10"
+# Default Revision number of new eSDK build
+REV="DevBuild"
 export REV
 
 # Host machine architecture
@@ -128,15 +174,24 @@ BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
 BSP="parallella_E16G3_1GB"
 
 # Default location of epiphany-libs.
-ESDK_LIBS="${topdir}/sdk/epiphany-libs"
+ESDK_LIBS="${basedir}/sdk/epiphany-libs"
+
+# The default branch for cloning/checkout
+BRANCH="master"
 
 # Default version to install
 BLD_VERSION=Release
 
+# Checkout release tags from define-relase.sh
+do_release="--no-release"
+
 # Parse options
-getopt_string=`getopt -n build-sdk -o a:b:drl:p:h -l arch:,host: \
-				   -l arm,x86 -l debug,release -l help -l version \
-				   -l bsp: -l esdklibs: -l esdkpath:,prefix: \
+getopt_string=`getopt -n install-sdk -o b:c:Cl:p:n:x:h \
+				   -l host: \
+				   -l debug -l no-debug -l help -l version \
+				   -l release -l no-release \
+				   -l bsp: -l bldname: -l branch: -l esdklibs: -l esdkpath:,prefix: \
+				   -l clean \
 				   -s sh -- "$@"`
 eval set -- "$getopt_string"
 
@@ -144,17 +199,13 @@ while true
 do
 	case $1 in
 
-	-a|--arch|--host)
+	-c|--host)
 		shift
-		ARCH=$1
+		host=$1;
 		;;
 
-	--arm)
-		ARCH=armv7l;
-		;;
-
-	--x86)
-		ARCH=x86_64
+	-c|--clean)
+		CLEAN=yes
 		;;
 
 	-b|--bsp)
@@ -162,45 +213,55 @@ do
 		BSP=$1
 		;;
 
-	-d|--debug)
+	--debug)
 		BLD_VERSION=Debug
 		;;
 
-	-r|--release)
+	--no-debug)
 		BLD_VERSION=Release
+		;;
+
+	--release | --no-release)
+		do_release="$1"
 		;;
 
 	-l|--esdklibs)
 		shift
 		ESDK_LIBS=$1
 		;;
-		
+
 	-p|--esdkpath|--prefix)
 		shift
 		ESDKPATH=$1
 		;;
 
-	-t|--toolprfx)
+    -n| --bldname)
 		shift
-		export CROSS_COMPILE=$1;
+		REV=$1
 		;;
 
+    -x| --branch)
+		shift
+		BRANCH=$1
+		;;
 
 	-h|--help)
 		echo "Epiphany SDK version ${REV}"
-		echo "Usage: ./build-sdk.sh [-a | --arch | --host <arch>]"
-			echo "						[--arm | --x86]"
+		echo "Usage: ./build-sdk.sh [-c | --host <arch triplet>]"
 			echo "						[-b | --bsp <bsp_name> ]"
-			echo "						[-d | --debug | -r | --release]"
+			echo "						[-C | --clean ]"
+			echo "						[--debug | --no-debug]"
 			echo "						[-l | --esdklibs <path> ]"
 			echo "						[-p | --esdkpath | --prefix <path>]"
-			echo "						[-t | --toolprfx]"
+			echo "						[-n | --bldname]"
+			echo "						[-x | --branch]"
 			echo "						[-h | --help]"
 			echo "						[--version]"
 			echo ""
 			echo "The arguments provided above will override the values of "
 			echo "the following environment variables:"
 			echo ""
+			echo "\tBSP"
 			echo "\tARCH"
 			echo "\tBSP"
 			echo "\tBLD_VERSION"
@@ -227,6 +288,24 @@ do
 	esac
 	shift
 done
+
+
+# Sort out Canadian cross stuff. First is it really a canadian cross
+build_arch=`uname -m`
+if [ "x" != "x${host}" ]
+then
+    host_arch=`getarch ${host}`
+
+    if [ "x${host_arch}" = "x${build_arch}" ]
+    then
+	# Not really a Canadian Cross
+	host=
+    else
+	export CROSS_COMPILE=${host}-
+    fi
+else
+    host_arch=${build_arch}
+fi
 
 # Argument validation
 arch_valid="ERR"
@@ -265,16 +344,44 @@ fi
 
 EPIPHANY_HOME="${ESDKPATH}/esdk"
 ESDK="${ESDKPATH}/esdk.${REV}"
-HOSTNAME="host.${ARCH}"
+HOSTNAME="host.${host_arch}"
 HOST="${ESDK}/tools/${HOSTNAME}"
-GNUNAME="e-gnu.${ARCH}"
+GNUNAME="e-gnu.${host_arch}"
 GNU="${ESDK}/tools/${GNUNAME}"
 
 # Add Epiphany and host GNU tool to path
-PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
-PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
+# Make sure we include the path to the right tools if we do canadian cross.
+if [ "x${build_arch}" = "x${host_arch}" ]; then
+    PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
+    PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
+else
+    # Check if we have toolchain in path before we set PATH
+    if ! check_toolchain "epiphany-elf-" 2>/dev/null
+    then
+	echo "Warning: Epiphany toolchain not in PATH. Will try to guess..."
+	# Assume tools are installed here. This is what build-toolchain.sh does
+	PATH="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}/bin:${PATH}"
+    fi
+fi
 
 export EPIPHANY_PREFIX EPIPHANY_HOME PATH
+
+
+# Check that we have all build tools
+if ! check_toolchain "epiphany-elf-"
+then
+    echo "Epiphany toolchain not found on build machine"
+    exit 1
+fi
+
+if [ "x" != "x${CROSS_COMPILE}" ]; then
+    if ! check_toolchain "${CROSS_COMPILE}"
+    then
+	echo "Cross-compile toolchain not found on build machine"
+	exit 1
+    fi
+fi
+
 
 echo ""
 echo "==============================================="
@@ -288,32 +395,35 @@ echo ""
 echo "=============================================="
 echo "Build Settings:								"
 echo "												"
-echo "Build Rev		= $REV							"
+echo "Build Rev     = $REV							"
+echo "Branch        = $BRANCH						"
 echo "EPIPHANY_HOME = $EPIPHANY_HOME				"
-echo "ESDK			= $ESDK							"
-echo "HOSTNAME		= $HOSTNAME						"
-echo "GNUNAME		= $GNUNAME						"
-echo "GNU			= $GNU							"
-echo "PATH			= $PATH							"
+echo "ESDK          = $ESDK							"
+echo "HOSTNAME      = $HOSTNAME						"
+echo "GNUNAME       = $GNUNAME						"
+echo "GNU           = $GNU							"
+echo "PATH          = $PATH							"
 echo "=============================================="
 echo ""
 
 # Create the SDK tree and set default symlinks
-echo "Creating the eSDK directory tree..."
+if [ ! -d ${ESDK} ]; then
+	echo "Creating the eSDK directory tree..."
 
-mkdir -p ${ESDK}
-ln -sTf "esdk.${REV}" ${ESDKPATH}/esdk
-mkdir -p ${ESDK}/bsps
-mkdir -p ${ESDK}/tools
+	mkdir -p ${ESDK}/bsps ${ESDK}/tools
 
-mkdir -p ${HOST}
-mkdir -p ${GNU}
-ln -sTf ${HOSTNAME} ${ESDK}/tools/host
-ln -sTf ${GNUNAME}	${ESDK}/tools/e-gnu
+	ln -sTf "esdk.${REV}" ${ESDKPATH}/esdk
+	ln -sTf ${HOSTNAME} ${ESDK}/tools/host
+	ln -sTf ${GNUNAME}	${ESDK}/tools/e-gnu
+fi
 
-mkdir -p ${HOST}/lib
-mkdir -p ${HOST}/include
-mkdir -p ${HOST}/bin
+if [ ! -d ${HOST} ]; then
+	mkdir -p ${HOST}/lib ${HOST}/include ${HOST}/bin
+fi
+
+if [ ! -d ${GNU} ]; then
+	mkdir -p ${GNU}
+fi
 
 # Check prerequisites
 if [ ! -d "${ESDK}/tools/e-gnu/epiphany-elf/lib" ]; then
@@ -324,7 +434,7 @@ fi
 
 if [ ! -d "${ESDK_LIBS}" ]; then
 	# Clone the epiphany-libs repository
-	if ! git clone https://github.com/adapteva/epiphany-libs.git; then
+	if ! git clone https://github.com/adapteva/epiphany-libs.git -b $BRANCH; then
 		printf "Failed to clone the epiphany-libs repository and no "
 		printf "ESDKLIBS pat was provided on the command line\n"
 		exit 1
@@ -332,17 +442,38 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 fi
 
 
+# Checkout and pull repos if necessary
+# TODO: Add flags for autopull and autocheckout
+# TODO: Move to basedir
+autopull="--auto-pull"
+autocheckout="--auto-checkout"
+if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/sdk-components \
+     ${logfile} ${auto_pull} ${auto_checkout} ${do_release}
+then
+    echo "ERROR: Could not get correct versions of tools"
+    exit 1
+fi
+
 # Copy top files
 cp -d ./README	  ${ESDK}
 cp -d ./COPYING	  ${ESDK}
 cp -d ./setup.sh  ${ESDK}
 cp -d ./setup.csh ${ESDK}
 
+
 # Build the eSDK libraries from epiphany-libs repo. From this point on we are
 # in the epiphany libraries directory.
-echo "Building eSDK libraries..."
 cd ${ESDK_LIBS} > /dev/null 2>&1
-if ! ./build-libs.sh -a ; then
+
+if [ "xyes" = "x$CLEAN" ]; then
+	build_elibs_flag="-c"
+else
+	build_elibs_flag="-a"
+fi
+
+echo "Building eSDK libraries..."
+echo $PATH
+if ! ./build-libs.sh ${build_elibs_flag} ; then
 	echo "epiphany-libs failed to build"
 	exit 1
 fi
@@ -387,34 +518,32 @@ cd ../../
 # Install the Epiphnay GDB RSP Server
 echo "-- Installing eServer"
 cd src/e-server
-cp -f ${BLD_VERSION}/e-server ${HOST}/bin/e-server.e
-cp -f e-server.sh	   ${HOST}/bin/e-server
+cp -f ${BLD_VERSION}/e-server ${HOST}/bin/e-server
 cd ../../
 
 # Install the Epiphnay Utilities
 echo "-- Installing eUtilities"
 cd src/e-utils
-cp -f e-reset/e-reset		  ${HOST}/bin/e-reset.e
-cp -f e-reset/e-reset.sh	  ${HOST}/bin/e-reset
-cp -f e-loader/Debug/e-loader ${HOST}/bin/e-loader.e
-cp -f e-loader/e-loader.sh	  ${HOST}/bin/e-loader
-cp -f e-read/Debug/e-read	  ${HOST}/bin/e-read.e
-cp -f e-read/e-read.sh		  ${HOST}/bin/e-read
-cp -f e-write/Debug/e-write	  ${HOST}/bin/e-write.e
-cp -f e-write/e-write.sh	  ${HOST}/bin/e-write
-cp -f e-hw-rev/e-hw-rev		  ${HOST}/bin/e-hw-rev.e
-cp -f e-hw-rev/e-hw-rev.sh	  ${HOST}/bin/e-hw-rev
-cp -f e-trace/include/a_trace.h	  ${HOST}/include
-cp -f e-objcopy				  ${HOST}/bin
+cp -f e-reset/e-reset                                  ${HOST}/bin/
+cp -f e-loader/Debug/e-loader                          ${HOST}/bin/
+cp -f e-read/Debug/e-read                              ${HOST}/bin/
+cp -f e-write/Debug/e-write                            ${HOST}/bin/
+cp -f e-hw-rev/e-hw-rev                                ${HOST}/bin/
+cp -f e-trace/include/a_trace.h                        ${HOST}/include
+cp -f e-objcopy                                        ${HOST}/bin
+cp -f e-trace-dump/${BLD_VERSION}/e-trace-dump         ${HOST}/bin
+cp -f e-trace-server/${BLD_VERSION}/e-trace-server     ${HOST}/bin
+cp -f e-trace/${BLD_VERSION}/libe-trace.so             ${HOST}/lib
+cp -f e-clear-shmtable/${BLD_VERSION}/e-clear-shmtable ${HOST}/bin
 cd ../../
 
 # Install the Epiphnay Runtime Library
 echo "-- Installing eLib"
 cd src/e-lib
 cp ${BLD_VERSION}/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
-cp include/*.h		  ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/
+cp include/*.h		  ${ESDK}/tools/e-gnu/epiphany-elf/include/
 ln -sTf libe-lib.a	  ${ESDK}/tools/e-gnu/epiphany-elf/lib/libelib.a
-ln -sTf e_lib.h		  ${ESDK}/tools/e-gnu/epiphany-elf/sys-include/e-lib.h
+ln -sTf e_lib.h		  ${ESDK}/tools/e-gnu/epiphany-elf/include/e-lib.h
 cd ../../
 
 
