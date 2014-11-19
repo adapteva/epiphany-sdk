@@ -32,7 +32,6 @@
 #					 [-C | --clean]
 #					 [-b | --bsp <bsp_name>]
 #					 [--debug | --no-debug]
-#					 [--release | --no-release]
 #					 [-l | --esdklibs <path> ]
 #					 [-p | --esdkpath | --prefix <path>]
 #					 [-h | --help]
@@ -66,11 +65,6 @@
 # --debug | --no-debug
 
 #	 Install the debug or release versions of the tools (default is release).
-
-
-# --release | --no-release
-
-# Use release tags from define-version.sh
 
 
 # -l <path>
@@ -182,14 +176,10 @@ BRANCH="master"
 # Default version to install
 BLD_VERSION=Release
 
-# Checkout release tags from define-relase.sh
-do_release="--no-release"
-
 # Parse options
 getopt_string=`getopt -n install-sdk -o b:c:Cl:p:n:x:h \
 				   -l host: \
 				   -l debug -l no-debug -l help -l version \
-				   -l release -l no-release \
 				   -l bsp: -l bldname: -l branch: -l esdklibs: -l esdkpath:,prefix: \
 				   -l clean \
 				   -s sh -- "$@"`
@@ -219,10 +209,6 @@ do
 
 	--no-debug)
 		BLD_VERSION=Release
-		;;
-
-	--release | --no-release)
-		do_release="$1"
 		;;
 
 	-l|--esdklibs)
@@ -448,7 +434,7 @@ fi
 autopull="--auto-pull"
 autocheckout="--auto-checkout"
 if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/sdk-components \
-     ${logfile} ${auto_pull} ${auto_checkout} ${do_release}
+     ${logfile} ${auto_pull} ${auto_checkout}
 then
     echo "ERROR: Could not get correct versions of tools"
     exit 1

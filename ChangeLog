@@ -1,3 +1,9 @@
+2014-11-19  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Remove release flag (-R) functionality. Leave it
+	as a no-op for now.
+	* install-sdk.sh: Remove --release flag.
+
 2014-11-03  Ola Jeppsson  <ola@adapteva.com>
 
 	* README: Update version numbers and URLs.
