@@ -1,5 +1,10 @@
 2014-11-19  Ola Jeppsson  <ola@adapteva.com>
 
+	* download-toolchain.sh: Rename to download-components.sh
+	* build-epiphany-sdk.sh: Adjust for renaming.
+
+2014-11-19  Ola Jeppsson  <ola@adapteva.com>
+
 	* sdk-components: Move SDK components (epiphany-libs & parallella-linux)
 	to basedir.
 	* build-epiphany-sdk.sh: Likewise

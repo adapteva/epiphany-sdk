@@ -21,17 +21,17 @@
 
 # Usage:
 
-# ./download-toolchain.sh [--force | --no-force]
-#                         [--clone | --download]
-#                         [--infra-url <url> | --infra-us |
-#                          --infra-uk | --infra-jp]
-#                         [--gmp | --no-gmp]
-#                         [--mpfr | --no-mpfr]
-#                         [--mpc | --no-mpc]
-#                         [--isl | --no-isl]
-#                         [--cloog | --no-cloog]
-#                         [--ncurses | --no-ncurses]
-#                         [--help | -h]
+# ./download-components.sh [--force | --no-force]
+#                          [--clone | --download]
+#                          [--infra-url <url> | --infra-us |
+#                           --infra-uk | --infra-jp]
+#                          [--gmp | --no-gmp]
+#                          [--mpfr | --no-mpfr]
+#                          [--mpc | --no-mpc]
+#                          [--isl | --no-isl]
+#                          [--cloog | --no-cloog]
+#                          [--ncurses | --no-ncurses]
+#                          [--help | -h]
 
 # --force | --no-force
 
@@ -414,18 +414,18 @@ case ${opt} in
 	;;
 
     ?*)
-	echo "Usage: ./download-toolchain [--force | --no-force]"
-	echo "                            [--clone | --download]"
-	echo "                            [--infra-url <url> | --infra-us |"
-	echo "                             --infra-uk | --infra-jp]"
-	echo "                            [--gmp | --no-gmp]"
-	echo "                            [--mpfr | --no-mpfr]"
-	echo "                            [--mpc | --no-mpc]"
-	echo "                            [--isl | --no-isl]"
-	echo "                            [--cloog | --no-cloog]"
-	echo "                            [--ncurses | --no-ncurses]"
-	echo "                            [--multicore-sim | --no-multicore-sim]"
-	echo "                            [--help | -h]"
+	echo "Usage: ./download-components.sh [--force | --no-force]"
+	echo "                                [--clone | --download]"
+	echo "                                [--infra-url <url> | --infra-us |"
+	echo "                                 --infra-uk | --infra-jp]"
+	echo "                                [--gmp | --no-gmp]"
+	echo "                                [--mpfr | --no-mpfr]"
+	echo "                                [--mpc | --no-mpc]"
+	echo "                                [--isl | --no-isl]"
+	echo "                                [--cloog | --no-cloog]"
+	echo "                                [--ncurses | --no-ncurses]"
+	echo "                                [--multicore-sim | --no-multicore-sim]"
+	echo "                                [--help | -h]"
 	exit 1
 	;;
 
