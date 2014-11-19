@@ -168,7 +168,7 @@ BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
 BSP="parallella_E16G3_1GB"
 
 # Default location of epiphany-libs.
-ESDK_LIBS="${basedir}/sdk/epiphany-libs"
+ESDK_LIBS="${basedir}/epiphany-libs"
 
 # The default branch for cloning/checkout
 BRANCH="master"
@@ -418,6 +418,13 @@ if [ ! -d "${ESDK}/tools/e-gnu/epiphany-elf/lib" ]; then
 	exit 1
 fi
 
+
+if ! cd ${basedir} > /dev/null 2>&1
+then
+    echo "ERROR: Could not change directory to ${basedir}"
+    exit 1
+fi
+
 if [ ! -d "${ESDK_LIBS}" ]; then
 	# Clone the epiphany-libs repository
 	if ! git clone https://github.com/adapteva/epiphany-libs.git -b $BRANCH; then
@@ -427,10 +434,8 @@ if [ ! -d "${ESDK_LIBS}" ]; then
 	fi
 fi
 
-
 # Checkout and pull repos if necessary
 # TODO: Add flags for autopull and autocheckout
-# TODO: Move to basedir
 autopull="--auto-pull"
 autocheckout="--auto-checkout"
 if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/sdk-components \
@@ -441,10 +446,10 @@ then
 fi
 
 # Copy top files
-cp -d ./README	  ${ESDK}
-cp -d ./COPYING	  ${ESDK}
-cp -d ./setup.sh  ${ESDK}
-cp -d ./setup.csh ${ESDK}
+cp -d ./sdk/README    ${ESDK}
+cp -d ./sdk/COPYING   ${ESDK}
+cp -d ./sdk/setup.sh  ${ESDK}
+cp -d ./sdk/setup.csh ${ESDK}
 
 
 # Build the eSDK libraries from epiphany-libs repo. From this point on we are

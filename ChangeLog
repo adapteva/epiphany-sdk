@@ -1,5 +1,12 @@
 2014-11-19  Ola Jeppsson  <ola@adapteva.com>
 
+	* sdk-components: Move SDK components (epiphany-libs & parallella-linux)
+	to basedir.
+	* build-epiphany-sdk.sh: Likewise
+	* install-sdk.sh: Likewise
+
+2014-11-19  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Remove release flag (-R) functionality. Leave it
 	as a no-op for now.
 	* install-sdk.sh: Remove --release flag.

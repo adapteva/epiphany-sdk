@@ -210,10 +210,12 @@ fi
 
 # TODO: Move to basedir
 if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
-	# Clone the parallella Linux source tree
-	git clone https://github.com/parallella/parallella-linux.git -b main
-
-	export PARALLELLA_LINUX_HOME=$PWD/parallella-linux
+	(
+		cd ${basedir}
+		# Clone the parallella Linux source tree
+		git clone https://github.com/parallella/parallella-linux.git -b main
+	)
+	export PARALLELLA_LINUX_HOME=${basedir}/parallella-linux
 fi
 
 
