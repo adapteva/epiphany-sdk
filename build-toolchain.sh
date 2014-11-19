@@ -68,7 +68,6 @@
 #                          [--build-dir-build <dir>]
 #                          [--build-dir-host <dir>]
 #                          [--host <host-triplet>]
-#                          [--release | --no-release]
 #                          [--install-dir <dir>]
 #                          [--install-dir-build <dir>]
 #                          [--install-dir-host <dir>]
@@ -129,12 +128,6 @@
 #     build libraries). This will trigger building of GCC and binutils for the
 #     host unless those tools have been previously built, or are found in the
 #     existing search path.
-
-# --release | --no-release
-
-#     If --release is specified, use RELEASE_TAG specified define-release.sh
-#     for all packages. Default is --no-release
-
 
 # --install-dir-build <install_dir>
 
@@ -407,7 +400,6 @@ staging_host=
 symlink_dir=e-gnu
 ds_build=
 ds_host=
-do_release="--no-release"
 do_clean_build="--no-clean-build"
 do_clean_host="--no-clean-host"
 auto_pull="--auto-pull"
@@ -449,10 +441,6 @@ case ${opt} in
     --host)
 	shift
 	host="$1"
-	;;
-
-    --release | --no-release)
-	do_release="$1"
 	;;
 
     --install-dir-build)
@@ -723,7 +711,6 @@ logterm "START BUILD: $(date)"
 logonly "Build directory (build arch):   ${bd_build}"
 logonly "Build directory (host arch):    ${bd_host}"
 logonly "Build architecture:             ${build_arch}"
-logonly "Release:                        ${do_release}"
 logonly "Host:                           ${host}"
 logonly "Host architecture:              ${host_arch}"
 logonly "Install directory (build arch): ${id_build}"
@@ -860,7 +847,7 @@ component_dirs="${infra_dir} ${component_dirs}"
 # Checkout and pull repos if necessary
 if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/toolchain-components \
                                     ${logfile} ${auto_pull} \
-                                    ${auto_checkout} ${do_release}
+                                    ${auto_checkout}
 then
     logterm "ERROR: Could not get correct versions of tools"
     failedbuild

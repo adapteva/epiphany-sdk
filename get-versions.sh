@@ -28,7 +28,6 @@
 #     get-versions.sh <basedir> <componentfile> <logfile>
 #                     [--auto-checkout | --no-auto-checkout]
 #                     [--auto-pull | --no-auto-pull]
-#                     [--release | --no-release]
 
 # We checkout the desired branch for each tool, but only if it is a git
 # repository.
@@ -89,7 +88,6 @@ logfile=$1
 shift
 autocheckout="--auto-checkout"
 autopull="--auto-pull"
-release="--no-release"
 
 # Parse options
 until
@@ -103,14 +101,9 @@ case ${opt} in
 	autopull=$1
 	;;
 
-    --release | --no-release)
-	release=$1
-	;;
-
     ?*)
 	echo "Usage: get-versions.sh  [--auto-checkout | --no-auto-checkout]"
         echo "                        [--auto-pull | --no-auto-pull]"
-        echo "                        [--release | --no-release]"
 	exit 1
 	;;
 
@@ -121,14 +114,6 @@ esac
 do
     shift
 done
-
-# If we're building in release mode we need to checkout the correct release
-# tag for all packages. This is defined in define-release.sh
-# Set the release parameters
-if [ "x--release" = "x${release}" ]
-then
-    . ${basedir}/sdk/define-release.sh
-fi
 
 
 ################################################################################
@@ -172,18 +157,6 @@ for line in `cat ${basedir}/${componentfile} | grep -v '^#' \
 do
     tool=`echo ${line} | cut -d ':' -f 1`
     branch=`echo ${line} | cut -d ':' -f 2`
-    repo=`echo ${line} | cut -d ':' -f 3`
-    release_prefix=`echo ${line} | cut -d ':' -f 4`
-
-    # We can use the original branch name as a hint if we're in detached head.
-    # It should be close to what we want and speed things up.
-    origbranch=${branch}
-
-    # Adjust branch if we're in release mode
-    if [ "x--release" = "x${release}" ]
-    then
-	branch=${release_prefix}${RELEASE_TAG}
-    fi
 
     # Select the tool dir
     if ! cd ${basedir}/${tool}
@@ -205,7 +178,7 @@ do
     then
 	logterm "Fetching ${tool}"
 
-	# See note below why two expressions are requied.
+	# See note below why two expressions are required.
 	if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
 	then
 	    # Try to guess a good branch with a working tree similar to the

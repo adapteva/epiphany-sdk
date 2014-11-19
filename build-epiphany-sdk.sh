@@ -220,7 +220,7 @@ export PATH="${id_buildarch_toolchain}/bin:${PATH}"
 multicore_sim_str="--multicore-sim"
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-	if ! ./download-toolchain.sh ${multicore_sim_str} ${do_release} --clone; then
+	if ! ./download-toolchain.sh ${multicore_sim_str} --clone; then
 
 		printf "\nAborting...\n"
 		exit 1
@@ -229,7 +229,6 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	# Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
 		${buildarch_install_dir_str} \
-		${do_release} \
 		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
