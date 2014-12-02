@@ -552,7 +552,7 @@ cd ../../
 echo "==============================================="
 echo "| NOTE: The default BSP is set to ${BSP}"
 echo "| Please make sure it matches your system,	|"
-echo "| or chenge the settings in this build script |"
+echo "| or change the settings in this build script |"
 echo "==============================================="
 
 exit 0
