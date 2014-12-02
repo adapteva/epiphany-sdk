@@ -232,7 +232,7 @@ github_tool () {
 
     if [ ${clone} = "true" ]
     then
-	clone_tool "${tool}" "git://github.com/adapteva/${repo}" "${branch}"
+	clone_tool "${tool}" "https://github.com/adapteva/${repo}" "${branch}"
     else
 	download_tool "${tool}" "https://github.com/adapteva/${repo}/archive" \
 	              "unzip" "${branch}.zip" "${repo}-${branch}"
