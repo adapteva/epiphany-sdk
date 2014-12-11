@@ -1,5 +1,10 @@
 2014-12-11  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Always invoke 'download-components.sh'.
+	It is now used for all components, not just the toolchain.
+
+2014-12-11  Ola Jeppsson  <ola@adapteva.com>
+
 	* components.conf: Switch to development (master) branch of
 	epiphany-libs.
 

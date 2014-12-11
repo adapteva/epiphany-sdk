@@ -191,13 +191,13 @@ export PATH="${id_buildarch_toolchain}/bin:${PATH}"
 # other than x86_64. So we'll rely on that for the time being.
 multicore_sim_str="--multicore-sim"
 
+if ! ./download-components.sh ${multicore_sim_str} --clone; then
+
+	printf "\nAborting...\n"
+	exit 1
+fi
+
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-	if ! ./download-components.sh ${multicore_sim_str} --clone; then
-
-		printf "\nAborting...\n"
-		exit 1
-	fi
-
 	# Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
 		${buildarch_install_dir_str} \
