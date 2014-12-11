@@ -1,3 +1,9 @@
+2014-12-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* components.conf (toolchain:gcc): Switch to branch epiphany-gcc-4.9.
+	* build-toolchain.sh: Like include/floatformat.h and
+	libiberty/floatformat.c from gdb.
+
 2014-12-11  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh: Always invoke 'download-components.sh'.

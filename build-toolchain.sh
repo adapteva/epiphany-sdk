@@ -907,6 +907,8 @@ then
       logterm "ERROR: Failed to build unified source tree in ${unisrc_dir}."
       failedbuild
   fi
+  ln -fs ${basedir}/gdb/include/floatformat.h ${unisrc_dir}/include
+  ln -fs ${basedir}/gdb/libiberty/floatformat.c ${unisrc_dir}/libiberty
 fi
 
 # Ensure the staging directory exists.
