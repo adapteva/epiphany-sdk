@@ -438,7 +438,7 @@ fi
 # TODO: Add flags for autopull and autocheckout
 autopull="--auto-pull"
 autocheckout="--auto-checkout"
-if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/sdk-components \
+if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/components.conf \
      ${logfile} ${auto_pull} ${auto_checkout}
 then
     echo "ERROR: Could not get correct versions of tools"

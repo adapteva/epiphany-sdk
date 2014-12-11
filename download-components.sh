@@ -237,19 +237,31 @@ download_components() {
 " # We only want the newline character
 
     res="ok"
-    for line in `cat ${basedir}/sdk/toolchain-components | grep -v '^#' \
+    for line in `cat ${basedir}/sdk/components.conf | grep -v '^#' \
 		     | grep -v '^$'`
     do
-	tool=`          echo ${line} | cut -d ':' -f 1`
-	branch=`        echo ${line} | cut -d ':' -f 2`
-	repo=`          echo ${line} | cut -d ':' -f 3`
-	release_prefix=`echo ${line} | cut -d ':' -f 4`
+	class=`         echo ${line} | cut -d ':' -f 1`
+	tool=`          echo ${line} | cut -d ':' -f 2`
+	branch=`        echo ${line} | cut -d ':' -f 3`
+	repo=`          echo ${line} | cut -d ':' -f 4`
+	release_prefix=`echo ${line} | cut -d ':' -f 5`
 
-	if ! github_tool ${tool} ${repo} ${branch} ${release_prefix}
-	then
-	    res="fail"
-	    break
-	fi
+	# TODO: Be more general
+	case ${class} in
+	toolchain|sdk)
+	    if ! github_tool ${tool} ${repo} ${branch}
+	    then
+		res="fail"
+		break
+	    fi
+
+	    ;;
+	*)
+	    echo Ignoring ${class} ${tool}
+	    ;;
+	esac
+
+
     done
 
 

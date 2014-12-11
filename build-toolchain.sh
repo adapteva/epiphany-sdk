@@ -845,7 +845,7 @@ fi
 component_dirs="${infra_dir} ${component_dirs}"
 
 # Checkout and pull repos if necessary
-if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/toolchain-components \
+if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/components.conf \
                                     ${logfile} ${auto_pull} \
                                     ${auto_checkout}
 then

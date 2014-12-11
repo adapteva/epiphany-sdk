@@ -121,7 +121,16 @@ tool_list=""
 for line in `cat ${basedir}/sdk/${componentfile} | grep -v '^#' \
                  | grep -v '^$'`
 do
-    tool=`echo ${line} | cut -d ':' -f 1`
+    class=`echo ${line} | cut -d ':' -f 1`
+    tool=`echo ${line} | cut -d ':' -f 2`
+
+    # Only tag relevant components
+    # TODO: component is too general
+    if [ ${class} != "component" ];
+    then
+        continue
+    fi
+
     tool_list="${tool} ${tool_list}"
 
     # Select the tool dir

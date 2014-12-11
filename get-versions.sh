@@ -155,8 +155,18 @@ status="0"
 for line in `cat ${basedir}/${componentfile} | grep -v '^#' \
                  | grep -v '^$'`
 do
-    tool=`echo ${line} | cut -d ':' -f 1`
-    branch=`echo ${line} | cut -d ':' -f 2`
+    class=` echo ${line} | cut -d ':' -f 1`
+    tool=`  echo ${line} | cut -d ':' -f 2`
+    branch=`echo ${line} | cut -d ':' -f 3`
+
+    # TODO: Class should be a command line argument
+    case ${class} in
+    toolchain|sdk)
+	;;
+    *)
+	continue
+	;;
+    esac
 
     # Select the tool dir
     if ! cd ${basedir}/${tool}

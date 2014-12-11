@@ -1,3 +1,15 @@
+2014-12-11  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf: Created. Switch to new components format. There are
+	still some rough edges. These will be fixed in a later commit.
+	* toolchain-components: Removed.
+	* sdk-components: Removed.
+	* build-toolchain.sh: Adjust for new components format.
+	* download-components.sh: Likewise.
+	* get-versions.sh: Likewise.
+	* install-sdk.sh: Likewise.
+	* tag-release.sh: Likewise.
+
 2014-11-19  Ola Jeppsson  <ola@adapteva.com>
 
 	* download-toolchain.sh: Rename to download-components.sh
