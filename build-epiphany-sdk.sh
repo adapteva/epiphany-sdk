@@ -34,9 +34,6 @@ BRANCH="master"
 # Likel value (with -c) if cross-building on Ubuntu is "arm-linux-gnueabihf"
 ARCH_TRIPLET=""
 
-# Whether we should check out release tags defined in define-release.sh
-do_release="--no-release"
-
 while getopts :a:c:Cdr:Rt:h arg; do
 	case $arg in
 
@@ -62,7 +59,7 @@ while getopts :a:c:Cdr:Rt:h arg; do
 		;;
 
 	R)
-		do_release="--release"
+		echo "Warning: -R is deprecated"
 		;;
 
 	t)
@@ -77,7 +74,6 @@ while getopts :a:c:Cdr:Rt:h arg; do
 		echo "    [-C]: Clean before start building."
 		echo "    [-d]: Enable building with debug symbols."
 		echo "    [-r <revision>]: The revision string for the SDK. Default $REV"
-		echo "    [-R]: Do release build. Use define-release.sh to get right tags"
 		echo "    [-t <tag_name>]: The tag name (or branch name) for the SDK sources. Default $BRANCH"
 		echo "    [-h]: Show usage"
 		echo ""
@@ -104,31 +100,7 @@ fi
 d=`dirname "$0"`
 basedir=`(cd "$d/.." && pwd)`
 
-
-# Check args.
-if [ "x--release" = "x${do_release}" ]
-then
-	if [ "xyes" = "x${have_rev_arg}" ]
-	then
-		echo "You cannot specify both release mode (-R) and revison (-r)"
-		exit 1
-	fi
-	if [ "xyes" = "x${have_branch_arg}" ]
-	then
-		echo "You cannot specify both release mode (-R) and branch (-t)"
-		exit 1
-	fi
-fi
-
-if [ "x--release" = "x${do_release}" ]
-then
-	# Set the release parameters
-	. ${basedir}/sdk/define-release.sh
-	BRANCH=${RELEASE_TAG}
-else
-	RELEASE=${REV}
-fi
-
+. ${basedir}/sdk/define-release.sh
 
 ESDK="${EPIPHANY_BUILD_HOME}/esdk.${RELEASE}"
 HOSTNAME="host.${ARCH}"
@@ -220,7 +192,7 @@ export PATH="${id_buildarch_toolchain}/bin:${PATH}"
 multicore_sim_str="--multicore-sim"
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
-	if ! ./download-toolchain.sh ${multicore_sim_str} ${do_release} --clone; then
+	if ! ./download-components.sh ${multicore_sim_str} --clone; then
 
 		printf "\nAborting...\n"
 		exit 1
@@ -229,7 +201,6 @@ if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	# Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
 		${buildarch_install_dir_str} \
-		${do_release} \
 		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
@@ -239,18 +210,18 @@ fi
 
 # TODO: Move to basedir
 if [ ! -d "$PARALLELLA_LINUX_HOME" ]; then
-	# Clone the parallella Linux source tree
-	git clone https://github.com/parallella/parallella-linux.git -b main
-
-	export PARALLELLA_LINUX_HOME=$PWD/parallella-linux
+	(
+		cd ${basedir}
+		# Clone the parallella Linux source tree
+		git clone https://github.com/parallella/parallella-linux.git -b main
+	)
+	export PARALLELLA_LINUX_HOME=${basedir}/parallella-linux
 fi
 
 
 # build the epiphany-libs and install the SDK
-# TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH} when we say
-# --release.
-
-if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} ${do_release} \
+# TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH}.
+if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} \
 	${host_str} ${sdk_debug_str} ${sdk_clean_str}; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"

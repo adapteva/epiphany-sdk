@@ -37,16 +37,15 @@
 #     The directory containing all the sources. Log and results files are
 #     created within this directory.
 
+# Epiphany releases have the naming convention:
 
+#   <year>.<month>[.<patch>]
 RELEASE_MAJOR="2014"
 RELEASE_MINOR="11"
-#RELEASE_PATCH=".0"
-RELEASE_RC="-rc2"
+RELEASE_PATCH=""
 
 # The full release version
-RELEASE="${RELEASE_MAJOR}.${RELEASE_MINOR}${RELEASE_PATCH}${RELEASE_RC}"
-
-RELEASE_TAG="esdk-${RELEASE}"
+RELEASE="${RELEASE_MAJOR}.${RELEASE_MINOR}${RELEASE_PATCH}"
 
 # Create a common log directory for all logs in this and sub-scripts
 LOGDIR=${basedir}/logs/${RELEASE}
@@ -59,6 +58,5 @@ mkdir -p ${RESDIR}
 
 # Export the environment variables
 export RELEASE
-export RELEASE_TAG
 export LOGDIR
 export RESDIR

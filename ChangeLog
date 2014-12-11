@@ -1,3 +1,33 @@
+2014-12-11  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf: Created. Switch to new components format. There are
+	still some rough edges. These will be fixed in a later commit.
+	* toolchain-components: Removed.
+	* sdk-components: Removed.
+	* build-toolchain.sh: Adjust for new components format.
+	* download-components.sh: Likewise.
+	* get-versions.sh: Likewise.
+	* install-sdk.sh: Likewise.
+	* tag-release.sh: Likewise.
+
+2014-11-19  Ola Jeppsson  <ola@adapteva.com>
+
+	* download-toolchain.sh: Rename to download-components.sh
+	* build-epiphany-sdk.sh: Adjust for renaming.
+
+2014-11-19  Ola Jeppsson  <ola@adapteva.com>
+
+	* sdk-components: Move SDK components (epiphany-libs & parallella-linux)
+	to basedir.
+	* build-epiphany-sdk.sh: Likewise
+	* install-sdk.sh: Likewise
+
+2014-11-19  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Remove release flag (-R) functionality. Leave it
+	as a no-op for now.
+	* install-sdk.sh: Remove --release flag.
+
 2014-11-03  Ola Jeppsson  <ola@adapteva.com>
 
 	* README: Update version numbers and URLs.
@@ -19,6 +49,16 @@
 	not already in the path.
 	(check_toolchain): Helper function. Checks if a specific toolchain is
 	available.
+
+2014-10-31  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* build-epiphany-sdk.sh: Remove use of --release for
+	download-toolchain.sh and build-toolchain.sh.
+	* build-toolchain.sh: Remove --release.
+	* define-release.sh: Remove RELEASE_TAG.
+	* download-toolchain.sh: Remove --release
+	* get-versions.sh: Remove --release.
+	* tag-release.sh: Created.
 
 2014-10-31  Ola Jeppsson  <ola@adapteva.com>
 
