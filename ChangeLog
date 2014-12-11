@@ -1,3 +1,9 @@
+2014-12-11  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf: Take into account that 'parallella-linux' is
+	located at the Parallella organization on github.
+	* download-components.sh: Likewise.
+
 2014-12-11  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* components.conf (toolchain:gcc): Switch to branch epiphany-gcc-4.9.

@@ -205,19 +205,23 @@ download_tool() {
 # @param[in] $2 The GitHub repo (within the adapteva organization) to
 #               clone/download.
 # @param[in] $3 The branch to checkout/download.
+# @param[in] $4 Github organization.
 
 # @return  The result of the underlying call to clone or download a tool.
 github_tool () {
     tool=$1
     repo=$2
     branch=$3
+    organization=$4
 
     if [ ${clone} = "true" ]
     then
-	clone_tool "${tool}" "git://github.com/adapteva/${repo}" "${branch}"
+	clone_tool "${tool}" "git://github.com/${organization}/${repo}" \
+	    "${branch}"
     else
-	download_tool "${tool}" "https://github.com/adapteva/${repo}/archive" \
-	              "unzip" "${branch}.zip" "${repo}-${branch}"
+	download_tool "${tool}" \
+			"https://github.com/${organization}/${repo}/archive" \
+			"unzip" "${branch}.zip" "${repo}-${branch}"
     fi
 }
 
@@ -245,13 +249,23 @@ download_components() {
 	# TODO: Be more general
 	case ${class} in
 	toolchain|sdk)
-	    if ! github_tool ${tool} ${repo} ${branch}
+	    if ! github_tool ${tool} ${repo} ${branch} adapteva
 	    then
 		res="fail"
 		break
 	    fi
 
 	    ;;
+	parallella)
+	    # Component resides at Parallella organization.
+	    if ! github_tool ${tool} ${repo} ${branch} parallella
+	    then
+		res="fail"
+		break
+	    fi
+
+	    ;;
+
 	*)
 	    echo Ignoring ${class} ${tool}
 	    ;;
