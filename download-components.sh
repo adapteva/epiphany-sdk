@@ -206,9 +206,6 @@ download_tool() {
 #               clone/download.
 # @param[in] $3 The branch to checkout/download.
 
-# @param[in] $4 The release prefix tag (if any) Needed when we checkout
-# multiple heads in one directory (epiphany-binutils-gdb)
-
 # @return  The result of the underlying call to clone or download a tool.
 github_tool () {
     tool=$1
@@ -244,7 +241,6 @@ download_components() {
 	tool=`          echo ${line} | cut -d ':' -f 2`
 	branch=`        echo ${line} | cut -d ':' -f 3`
 	repo=`          echo ${line} | cut -d ':' -f 4`
-	release_prefix=`echo ${line} | cut -d ':' -f 5`
 
 	# TODO: Be more general
 	case ${class} in

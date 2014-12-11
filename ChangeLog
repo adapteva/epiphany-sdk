@@ -1,5 +1,10 @@
 2014-12-11  Ola Jeppsson  <ola@adapteva.com>
 
+	* components.conf: Remove last traces of 'release_tag_prefix'.
+	* download-components.sh: Likewise.
+
+2014-12-11  Ola Jeppsson  <ola@adapteva.com>
+
 	* components.conf: Created. Switch to new components format. There are
 	still some rough edges. These will be fixed in a later commit.
 	* toolchain-components: Removed.
