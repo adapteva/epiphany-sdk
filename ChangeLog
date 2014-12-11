@@ -1,5 +1,10 @@
 2014-12-11  Ola Jeppsson  <ola@adapteva.com>
 
+	* components.conf: Switch to development (master) branch of
+	epiphany-libs.
+
+2014-12-11  Ola Jeppsson  <ola@adapteva.com>
+
 	* components.conf: Remove last traces of 'release_tag_prefix'.
 	* download-components.sh: Likewise.
 
