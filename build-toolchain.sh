@@ -1171,8 +1171,10 @@ else
     LDFLAGS="-lrt ${LDFLAGS}"
     export CFLAGS LDFLAGS
 
-    if ! "${gdb_multicore_sim_dir}/configure" ${host_str} --prefix="${id_gdb_multicore_sim}" \
-	--target=epiphany-elf --enable-emesh-sim --enable-sim-hardware >> "${logfile}" 2>&1
+    if ! "${gdb_multicore_sim_dir}/configure" ${host_str} \
+        --prefix="${id_gdb_multicore_sim}" --target=epiphany-elf \
+        --enable-emesh-sim --enable-sim-hardware \
+        ${config_extra} >> "${logfile}" 2>&1
     then
 	logterm "ERROR: Epiphany multicore simulator configuration for host machine failed."
 	failedbuild

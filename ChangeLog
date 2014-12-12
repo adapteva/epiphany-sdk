@@ -1,3 +1,8 @@
+2014-12-12  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Use extra config flags for building
+	multicore simulator.
+
 2014-12-12  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* define-release.sh: Make RELEASE "master".
