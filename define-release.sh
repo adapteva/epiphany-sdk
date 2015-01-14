@@ -38,10 +38,10 @@
 #     created within this directory.
 
 
-RELEASE_MAJOR="2014"
-RELEASE_MINOR="11"
+RELEASE_MAJOR="2015"
+RELEASE_MINOR="1"
 #RELEASE_PATCH=".0"
-#RELEASE_RC="-rc2"
+RELEASE_RC="-devel"
 
 # The full release version
 RELEASE="${RELEASE_MAJOR}.${RELEASE_MINOR}${RELEASE_PATCH}${RELEASE_RC}"
