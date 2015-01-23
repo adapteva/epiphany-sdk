@@ -1,5 +1,9 @@
 2015-01-24  Ola Jeppsson  <ola@adapteva.com>
 
+	* README: Update for 2015.1 release.
+
+2015-01-24  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Build 'gdb-multicore-sim' with
 	config_extra flags. This usually means --disable-werror which
 	avoids some problems.

@@ -8,10 +8,10 @@ This repository is the development repo. containing the latest code
 changes. It may not build, and if it does, it may not work correctly.
 
 The latest release repo is located at:
-https://github.com/adapteva/epiphany-sdk/tree/2014.11
+https://github.com/adapteva/epiphany-sdk/tree/2015.1
 
 To download the latest release repo:
-https://github.com/adapteva/epiphany-sdk/archive/esdk-2014.11.tar.gz
+https://github.com/adapteva/epiphany-sdk/archive/esdk-2015.1.tar.gz
 
 To download the latest SDK release:
 ftp://ftp.parallella.org/esdk/
@@ -42,7 +42,7 @@ Copyright note:
 
 This file is part of the Epiphany Software Development Kit.
 
-Copyright (C) 2013 Adapteva, Inc.
+Copyright (C) 2013-2015 Adapteva, Inc.
 Contributed by Yaniv Sapir <support@adapteva.com>
 
 This package is free software: you can redistribute it and/or modify
