@@ -1,5 +1,9 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Add jobs flag.
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* README.md: New file.
 
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>

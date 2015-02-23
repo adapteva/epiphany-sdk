@@ -71,7 +71,9 @@ ELIBS_ARCH_PREFIX="arm-linux-gnueabihf"
 # Whether we should check out release tags defined in define-release.sh
 do_release="--no-release"
 
-while getopts c:e:Cdr:Rt:h arg; do
+jobs_str=""
+
+while getopts c:e:Cdj:r:Rt:h arg; do
 	case $arg in
 
 	c)
@@ -89,6 +91,10 @@ while getopts c:e:Cdr:Rt:h arg; do
 
 	d)
 		DEBUG=yes
+		;;
+
+	j)
+		jobs_str="--jobs ${OPTARG}"
 		;;
 
 	r)
@@ -113,6 +119,8 @@ while getopts c:e:Cdr:Rt:h arg; do
 		echo "                        Default: ${ELIBS_ARCH_PREFIX}"
 		echo "    [-C]:               Clean before start building."
 		echo "    [-d]:               Enable building with debug symbols."
+		echo "    [-j <count>]:       Specify that parallel make should run at"
+		echo "                        most <count> jobs."
 		echo "    [-r <revision>]:    The revision string for the SDK."
 		echo "                        Default $REV"
 		echo "    [-t <tag_name>]:    The tag name (or branch name) for the SDK sources."
@@ -254,7 +262,8 @@ fi
 
 if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
 	# Build the toolchain (this will take a while)
-	if ! ./build-toolchain.sh --install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
+	if ! ./build-toolchain.sh ${jobs_str} \
+		--install-dir-host ${EPIPHANY_HOME}/tools/${GNUNAME} \
 		${buildarch_install_dir_str} \
 		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"
