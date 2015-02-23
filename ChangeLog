@@ -1,5 +1,9 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.yml: New file.
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* download-components.sh: Download tarball instead of zip
 	file to shorten download time.
 

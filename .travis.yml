@@ -1,0 +1,27 @@
+language: c
+
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq
+      build-essential
+      bison
+      flex
+      g++-arm-linux-gnueabihf
+      gcc-arm-linux-gnueabihf
+      libgmp3-dev
+      libncurses5-dev
+      libmpc-dev
+      libmpfr-dev
+      locate
+      texinfo
+      wget
+      xzip
+      lzip
+      zip
+
+script:
+    - mkdir sdk
+    - mv * .* sdk || true
+    - ./sdk/download-components.sh --download --multicore-sim
+    - ./sdk/build-epiphany-sdk.sh
+
