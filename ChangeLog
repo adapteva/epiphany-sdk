@@ -1,5 +1,10 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.yml: Disable parallel make to try to pin-point why
+	build fails on travis-ci.
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Add jobs flag.
 
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
