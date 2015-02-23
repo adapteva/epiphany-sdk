@@ -23,6 +23,7 @@
 
 # ./download-components.sh [--force | --no-force]
 #                          [--clone | --download]
+#                          [--https | --ssh ]
 #                          [--infra-url <url> | --infra-us |
 #                           --infra-uk | --infra-jp]
 #                          [--gmp | --no-gmp]
@@ -44,6 +45,13 @@
 #     If --clone is specified, attempt to clone the repository, otherwise if
 #     --download is specified, attempt to download a tarball file of the
 #     repository.  Default --download.
+
+# --https | --ssh
+
+#     If --clone is specified, the --https and --ssh flags are used to
+#     select which transport git should use. Default --https.
+#
+#
 
 # --infra-url <url>
 
@@ -225,7 +233,7 @@ github_tool () {
 
     if [ ${clone} = "true" ]
     then
-	clone_tool "${tool}" "git://github.com/${organization}/${repo}" \
+	clone_tool "${tool}" "${git_transport_prefix}/${organization}/${repo}" \
 	    "${branch}"
     else
 	download_tool "${tool}" \
@@ -370,6 +378,7 @@ absolutedir() {
 
 force="false"
 clone="false"
+git_transport_prefix="https://github.com"
 infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
 do_gmp="--do-gmp"
 do_mpfr="--do-mpfr"
@@ -397,6 +406,14 @@ case ${opt} in
 
     --download)
 	clone="false"
+	;;
+
+    --ssh)
+	git_transport_prefix="git@github.com:"
+	;;
+
+    --https)
+	git_transport_prefix="https://github.com"
 	;;
 
     --infra-url)
@@ -447,6 +464,7 @@ case ${opt} in
     ?*)
 	echo "Usage: ./download-components.sh [--force | --no-force]"
 	echo "                                [--clone | --download]"
+	echo "                                [--https | --ssh]"
 	echo "                                [--infra-url <url> | --infra-us |"
 	echo "                                 --infra-uk | --infra-jp]"
 	echo "                                [--gmp | --no-gmp]"

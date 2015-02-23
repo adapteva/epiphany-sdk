@@ -1,3 +1,7 @@
+2015-02-24  Ola Jeppsson  <ola@adapteva.com>
+
+	* download-components.sh: Default to HTTPS for git cloning.
+
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
 	* .travis.sh: New file. Add dummy ping loop to keep build
