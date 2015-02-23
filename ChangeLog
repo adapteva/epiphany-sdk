@@ -1,5 +1,14 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.sh: New file. Add dummy ping loop to keep build
+	alive.
+	* .travis.yml: Call .travis.sh
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* .travis.yml: Disable parallel make to try to pin-point why
 	build fails on travis-ci.
 

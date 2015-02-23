@@ -32,5 +32,5 @@ script:
     - mkdir sdk
     - mv * .* sdk || true
     - ./sdk/download-components.sh --download --multicore-sim
-    - ./sdk/build-epiphany-sdk.sh -j 1 || (ls logs/*/build*.log; tail -n 5000 logs/*/build*.log; false)
+    - ./sdk/.travis.sh
 
