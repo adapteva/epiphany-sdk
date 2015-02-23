@@ -1,5 +1,10 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* download-components.sh: Download tarball instead of zip
+	file to shorten download time.
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Allow better control of
 	host target architectures by splitting tool chain and
 	epiphany-libs host prefixes into two arguments. Default to

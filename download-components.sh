@@ -42,7 +42,7 @@
 # --clone | --download
 
 #     If --clone is specified, attempt to clone the repository, otherwise if
-#     --download is specified, attempt to download a ZIP file of the
+#     --download is specified, attempt to download a tarball file of the
 #     repository.  Default --download.
 
 # --infra-url <url>
@@ -141,7 +141,7 @@ clone_tool() {
 # @param[in] $1  The tool to download
 # @param[in] $2  URL of archive directory
 # @param[in] $3  Command to unpack the download
-# @parma[in] $4  Branch or version packed file (i.e. with suffix such as .zip)
+# @parma[in] $4  Branch or version packed file (i.e. with suffix such as tar.gz)
 # @parma[in] $5  Unpacked main directory
 
 # @return 0 on success, 1 on failure. Note that failure to remove components
@@ -162,7 +162,7 @@ download_tool() {
 	fi
     fi
 
-    # Download and unzip source if it does not already exist
+    # Download and unpack source if it does not already exist
     if [ -e ${tool} ]
     then
 	echo "${tool} already downloaded." | tee -a ${log}
@@ -198,6 +198,15 @@ download_tool() {
     fi
 }
 
+# Function to unpack tarball
+
+# @param[in] $1 Filename
+
+# @return  Exit status from tar
+tar_xfz () {
+    tar xfz $1
+}
+
 # Function to either download a tool or clone a git repository from GitHub,
 # checking out the relevant branch.
 
@@ -221,7 +230,7 @@ github_tool () {
     else
 	download_tool "${tool}" \
 			"https://github.com/${organization}/${repo}/archive" \
-			"unzip" "${branch}.zip" "${repo}-${branch}"
+			"tar_xfz" "${branch}.tar.gz" "${repo}-${branch}"
     fi
 }
 
