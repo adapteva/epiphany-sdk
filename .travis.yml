@@ -23,5 +23,5 @@ script:
     - mkdir sdk
     - mv * .* sdk || true
     - ./sdk/download-components.sh --download --multicore-sim
-    - ./sdk/build-epiphany-sdk.sh
+    - ./sdk/build-epiphany-sdk.sh || (ls logs/*/build*.log; tail -n 5000 logs/*/build*.log; false)
 

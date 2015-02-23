@@ -1,5 +1,9 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.yml: Print build log on error.
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Replace 'ln --relative' with something
 	more portable.
 
