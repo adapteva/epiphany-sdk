@@ -21,8 +21,40 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Host machine architecture default
-ARCH="armv7l"
+
+
+################################################################################
+#                                                                              #
+#                              Shell functions                                 #
+#                                                                              #
+################################################################################
+
+# Get the architecture from a triplet.
+
+# This is the first field up to -, but with "arm" translated to "armv7l".
+
+# @param[in] $1  triplet
+# @return  The architecture of the triplet, but with arm translated to armv7l.
+getarch () {
+    triplet=$1
+
+
+    if [ "x${triplet}" = "x" ]
+    then
+	arch=$(uname -m)
+    else
+	arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
+    fi
+
+    if [ "x${arch}" = "xarm" ]
+    then
+	arch="armv7l"
+    fi
+
+    echo ${arch}
+}
+
+
 
 # Revision number of Epiphany SDK default
 REV="RevUndefined"
@@ -31,19 +63,25 @@ REV="RevUndefined"
 BRANCH="master"
 
 # Host architecture triplet for compiler tools
-# Likel value (with -c) if cross-building on Ubuntu is "arm-linux-gnueabihf"
-ARCH_TRIPLET=""
+# Likely value (with -c) if cross-building on Ubuntu is "arm-linux-gnueabihf"
+GNU_ARCH_PREFIX=""
 
-while getopts :a:c:Cdr:Rt:h arg; do
+ELIBS_ARCH_PREFIX="arm-linux-gnueabihf"
+
+# Whether we should check out release tags defined in define-release.sh
+do_release="--no-release"
+
+while getopts c:e:Cdr:Rt:h arg; do
 	case $arg in
 
-	a)
-		ARCH=$OPTARG
+	c)
+		GNU_ARCH_PREFIX=$OPTARG
 		;;
 
-	c)
-		ARCH_TRIPLET=$OPTARG
+	e)
+		ELIBS_ARCH_PREFIX=$OPTARG
 		;;
+
 
 	C)
 		CLEAN=yes
@@ -69,13 +107,17 @@ while getopts :a:c:Cdr:Rt:h arg; do
 
 	h)
 		echo "Usage: ./build-epiphany-sdk.sh "
-		echo "    [-a <host arch>]: The host architecture. Default $ARCH"
-		echo "    [-c <host triplet>]: The architecture triplet. Only needed for Canadian cross builds."
-		echo "    [-C]: Clean before start building."
-		echo "    [-d]: Enable building with debug symbols."
-		echo "    [-r <revision>]: The revision string for the SDK. Default $REV"
-		echo "    [-t <tag_name>]: The tag name (or branch name) for the SDK sources. Default $BRANCH"
-		echo "    [-h]: Show usage"
+		echo "    [-c <host prefix>]: Tool-chain architecture prefix."
+		echo "                        Only needed for Canadian cross builds."
+		echo "    [-e <host prefix>]: epiphany-libs architecture prefix."
+		echo "                        Default: ${ELIBS_ARCH_PREFIX}"
+		echo "    [-C]:               Clean before start building."
+		echo "    [-d]:               Enable building with debug symbols."
+		echo "    [-r <revision>]:    The revision string for the SDK."
+		echo "                        Default $REV"
+		echo "    [-t <tag_name>]:    The tag name (or branch name) for the SDK sources."
+		echo "                        Default: $BRANCH"
+		echo "    [-h]:               Show usage"
 		echo ""
 		exit 0
 		;;
@@ -103,9 +145,9 @@ basedir=`(cd "$d/.." && pwd)`
 . ${basedir}/sdk/define-release.sh
 
 ESDK="${EPIPHANY_BUILD_HOME}/esdk.${RELEASE}"
-HOSTNAME="host.${ARCH}"
+HOSTNAME="host.$(getarch ${ELIBS_ARCH_PREFIX})"
 HOST="${ESDK}/tools/${HOSTNAME}"
-GNUNAME="e-gnu.${ARCH}"
+GNUNAME="e-gnu.$(getarch ${GNU_ARCH_PREFIX})"
 GNU="${ESDK}/tools/${GNUNAME}"
 EPIPHANY_HOME=$ESDK
 
@@ -123,7 +165,8 @@ echo "    ESDK=$ESDK"
 echo ""
 echo "Build settings:"
 echo ""
-echo "    Target architecture:          ${ARCH}"
+echo "    Tool-chain host prefix:       ${GNU_ARCH_PREFIX}"
+echo "    epiphany-libs host prefix:    ${ELIBS_ARCH_PREFIX}"
 echo "    Build version:                ${RELEASE}"
 echo "    Build from branch or tag:     ${BRANCH}"
 echo ""
@@ -147,12 +190,23 @@ ln -sTf ${HOSTNAME} ${ESDK}/tools/host
 ln -sTf ${GNUNAME}  ${ESDK}/tools/e-gnu
 
 
-# Sort out arg for Canadian cross
-if [ "x${ARCH_TRIPLET}" = "x" ]; then
+# Sort out arg for cross compiling / Canadian cross
+
+# Toolchain host architecture prefix
+if [ "x${GNU_ARCH_PREFIX}" = "x" ]; then
 	host_str=""
 else
-	host_str="--host ${ARCH_TRIPLET}"
+	host_str="--host ${GNU_ARCH_PREFIX}"
 fi
+
+# epiphany-libs host architecture prefix
+if [ "x${ELIBS_ARCH_PREFIX}" = "x" ]; then
+	elibs_host_str=""
+else
+	elibs_host_str="--host ${ELIBS_ARCH_PREFIX}"
+fi
+
+
 
 if [ "xyes" = "x$DEBUG" ]; then
 	export CFLAGS="-g ${CFLAGS}"
@@ -172,7 +226,8 @@ fi
 
 # If we're building for same host buildmachine the toolchain will naturally be
 # installed to ${GNU}. Otherwise install into builds/
-if [ "x${ARCH}" = "x$(uname -m)" ]
+if [ "x${GNU_ARCH_PREFIX}" = "x" -o \
+     "x$(getarch ${GNU_ARCH_PREFIX})" = "x$(uname -m)" ]
 then
     id_buildarch_toolchain="${GNU}"
     buildarch_install_dir_str=""
@@ -222,7 +277,7 @@ fi
 # build the epiphany-libs and install the SDK
 # TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH}.
 if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} \
-	${host_str} ${sdk_debug_str} ${sdk_clean_str}; then
+	${elibs_host_str} ${sdk_debug_str} ${sdk_clean_str}; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
