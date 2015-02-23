@@ -1213,8 +1213,8 @@ else
 	(cp -f ${id_gdb_multicore_sim}/epiphany-elf/libexec/epiphany-elf-sim-dummy \
 	    ${id_host}/epiphany-elf/libexec/epiphany-elf-sim-dummy ||
 	    logterm "Warning: Could not install multicore simulator dummy binary" \
-	) &&
-	ln -fsr ${id_host}/bin/epiphany-elf-sim ${id_host}/bin/e-sim
+	) && (
+	    cd ${id_host}/bin && ln -fs epiphany-elf-sim e-sim )
 	)
     then
 	logterm "Error: Epiphany multicore simulator install failed."
