@@ -1,5 +1,9 @@
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* README.md: New file.
+
+2015-02-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* .travis.yml: Build with gcc-4.8
 
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
