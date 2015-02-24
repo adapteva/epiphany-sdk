@@ -1,5 +1,11 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Remove unneeded extra clone of
+	parallella-linux. This is handled by the previous call to
+	download-components.sh.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Do not pass "--multicore-sim" to
 	download-components.sh
 	* download-components.sh: Rely entirely on components file
