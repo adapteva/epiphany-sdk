@@ -325,7 +325,7 @@ check_dir_exists () {
     if [ ! -d "${basedir}/${1}" ]
     then
 	logterm "ERROR: Component directory ${basedir}/${1} missing."
-	return;
+	return 1
     fi
 }
 
@@ -768,15 +768,15 @@ fi
 # Sanity check that we have everything we need. Take the opportunity to set up
 # the component lists at the same time. Note that later items in the list
 # override earlier items.
+res="success"
 
 # First the main components, which we *must* have.
-res="success"
-check_dir_exists "gcc" | res="failure"
-check_dir_exists "binutils" | res="failure"
-check_dir_exists "gdb" | res="failure"
-check_dir_exists "newlib" | res="failure"
-check_dir_exists "cgen" | res="failure"
-check_dir_exists "sdk" | res="failure"
+check_dir_exists "gcc"      || res="failure"
+check_dir_exists "binutils" || res="failure"
+check_dir_exists "gdb"      || res="failure"
+check_dir_exists "newlib"   || res="failure"
+check_dir_exists "cgen"     || res="failure"
+check_dir_exists "sdk"      || res="failure"
 
 component_dirs="newlib gdb cgen binutils gcc"
 
@@ -786,7 +786,7 @@ infra_exclude=""
 
 if [ "${do_gmp}" = "--do-gmp" ]
 then
-    check_dir_exists "gcc-infrastructure/gmp" | res="failure"
+    check_dir_exists "gcc-infrastructure/gmp" || res="failure"
     infra_dir="gcc-infrastructure"
 else
     infra_exclude="gmp ${infra_exclude}"
@@ -794,7 +794,7 @@ fi
 
 if [ "${do_mpfr}" = "--mpfr" ]
 then
-    check_dir_exists "gcc-infrastructure/mpfr" | res="failure"
+    check_dir_exists "gcc-infrastructure/mpfr" || res="failure"
     infra_dir="gcc-infrastructure"
 else
     infra_exclude="mpfr ${infra_exclude}"
@@ -802,7 +802,7 @@ fi
 
 if [ "${do_mpc}" = "--mpc" ]
 then
-    check_dir_exists "gcc-infrastructure/mpc" | res="failure"
+    check_dir_exists "gcc-infrastructure/mpc" || res="failure"
     infra_dir="gcc-infrastructure"
 else
     infra_exclude="mpc ${infra_exclude}"
@@ -810,7 +810,7 @@ fi
 
 if [ "${do_isl}" = "--isl" ]
 then
-    check_dir_exists "gcc-infrastructure/isl" | res="failure"
+    check_dir_exists "gcc-infrastructure/isl" || res="failure"
     infra_dir="gcc-infrastructure"
 else
     infra_exclude="isl ${infra_exclude}"
@@ -818,7 +818,7 @@ fi
 
 if [ "${do_cloog}" = "--cloog" ]
 then
-    check_dir_exists "gcc-infrastructure/cloog" | res="failure"
+    check_dir_exists "gcc-infrastructure/cloog" || res="failure"
     infra_dir="gcc-infrastructure"
 else
     infra_exclude="cloog ${infra_exclude}"
@@ -826,7 +826,7 @@ fi
 
 if [ "${do_ncurses}" = "--ncurses" ]
 then
-    check_dir_exists "gcc-infrastructure/ncurses" | res="failure"
+    check_dir_exists "gcc-infrastructure/ncurses" || res="failure"
     infra_dir="gcc-infrastructure"
 else
     infra_exclude="ncurses ${infra_exclude}"

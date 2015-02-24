@@ -1,5 +1,9 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-toolchain.sh: Fix typos in error checking.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Remove unneeded extra clone of
 	parallella-linux. This is handled by the previous call to
 	download-components.sh.
