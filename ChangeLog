@@ -1,3 +1,11 @@
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Do not pass "--multicore-sim" to
+	download-components.sh
+	* download-components.sh: Rely entirely on components file
+	to determine which components to download. Remove arguments
+	that were used to do this.
+
 2015-02-24  Ola Jeppsson  <ola@adapteva.com>
 
 	* download-components.sh: Default to HTTPS for git cloning.
@@ -7,9 +15,6 @@
 	* .travis.sh: New file. Add dummy ping loop to keep build
 	alive.
 	* .travis.yml: Call .travis.sh
-
-2015-02-23  Ola Jeppsson  <ola@adapteva.com>
-
 
 2015-02-23  Ola Jeppsson  <ola@adapteva.com>
 

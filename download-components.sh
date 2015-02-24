@@ -26,12 +26,6 @@
 #                          [--https | --ssh ]
 #                          [--infra-url <url> | --infra-us |
 #                           --infra-uk | --infra-jp]
-#                          [--gmp | --no-gmp]
-#                          [--mpfr | --no-mpfr]
-#                          [--mpc | --no-mpc]
-#                          [--isl | --no-isl]
-#                          [--cloog | --no-cloog]
-#                          [--ncurses | --no-ncurses]
 #                          [--help | -h]
 
 # --force | --no-force
@@ -63,27 +57,6 @@
 # --infra-jp
 
 #     Synonyms respectively for infrastructure URLs in the USA, UK and Japan
-
-# --gmp | --no-gmp
-# --mpfr | --no-mpfr
-# --mpc | --no-mpc
-# --isl | --no-isl
-# --cloog | --no-cloog
-# --ncurses | --no-ncurses
-
-#     Download, or (with the --no- prefix) don't download the corresponding GCC
-#     infrastructure component. The components are downloaded from the
-#     infrastructure URL, which may be changed by the --infra-url option. By
-#     default all components are downloaded.
-
-# --multicore-sim | --no-multicore-sim
-
-#     Download, or (with the --no- prefix) don't download the GDB based
-#     experimental multi-core simulator.
-#     The components are downloaded from the
-#     infrastructure URL, which may be changed by the --infra-url option. By
-#     default all components are downloaded.
-
 
 # --help | -h
 
@@ -182,7 +155,7 @@ download_tool() {
 	    echo "ERROR: Unable to download ${tool}" | tee -a ${log}
 	    return 1
 	fi
-	if ! ${unpack_cmd} ${branch} >> ${log} 2>&1
+	if ! eval ${unpack_cmd} ${branch} >> ${log} 2>&1
 	then
 	    echo "ERROR: Unable to unpack ${tool}" | tee -a ${log}
 	    return 1
@@ -206,14 +179,6 @@ download_tool() {
     fi
 }
 
-# Function to unpack tarball
-
-# @param[in] $1 Filename
-
-# @return  Exit status from tar
-tar_xfz () {
-    tar xfz $1
-}
 
 # Function to either download a tool or clone a git repository from GitHub,
 # checking out the relevant branch.
@@ -238,7 +203,7 @@ github_tool () {
     else
 	download_tool "${tool}" \
 			"https://github.com/${organization}/${repo}/archive" \
-			"tar_xfz" "${branch}.tar.gz" "${repo}-${branch}"
+			"tar xf" "${branch}.tar.gz" "${repo}-${branch}"
     fi
 }
 
@@ -246,9 +211,8 @@ github_tool () {
 
 # @return 0 on success, anything else indicates failure
 download_components() {
-    # Clone repositories from GitHub
+    # Clone/Download repositories from GitHub
     # TODO: ??? Move this to get-versions.sh
-    # TODO: Some components might be optional and unnecessary to download.
 
     OLD_IFS=${IFS}
     IFS="
@@ -258,24 +222,49 @@ download_components() {
     for line in `cat ${basedir}/sdk/components.conf | grep -v '^#' \
 		     | grep -v '^$'`
     do
-	class=`         echo ${line} | cut -d ':' -f 1`
-	tool=`          echo ${line} | cut -d ':' -f 2`
-	branch=`        echo ${line} | cut -d ':' -f 3`
-	repo=`          echo ${line} | cut -d ':' -f 4`
+	class=`echo ${line} | cut -d ':' -f 1`
 
-	# TODO: Be more general
 	case ${class} in
-	toolchain|sdk)
-	    if ! github_tool ${tool} ${repo} ${branch} adapteva
+	toolchain|sdk|parallella)
+	    tool=`   echo ${line} | cut -d ':' -f 2`
+	    branch=` echo ${line} | cut -d ':' -f 3`
+	    repo=`   echo ${line} | cut -d ':' -f 4`
+	    if [ "x${class}" = "xparallella" ]
+	    then
+		org="parallella"
+	    else
+		org="adapteva"
+	    fi
+
+	    if ! github_tool "${tool}" "${repo}" "${branch}" "${org}"
 	    then
 		res="fail"
 		break
 	    fi
 
 	    ;;
-	parallella)
-	    # Component resides at Parallella organization.
-	    if ! github_tool ${tool} ${repo} ${branch} parallella
+
+	gccinfra)
+	    name=`    echo ${line} | cut -d ':' -f 2`
+	    version=` echo ${line} | cut -d ':' -f 3`
+	    suffix=`  echo ${line} | cut -d ':' -f 4`
+
+	    if ! gcc_component ${name} ${version} ${suffix}
+	    then
+		res="fail"
+		break
+	    fi
+
+	    ;;
+
+	other)
+	    name=`    echo ${line} | cut -d ':' -f 2`
+	    version=` echo ${line} | cut -d ':' -f 3`
+	    suffix=`  echo ${line} | cut -d ':' -f 4`
+	    proto=`   echo ${line} | cut -d ':' -f 5`
+	    base=`    echo ${line} | cut -d ':' -f 6`
+
+	    if ! other_component ${name} ${version} ${suffix} ${proto}:${base}
 	    then
 		res="fail"
 		break
@@ -380,13 +369,6 @@ force="false"
 clone="false"
 git_transport_prefix="https://github.com"
 infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
-do_gmp="--do-gmp"
-do_mpfr="--do-mpfr"
-do_mpc="--do-mpc"
-do_isl="--do-isl"
-do_cloog="--do-cloog"
-do_ncurses="--do-ncurses"
-do_multicore_sim="--multicore-sim"
 
 until
 opt=$1
@@ -433,47 +415,12 @@ case ${opt} in
 	infra_url="http://ftp.tsukuba.wide.ad.jp/software/gcc/infrastructure"
 	;;
 
-    --gmp | --no-gmp)
-	do_gmp="$1"
-	;;
-
-    --mpfr | --no-mpfr)
-	do_mpfr="$1"
-	;;
-
-    --mpc | --no-mpc)
-	do_mpc="$1"
-	;;
-
-    --isl | --no-isl)
-	do_isl="$1"
-	;;
-
-    --cloog | --no-cloog)
-	do_cloog="$1"
-	;;
-
-    --ncurses | --no-ncurses)
-	do_ncurses="$1"
-	;;
-
-    --multicore-sim | --no-multicore-sim)
-	do_multicore_sim="$1"
-	;;
-
     ?*)
 	echo "Usage: ./download-components.sh [--force | --no-force]"
 	echo "                                [--clone | --download]"
 	echo "                                [--https | --ssh]"
 	echo "                                [--infra-url <url> | --infra-us |"
 	echo "                                 --infra-uk | --infra-jp]"
-	echo "                                [--gmp | --no-gmp]"
-	echo "                                [--mpfr | --no-mpfr]"
-	echo "                                [--mpc | --no-mpc]"
-	echo "                                [--isl | --no-isl]"
-	echo "                                [--cloog | --no-cloog]"
-	echo "                                [--ncurses | --no-ncurses]"
-	echo "                                [--multicore-sim | --no-multicore-sim]"
 	echo "                                [--help | -h]"
 	exit 1
 	;;
@@ -518,40 +465,6 @@ if ! download_components
 then
     echo "ERROR: Failed to download components" | tee -a ${log}
     exit 1
-fi
-
-# Download optional GCC components
-# TODO: We want to define these outside of the download script, either in
-# 'toolchain-components' or 'gcc-components'.
-if [ "${do_gmp}" = "--do-gmp" ]
-then
-    gcc_component "gmp" "gmp-4.3.2" "tar.bz2" || res="fail"
-fi
-
-if [ "${do_mpfr}" = "--do-mpfr" ]
-then
-    gcc_component "mpfr" "mpfr-2.4.2" "tar.bz2" || res="fail"
-fi
-
-if [ "${do_mpc}" = "--do-mpc" ]
-then
-    gcc_component "mpc" "mpc-0.8.1" "tar.gz" || res="fail"
-fi
-
-if [ "${do_isl}" = "--do-isl" ]
-then
-    gcc_component "isl" "isl-0.12.2" "tar.bz2" || res="fail"
-fi
-
-if [ "${do_cloog}" = "--do-cloog" ]
-then
-    gcc_component "cloog" "cloog-0.18.1" "tar.gz" || res="fail"
-fi
-
-if [ "${do_ncurses}" = "--do-ncurses" ]
-then
-    other_component "ncurses" "ncurses-5.9" "tar.gz" \
-	"http://ftp.gnu.org/pub/gnu/ncurses" || res="fail"
 fi
 
 if [ "${res}" = "ok" ]

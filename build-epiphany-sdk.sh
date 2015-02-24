@@ -254,8 +254,7 @@ export PATH="${id_buildarch_toolchain}/bin:${PATH}"
 # other than x86_64. So we'll rely on that for the time being.
 multicore_sim_str="--multicore-sim"
 
-if ! ./download-components.sh ${multicore_sim_str} --clone; then
-
+if ! ./download-components.sh --clone; then
 	printf "\nAborting...\n"
 	exit 1
 fi
