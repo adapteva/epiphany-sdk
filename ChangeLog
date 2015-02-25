@@ -1,5 +1,13 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Refactoring: Rename
+	EPIPHANY_BUILD_HOME to EPIPHANY_BUILDROOT; Rename
+	{GNU,ELIBS}_ARCH_PREFIX to x_CANONICAL_HOST; Removed dead
+	code. Add relevant environment variables to help text. Add
+	EPIPHANY_DESTDIR environment variable.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* install-sdk.sh: Cleanup.
 
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
