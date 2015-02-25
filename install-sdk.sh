@@ -388,8 +388,10 @@ check_dir_exists "epiphany-libs" || failedbuild
 # TODO: Add flags for autopull and autocheckout
 autopull="--auto-pull"
 autocheckout="--auto-checkout"
+regex="sdk\|parallella"
 if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/components.conf \
-     ${logfile} ${auto_pull} ${auto_checkout}
+     ${logfile} ${auto_pull} ${auto_checkout} \
+     --regex ${regex}
 then
     echo "ERROR: Could not get correct versions of tools"
     exit 1

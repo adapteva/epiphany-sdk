@@ -1,5 +1,12 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* get-versions.sh: Add --regex parameter.
+	* build-toolchain.sh: Use above mentioned --regex parameter to
+	only update relevant classes of components.
+	* install-sdk.sh: Likewise.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* common-functions: New file.
 	* build-epiphany-sdk.sh: Move all shell functions to
 	'common-functions'. Include 'common-functions'.

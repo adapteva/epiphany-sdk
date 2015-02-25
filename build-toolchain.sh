@@ -768,10 +768,12 @@ fi
 
 component_dirs="${infra_dir} ${component_dirs}"
 
+regex="toolchain"
 # Checkout and pull repos if necessary
 if ! ${basedir}/sdk/get-versions.sh ${basedir} sdk/components.conf \
                                     ${logfile} ${auto_pull} \
-                                    ${auto_checkout}
+                                    ${auto_checkout} \
+				    --regex ${regex}
 then
     logterm "ERROR: Could not get correct versions of tools"
     failedbuild

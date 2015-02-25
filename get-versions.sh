@@ -28,6 +28,7 @@
 #     get-versions.sh <basedir> <componentfile> <logfile>
 #                     [--auto-checkout | --no-auto-checkout]
 #                     [--auto-pull | --no-auto-pull]
+#                     [--regex <filter>]
 
 # We checkout the desired branch for each tool, but only if it is a git
 # repository.
@@ -88,6 +89,7 @@ logfile=$1
 shift
 autocheckout="--auto-checkout"
 autopull="--auto-pull"
+regex="toolchain\|sdk\|parallella"
 
 # Parse options
 until
@@ -101,9 +103,15 @@ case ${opt} in
 	autopull=$1
 	;;
 
+    --regex)
+	shift
+	regex=$1
+	;;
+
     ?*)
 	echo "Usage: get-versions.sh  [--auto-checkout | --no-auto-checkout]"
         echo "                        [--auto-pull | --no-auto-pull]"
+	echo "                        [--regex <filter>]"
 	exit 1
 	;;
 
@@ -159,14 +167,10 @@ do
     tool=`  echo ${line} | cut -d ':' -f 2`
     branch=`echo ${line} | cut -d ':' -f 3`
 
-    # TODO: Class should be a command line argument
-    case ${class} in
-    toolchain|sdk)
-	;;
-    *)
+    if ! echo ${class} | grep -q ${regex}
+    then
 	continue
-	;;
-    esac
+    fi
 
     # Select the tool dir
     if ! cd ${basedir}/${tool}
