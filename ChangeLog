@@ -1,5 +1,10 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.yml: Do not pass --multicore-sim to
+	download-components.sh.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* .mailmap: New file.
 
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>

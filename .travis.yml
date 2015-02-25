@@ -31,6 +31,6 @@ before_install:
 script:
     - mkdir sdk
     - mv * .* sdk || true
-    - ./sdk/download-components.sh --download --multicore-sim
+    - ./sdk/download-components.sh --download
     - ./sdk/.travis.sh
 
