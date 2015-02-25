@@ -1,5 +1,9 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* .mailmap: New file.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* get-versions.sh: Add --regex parameter.
 	* build-toolchain.sh: Use above mentioned --regex parameter to
 	only update relevant classes of components.
