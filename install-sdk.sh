@@ -397,27 +397,18 @@ if [ "x" != "x${CROSS_COMPILE}" ]; then
     fi
 fi
 
-
-echo ""
-echo "==============================================="
-echo "| NOTE: The default BSP is set to ${BSP}"
-echo "| Please make sure it matches your system,	|"
-echo "| or change the settings in this build script |"
-echo "==============================================="
-echo ""
-
 echo ""
 echo "=============================================="
-echo "Build Settings:								"
-echo "												"
-echo "Build Rev     = $REV							"
-echo "Branch        = $BRANCH						"
-echo "EPIPHANY_HOME = $EPIPHANY_HOME				"
-echo "ESDK          = $ESDK							"
-echo "HOSTNAME      = $HOSTNAME						"
-echo "GNUNAME       = $GNUNAME						"
-echo "GNU           = $GNU							"
-echo "PATH          = $PATH							"
+echo "Build Settings:"
+echo ""
+echo "Build Rev     = $REV"
+echo "Branch        = $BRANCH"
+echo "EPIPHANY_HOME = $EPIPHANY_HOME"
+echo "ESDK          = $ESDK"
+echo "HOSTNAME      = $HOSTNAME"
+echo "GNUNAME       = $GNUNAME"
+echo "GNU           = $GNU"
+echo "PATH          = $PATH"
 echo "=============================================="
 echo ""
 
@@ -466,12 +457,6 @@ then
     echo "ERROR: Could not get correct versions of tools"
     exit 1
 fi
-
-# Copy top files
-cp -d ./sdk/README    ${ESDK}
-cp -d ./sdk/COPYING   ${ESDK}
-cp -d ./sdk/setup.sh  ${ESDK}
-cp -d ./sdk/setup.csh ${ESDK}
 
 
 # Build the eSDK libraries from epiphany-libs repo. From this point on we are
@@ -557,15 +542,23 @@ cp ${BLD_VERSION}/libe-lib.a ${ESDK}/tools/e-gnu/epiphany-elf/lib
 cp include/*.h		  ${ESDK}/tools/e-gnu/epiphany-elf/include/
 ln -sTf libe-lib.a	  ${ESDK}/tools/e-gnu/epiphany-elf/lib/libelib.a
 ln -sTf e_lib.h		  ${ESDK}/tools/e-gnu/epiphany-elf/include/e-lib.h
-cd ../../
 
 
-# Any special operations here...
+cd ${basedir}
 
-echo "==============================================="
-echo "| NOTE: The default BSP is set to ${BSP}"
-echo "| Please make sure it matches your system,	|"
-echo "| or change the settings in this build script |"
-echo "==============================================="
+# Copy top files
+echo "Copying top files"
+cp -d ./sdk/README    ${ESDK}
+cp -d ./sdk/COPYING   ${ESDK}
+cp -d ./sdk/setup.sh  ${ESDK}
+cp -d ./sdk/setup.csh ${ESDK}
+
+printf "=%.0s" $(seq 1 60)
+printf "\n"
+printf "| %-56s |\n" "NOTE: The default BSP is set to \"${BSP}\""
+printf "| %-56s |\n" "Please make sure it matches your system,"
+printf "| %-56s |\n" "or change the settings in this build script"
+printf "=%.0s" $(seq 1 60)
+printf "\n"
 
 exit 0

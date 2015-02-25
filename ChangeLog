@@ -1,5 +1,9 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* install-sdk.sh: Cleanup.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* install-sdk.sh: Use check_dir_exists() function to check for
 	epiphany-libs.
 
