@@ -1,5 +1,10 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* install-sdk.sh: Use check_dir_exists() function to check for
+	epiphany-libs.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Fix typos in error checking.
 
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>

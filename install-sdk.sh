@@ -119,6 +119,28 @@ getarch () {
     echo ${arch}
 }
 
+
+# Check a component directory exists in the basedir
+
+# @param[in] $1 the directory to check
+
+# @return  0 (success) if the directory is there and readable, 1 (failure)
+#          otherwise.
+check_dir_exists () {
+    if [ ! -d "${basedir}/${1}" ]
+    then
+	logterm "ERROR: Component directory ${basedir}/${1} missing."
+	return 1
+    fi
+}
+
+# Convenience function to copy a message to the log and terminal
+
+# @param[in] $1  The message to log
+logterm () {
+    echo $1 | tee -a ${logfile}
+}
+
 # Check if toolchain is present.
 
 # @param[in] $1  Toolchain prefix
@@ -130,6 +152,13 @@ check_toolchain () {
     (which ${prefix}gcc && which ${prefix}as &&
      which ${prefix}ld  && which ${prefix}ar) >/dev/null
 }
+
+# Convenience function to exit with a suitable message.
+failedbuild () {
+  echo "Build failed. See ${logfile} for details."
+  exit 1
+}
+
 
 
 # -----------------------------------------------------------------------------
@@ -425,14 +454,7 @@ then
     exit 1
 fi
 
-if [ ! -d "${ESDK_LIBS}" ]; then
-	# Clone the epiphany-libs repository
-	if ! git clone https://github.com/adapteva/epiphany-libs.git -b $BRANCH; then
-		printf "Failed to clone the epiphany-libs repository and no "
-		printf "ESDKLIBS pat was provided on the command line\n"
-		exit 1
-	fi
-fi
+check_dir_exists "epiphany-libs" || failedbuild
 
 # Checkout and pull repos if necessary
 # TODO: Add flags for autopull and autocheckout
