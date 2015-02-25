@@ -21,38 +21,15 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Define the basedir
+d=`dirname "$0"`
+basedir=`(cd "$d/.." && pwd)`
 
+# Common functions
+. ${basedir}/sdk/common-functions
 
-################################################################################
-#                                                                              #
-#                              Shell functions                                 #
-#                                                                              #
-################################################################################
-
-# Get the architecture from a triplet.
-
-# This is the first field up to -, but with "arm" translated to "armv7l".
-
-# @param[in] $1  triplet
-# @return  The architecture of the triplet, but with arm translated to armv7l.
-getarch () {
-    triplet=$1
-
-
-    if [ "x${triplet}" = "x" ]
-    then
-	arch=$(uname -m)
-    else
-	arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
-    fi
-
-    if [ "x${arch}" = "xarm" ]
-    then
-	arch="armv7l"
-    fi
-
-    echo ${arch}
-}
+# Set the release parameters
+. ${basedir}/sdk/define-release.sh
 
 
 # Git branch name for build default
@@ -144,12 +121,6 @@ fi
 if [ "x${EPIPHANY_DESTDIR}" = "x" ]; then
 	EPIPHANY_DESTDIR=${EPIPHANY_BUILDROOT}
 fi
-
-# Define the basedir
-d=`dirname "$0"`
-basedir=`(cd "$d/.." && pwd)`
-
-. ${basedir}/sdk/define-release.sh
 
 ESDK="${EPIPHANY_DESTDIR}/esdk.${RELEASE}"
 HOSTNAME="host.$(getarch ${ELIBS_CANONICAL_HOST})"

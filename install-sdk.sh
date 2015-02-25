@@ -95,81 +95,12 @@
 set -e
 
 
-################################################################################
-#                                                                              #
-#                              Shell functions                                 #
-#                                                                              #
-################################################################################
-
-# Get the architecture from a triplet.
-
-# This is the first field up to -, but with "arm" translated to "armv7l".
-
-# @param[in] $1  triplet
-# @return  The architecture of the triplet, but with arm translated to armv7l.
-getarch () {
-    triplet=$1
-
-    arch=`echo $triplet | sed -e 's/^\([^-]*\).*$/\1/'`
-    if [ "x${arch}" = "xarm" ]
-    then
-	arch="armv7l"
-    fi
-
-    echo ${arch}
-}
-
-
-# Check a component directory exists in the basedir
-
-# @param[in] $1 the directory to check
-
-# @return  0 (success) if the directory is there and readable, 1 (failure)
-#          otherwise.
-check_dir_exists () {
-    if [ ! -d "${basedir}/${1}" ]
-    then
-	logterm "ERROR: Component directory ${basedir}/${1} missing."
-	return 1
-    fi
-}
-
-# Convenience function to copy a message to the log and terminal
-
-# @param[in] $1  The message to log
-logterm () {
-    echo $1 | tee -a ${logfile}
-}
-
-# Check if toolchain is present.
-
-# @param[in] $1  Toolchain prefix
-# @return        Returns 0 on success. Anything else indicates failure.
-check_toolchain () {
-    local prefix
-    prefix=$1
-
-    (which ${prefix}gcc && which ${prefix}as &&
-     which ${prefix}ld  && which ${prefix}ar) >/dev/null
-}
-
-# Convenience function to exit with a suitable message.
-failedbuild () {
-  echo "Build failed. See ${logfile} for details."
-  exit 1
-}
-
-
-
-# -----------------------------------------------------------------------------
-#
-#				   Argument parsing
-#
-# -----------------------------------------------------------------------------
-
 # Set the top level directory.
 d=`dirname "$0"`
 basedir=`(cd "$d/.." && pwd)`
+
+# Common functions
+. ${basedir}/sdk/common-functions
 
 # Set the release parameters
 . ${basedir}/sdk/define-release.sh
@@ -179,6 +110,12 @@ logfile=${LOGDIR}/build-$(date -u +%F-%H%M).log
 rm -f "${logfile}"
 echo "Logging to ${logfile}"
 
+
+# -----------------------------------------------------------------------------
+#
+#				   Argument parsing
+#
+# -----------------------------------------------------------------------------
 
 # Default values
 

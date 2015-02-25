@@ -1,5 +1,13 @@
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* common-functions: New file.
+	* build-epiphany-sdk.sh: Move all shell functions to
+	'common-functions'. Include 'common-functions'.
+	* build-toolchain.sh: Likewise.
+	* install-sdk.sh: Likewise.
+
+2015-02-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Refactoring: Rename
 	EPIPHANY_BUILD_HOME to EPIPHANY_BUILDROOT; Rename
 	{GNU,ELIBS}_ARCH_PREFIX to x_CANONICAL_HOST; Removed dead
