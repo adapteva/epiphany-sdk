@@ -1,3 +1,8 @@
+2015-02-26  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Change prefix for
+	EPIPHANY_{DESTDIR,BUILDROOT,BUILD_TOOLCHAIN} to ESDK_x.
+
 2015-02-25  Ola Jeppsson  <ola@adapteva.com>
 
 	* .travis.yml: Do not pass --multicore-sim to

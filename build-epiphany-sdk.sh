@@ -82,7 +82,7 @@ while getopts c:e:Cdj:r:Rt:h arg; do
 		;;
 
 	h)
-		echo "Usage: ./build-epiphany-sdk.sh "
+		echo "Usage: ${0}"
 		echo "    [-c <host prefix>]: Tool-chain architecture prefix."
 		echo "                        Only needed for Canadian cross builds."
 		echo "    [-e <host prefix>]: epiphany-libs architecture prefix."
@@ -96,9 +96,9 @@ while getopts c:e:Cdj:r:Rt:h arg; do
 		echo "    [-h]:               Show usage"
 		echo ""
 		echo "Environment variables:"
-		echo "    EPIPHANY_BUILDROOT"
-		echo "    EPIPHANY_BUILD_TOOLCHAIN"
-		echo "    EPIPHANY_DESTDIR"
+		echo "    ESDK_BUILDROOT"
+		echo "    ESDK_BUILD_TOOLCHAIN"
+		echo "    ESDK_DESTDIR"
 		echo "    PARALLELLA_LINUX_HOME"
 		echo ""
 		exit 0
@@ -113,16 +113,16 @@ done
 
 shift $((OPTIND-1))
 
-if [ "x${EPIPHANY_BUILDROOT}" = "x" ]; then
+if [ "x${ESDK_BUILDROOT}" = "x" ]; then
 	d=$(dirname "$0")
-	EPIPHANY_BUILDROOT=$(cd "$d/.." && pwd)
+	ESDK_BUILDROOT=$(cd "$d/.." && pwd)
 fi
 
-if [ "x${EPIPHANY_DESTDIR}" = "x" ]; then
-	EPIPHANY_DESTDIR=${EPIPHANY_BUILDROOT}
+if [ "x${ESDK_DESTDIR}" = "x" ]; then
+	ESDK_DESTDIR=${ESDK_BUILDROOT}
 fi
 
-ESDK="${EPIPHANY_DESTDIR}/esdk.${RELEASE}"
+ESDK="${ESDK_DESTDIR}/esdk.${RELEASE}"
 HOSTNAME="host.$(getarch ${ELIBS_CANONICAL_HOST})"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.$(getarch ${TOOLCHAIN_CANONICAL_HOST})"
@@ -136,8 +136,8 @@ echo '********************************************'
 echo ""
 echo "Environment settings:"
 echo ""
-echo "    EPIPHANY_BUILDROOT=${EPIPHANY_BUILDROOT}"
-echo "    EPIPHANY_DESTDIR=${EPIPHANY_DESTDIR}"
+echo "    ESDK_BUILDROOT=${ESDK_BUILDROOT}"
+echo "    ESDK_DESTDIR=${ESDK_DESTDIR}"
 echo ""
 echo "Build settings:"
 echo ""
@@ -148,7 +148,7 @@ echo "    Build version:                ${RELEASE}"
 echo "    Build from branch or tag:     ${BRANCH}"
 echo ""
 
-cd ${EPIPHANY_BUILDROOT}/sdk || exit 1
+cd ${ESDK_BUILDROOT}/sdk || exit 1
 
 # Create the SDK tree
 echo "Creating the eSDK directory tree..."
@@ -209,7 +209,7 @@ then
     id_buildarch_toolchain="${GNU}"
     buildarch_install_dir_str=""
 else
-    id_buildarch_toolchain=${EPIPHANY_BUILDROOT}/builds/id-$(uname -m)-${RELEASE}-toolchain
+    id_buildarch_toolchain=${ESDK_BUILDROOT}/builds/id-$(uname -m)-${RELEASE}-toolchain
     buildarch_install_dir_str="--install-dir-build ${id_buildarch_toolchain}"
 fi
 
@@ -228,7 +228,7 @@ if ! ./download-components.sh --clone; then
 	exit 1
 fi
 
-if [ "$EPIPHANY_BUILD_TOOLCHAIN" != "no" ]; then
+if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	# Build the toolchain (this will take a while)
 	if ! ./build-toolchain.sh ${jobs_str} \
 		--install-dir-host ${GNU} \
@@ -248,7 +248,7 @@ fi
 # build the epiphany-libs and install the SDK
 # TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH}.
 if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} \
-	--prefix ${EPIPHANY_DESTDIR} \
+	--prefix ${ESDK_DESTDIR} \
 	${sdk_host_str} ${sdk_debug_str} ${sdk_clean_str}; then
 	printf "The Epiphany SDK build failed!\n"
 	printf "\nAborting...\n"
