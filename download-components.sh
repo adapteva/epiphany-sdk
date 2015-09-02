@@ -368,7 +368,8 @@ absolutedir() {
 force="false"
 clone="false"
 git_transport_prefix="https://github.com"
-infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
+
+infra_url="ftp://gcc.gnu.org/pub/gcc/infrastructure"
 
 until
 opt=$1

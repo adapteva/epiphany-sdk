@@ -221,7 +221,9 @@ export PATH="${id_buildarch_toolchain}/bin:${PATH}"
 # infrastructure for checking host arch in this file yet. However,
 # 'build-toolchain.sh' will emit a warning and refuse to build it for hosts
 # other than x86_64. So we'll rely on that for the time being.
-multicore_sim_str="--multicore-sim"
+# TODO: Should be merged into our gdb branch before next release.
+# Disable building it for now
+multicore_sim_str="--no-multicore-sim"
 
 if ! ./download-components.sh --clone; then
 	printf "\nAborting...\n"
@@ -230,8 +232,12 @@ fi
 
 if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	# Build the toolchain (this will take a while)
+	# TODO: Remove --enable-cgen-maint and --enable-werror
+	# before we release.
 	if ! ./build-toolchain.sh ${jobs_str} \
 		--install-dir-host ${GNU} \
+		--enable-werror \
+		--enable-cgen-maint \
 		${buildarch_install_dir_str} \
 		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
 		printf "The toolchain build failed!\n"

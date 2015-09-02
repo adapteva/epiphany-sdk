@@ -1,3 +1,17 @@
+2015-09-03  Ola Jeppsson  <ola@adapteva.com>
+
+	* .travis.yml: Install guile-1.8
+	* build-epiphany-sdk.sh: Don't build gdb multicore simulator.
+	Pass in --enable-werror and --enable-cgen-maint.
+	* build-toolchain.sh: Fix ${do_gmp} typo. Don't build cloog.
+	* components.conf: Bump version numbers to:
+	gcc-5 (currently at 5.2)
+	binutils-2.25
+	gdb-7.10
+	newlib-2.2.0
+	ncurses-6.0
+	* download-components.sh: Change infra_url to gcc ftp.
+
 2015-09-02  Ola Jeppsson  <ola@adapteva.com>
 
 	* symlink-all.sh: Be more specific about which directories we

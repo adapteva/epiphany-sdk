@@ -27,6 +27,7 @@ before_install:
       xzip
       lzip
       zip
+      guile-1.8
 
 script:
     - mkdir sdk

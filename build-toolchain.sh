@@ -332,11 +332,13 @@ rebuild_unisrc="--preserve-unisrc"
 unisrc_dir=${basedir}/unisrc-${RELEASE}
 jobs=
 load=
+# TODO: Get rid of all these flags. If you don't want something comment out the
+# line in the components file.
 do_gmp="--gmp"
 do_mpfr="--mpfr"
 do_mpc="--mpc"
 do_isl="--isl"
-do_cloog="--cloog"
+do_cloog="--no-cloog"
 do_ncurses="--ncurses"
 
 do_multicore_sim="--no-multicore-sim"
@@ -702,13 +704,13 @@ check_dir_exists "newlib"   || res="failure"
 check_dir_exists "cgen"     || res="failure"
 check_dir_exists "sdk"      || res="failure"
 
-component_dirs="newlib gdb cgen binutils gcc"
+component_dirs="newlib gdb binutils cgen gcc"
 
 # Optional GCC infrastructure components
 infra_dir=""
 infra_exclude=""
 
-if [ "${do_gmp}" = "--do-gmp" ]
+if [ "${do_gmp}" = "--gmp" ]
 then
     check_dir_exists "gcc-infrastructure/gmp" || res="failure"
     infra_dir="gcc-infrastructure"
@@ -1049,6 +1051,9 @@ fi
 #                        Install Epiphany multicore simulator                  #
 #                                                                              #
 ################################################################################
+
+# TODO: Should be merged into our gdb branch before next toolchain release. So
+# this entire section will not be needed.
 if [ "x${do_multicore_sim}" != "x--multicore-sim" ]
 then
     logterm "Skipping multicore simulator..."
