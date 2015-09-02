@@ -88,7 +88,7 @@ basedir="$1"
 shift
 logfile="$1"
 shift
-ignore="$1"
+always_ignore="$1"
 shift
 
 # Change to the unisrc directory, which can be relative to the base directory.
@@ -114,15 +114,23 @@ do
     # Special case of some directories to ignore for some components
     case $component in
 	binutils)
-	    ignore="{ignore} gdb sim"
+	    ignore="${always_ignore} gdb sim"
 	    ;;
 
 	gdb)
-	    ignore="${ignore} binutils gas ld"
+	    ignore="${always_ignore} binutils ld opcodes bfd"
+	    ;;
+
+	gcc)
+	    ignore="${always_ignore}"
+	    ;;
+
+	cgen)
+	    ignore="${always_ignore} etc config"
 	    ;;
 
 	*)
-	    ignore=""
+	    ignore="${always_ignore} sim"
 	    ;;
     esac
 

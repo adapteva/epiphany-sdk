@@ -1,3 +1,8 @@
+2015-09-02  Ola Jeppsson  <ola@adapteva.com>
+
+	* symlink-all.sh: Be more specific about which directories we
+	want from which component. Fix thinko and typo for ${ignore}.
+
 2015-02-26  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh: Change prefix for
