@@ -355,7 +355,7 @@ absolutedir() {
 force="false"
 clone="false"
 do_release="--no-release"
-infra_url="http://mirrors-uk.go-parts.com/gcc/infrastructure"
+infra_url="http://www.netgull.com/gcc/infrastructure"
 do_gmp="--do-gmp"
 do_mpfr="--do-mpfr"
 do_mpc="--do-mpc"
