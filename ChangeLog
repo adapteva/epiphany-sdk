@@ -1,3 +1,8 @@
+2015-09-17  Ola Jeppsson  <ola@adapteva.com>
+
+	* download-toolchain.sh: Change default infra_url to working
+	mirror.
+
 2015-01-24  Ola Jeppsson  <ola@adapteva.com>
 
 	* README: Update for 2015.1 release.
