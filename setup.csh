@@ -14,20 +14,34 @@ else
 	exit 2
 endif
 
+
+switch ( `uname -m` )
+	case x86_64:
+		setenv _esdk_arch ".x86_64"
+		breaksw
+	case arm*:
+		setenv _esdk_arch ".armv7l"
+		breaksw
+	default:
+		setenv _esdk_arch ""
+endsw
+
+
 #setenv PATH ${EPIPHANY_HOME}/tools/a-gnu/bin:${PATH}
-setenv PATH ${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}
-setenv PATH ${EPIPHANY_HOME}/tools/host/bin:${PATH}
+setenv PATH ${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/bin:${PATH}
+setenv PATH ${EPIPHANY_HOME}/tools/host${_esdk_arch}/bin:${PATH}
 setenv EPIPHANY_HDF ${EPIPHANY_HOME}/bsps/current/platform.hdf
 
 if ( $?MANPATH  ) then
-    setenv MANPATH ${EPIPHANY_HOME}/tools/e-gnu/share/man:${MANPATH}
+    setenv MANPATH ${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/share/man:${MANPATH}
 else
-    setenv MANPATH ${EPIPHANY_HOME}/tools/e-gnu/share/man
+    setenv MANPATH ${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/share/man
 endif
 
 if ( $?LD_LIBRARY_PATH  ) then
-	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host/lib:${LD_LIBRARY_PATH}
+	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host${_esdk_arch}/lib:${LD_LIBRARY_PATH}
 else
-	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host/lib
+	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host${_esdk_arch}/lib
 endif
 
+unset _esdk_arch
