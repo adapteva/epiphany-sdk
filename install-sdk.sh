@@ -297,23 +297,19 @@ HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.${host_arch}"
 GNU="${ESDK}/tools/${GNUNAME}"
 
-# Add Epiphany and host GNU tool to path
+# Add Epiphany toolchain to path
 # Make sure we include the path to the right tools if we do canadian cross.
-if [ "x${build_arch}" = "x${host_arch}" ]; then
-    PATH="${EPIPHANY_HOME}/tools/e-gnu/bin:${PATH}"
-    PATH="${EPIPHANY_HOME}/tools/host/bin:${PATH}"
-else
-    # Check if we have toolchain in path before we set PATH
-    if ! check_toolchain "epiphany-elf-" 2>/dev/null
-    then
-	echo "Warning: Epiphany toolchain not in PATH. Will try to guess..."
-	# Assume tools are installed here. This is what build-toolchain.sh does
-	PATH="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}/bin:${PATH}"
-    fi
-fi
+org_path=${PATH}
+for p in "${basedir}/builds/id-${build_arch}-${RELEASE}-toolchain/bin" \
+	 "${EPIPHANY_HOME}/tools/e-gnu.${build_arch}/bin" \
+	 "/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${build_arch}/bin"
+do
+    PATH="${p}:${org_path}"
+    check_toolchain "epiphany-elf-" && break
+done
+unset org_path
 
 export EPIPHANY_PREFIX EPIPHANY_HOME PATH
-
 
 # Check that we have all build tools
 if ! check_toolchain "epiphany-elf-"
