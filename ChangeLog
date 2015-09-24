@@ -1,5 +1,9 @@
 2015-09-24  Ola Jeppsson  <ola@adapteva.com>
 
+	* install-sdk.sh: Fix typo.
+
+2015-09-24  Ola Jeppsson  <ola@adapteva.com>
+
 	* install-sdk.sh: Rewrite toolchain path lookup.
 
 2015-09-24  Ola Jeppsson  <ola@adapteva.com>

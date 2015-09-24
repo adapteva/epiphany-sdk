@@ -257,7 +257,7 @@ fi
 
 # Argument validation
 host_arch_valid="ERR"
-if [ \( "x${host_arch}" = "xarmv7l" \) -o \( "x${host_arch}" = "x86_64" \) ]
+if [ \( "x${host_arch}" = "xarmv7l" \) -o \( "x${host_arch}" = "xx86_64" \) ]
 then
 	host_arch_valid="OK"
 else
