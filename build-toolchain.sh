@@ -341,8 +341,6 @@ do_isl="--isl"
 do_cloog="--no-cloog"
 do_ncurses="--ncurses"
 
-do_multicore_sim="--no-multicore-sim"
-
 # The assembler and/or linker are broken so that constant merging doesn't
 # work.
 CFLAGS_FOR_TARGET="-O2 -g"
@@ -463,10 +461,6 @@ case ${opt} in
 
     --ncurses | --no-ncurses)
 	do_ncurses="$1"
-	;;
-
-    --multicore-sim | --no-multicore-sim)
-	do_multicore_sim="$1"
 	;;
 
     --target-cflags)
@@ -758,11 +752,6 @@ else
     infra_exclude="ncurses ${infra_exclude}"
 fi
 
-if [ "${do_multicore_sim}" = "--multicore-sim" ]
-then
-    check_dir_exists "gdb-multicore-sim" || res="failure"
-fi
-
 if [ "${res}" != "success" ]
 then
     failedbuild
@@ -1044,121 +1033,6 @@ then
     PATH=${id_host}/bin:$PATH
     export PATH
 fi
-
-
-################################################################################
-#                                                                              #
-#                        Install Epiphany multicore simulator                  #
-#                                                                              #
-################################################################################
-
-# TODO: Should be merged into our gdb branch before next toolchain release. So
-# this entire section will not be needed.
-if [ "x${do_multicore_sim}" != "x--multicore-sim" ]
-then
-    logterm "Skipping multicore simulator..."
-elif [ "yx86_64" != "y${host_arch}" ]
-then
-    logterm "Warning: Epiphany multi-core simulator is x86_64-only. Sorry."
-    logterm "Skipping multicore simulator..."
-else
-    logterm "Building Epiphany multicore simulator..."
-
-    bd_gdb_multicore_sim="${bd_host}-gdb-multicore-sim"
-    gdb_multicore_sim_dir="${basedir}/gdb-multicore-sim"
-    # Install into isolated directory so we don't clash with toolchain's GDB
-    id_gdb_multicore_sim="${bd_gdb_multicore_sim}-install"
-
-    # TODO: It is unnecessary to clean every time but we do need to check
-    # whether the previous configure was successful.
-    if ! rm -rf ${bd_gdb_multicore_sim}
-    then
-	logterm "ERROR: Could not remove build directory ${bd_multicore_sim}."
-	failedbuild
-    fi
-    mkdir -p ${bd_gdb_multicore_sim}
-
-    if ! rm -rf ${id_gdb_multicore_sim}
-    then
-	logterm "ERROR: Could not remove install directory ${id_multicore_sim}."
-	failedbuild
-    fi
-    mkdir -p ${id_gdb_multicore_sim}
-
-
-    # Change to the build directory
-    if ! cd ${bd_gdb_multicore_sim}
-    then
-	logterm "ERROR: Could not change to build directory ${bd_multicore_sim}."
-	failedbuild
-    fi
-
-
-    # Some flags we need, GDB doesn't seem to have nice way to specify per target
-    # flags so do it this way.
-    OLD_CFLAGS=${CFLAGS}
-    OLD_LDFLAGS=${LDFLAGS}
-    CFLAGS="-pthread -lrt -fPIC -fvisibility=hidden ${CFLAGS}"
-    LDFLAGS="-lrt ${LDFLAGS}"
-    export CFLAGS LDFLAGS
-
-    if ! "${gdb_multicore_sim_dir}/configure" ${host_str} \
-        --prefix="${id_gdb_multicore_sim}" --target=epiphany-elf \
-        --enable-emesh-sim --enable-sim-hardware \
-        ${config_extra} >> "${logfile}" 2>&1
-    then
-	logterm "ERROR: Epiphany multicore simulator configuration for host machine failed."
-	failedbuild
-    fi
-
-    if ! make ${parallel} all-gdb all-sim >> "${logfile}" 2>&1
-    then
-	logterm "Error: Epiphany multicore simulator build failed."
-	failedbuild
-    fi
-
-    logterm "Installing multicore simulator..."
-    if ! make install-gdb install-sim >> "${logfile}" 2>&1
-    then
-	logterm "Error: Epiphany multicore simulator install failed."
-	failedbuild
-    fi
-
-    # Make simulator frontend use our stand-alone runner
-    if ! (sed -i 's,epiphany-elf-run,epiphany-elf-mrun,g' ${id_gdb_multicore_sim}/bin/epiphany-elf-sim)
-    then
-	logterm "Error: Failed to patch Epiphany multicore simulator frontend script"
-	failedbuild
-    fi
-
-    # And now we have the pleasure to manually copy files over to the build
-    # directory in a way so we don't clash with the toolchain's GDB.
-    if ! ( \
-	# GDB binaries
-	cp -f ${id_gdb_multicore_sim}/bin/epiphany-elf-gdb ${id_host}/bin/epiphany-elf-mgdb &&
-	cp -f ${id_gdb_multicore_sim}/bin/epiphany-elf-run ${id_host}/bin/epiphany-elf-mrun &&
-	# Frontend
-	cp -f ${id_gdb_multicore_sim}/bin/epiphany-elf-sim ${id_host}/bin/epiphany-elf-sim  &&
-	# Frontend dummy
-	mkdir -p ${id_host}/epiphany-elf/libexec &&
-	(cp -f ${id_gdb_multicore_sim}/epiphany-elf/libexec/epiphany-elf-sim-dummy \
-	    ${id_host}/epiphany-elf/libexec/epiphany-elf-sim-dummy ||
-	    logterm "Warning: Could not install multicore simulator dummy binary" \
-	) && (
-	    cd ${id_host}/bin && ln -fs epiphany-elf-sim e-sim )
-	)
-    then
-	logterm "Error: Epiphany multicore simulator install failed."
-	failedbuild
-    fi
-
-    # Restore environment
-    CFLAGS=${OLD_CFLAGS}
-    LDFLAGS=${OLD_LDFLAGS}
-    export CFLAGS LDFLAGS
-
-fi # multicore_esim
-
 
 
 ################################################################################

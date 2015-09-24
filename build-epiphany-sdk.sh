@@ -216,15 +216,6 @@ fi
 # install-sdk.sh must have an Epiphany toolchain in the PATH
 export PATH="${id_buildarch_toolchain}/bin:${PATH}"
 
-
-# TODO: We only want multicore-sim for x86_64 but we don't have the
-# infrastructure for checking host arch in this file yet. However,
-# 'build-toolchain.sh' will emit a warning and refuse to build it for hosts
-# other than x86_64. So we'll rely on that for the time being.
-# TODO: Should be merged into our gdb branch before next release.
-# Disable building it for now
-multicore_sim_str="--no-multicore-sim"
-
 if ! ./download-components.sh --clone; then
 	printf "\nAborting...\n"
 	exit 1
@@ -239,7 +230,7 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 		--enable-werror \
 		--enable-cgen-maint \
 		${buildarch_install_dir_str} \
-		${host_str} ${toolchain_clean_str} ${multicore_sim_str}; then
+		${host_str} ${toolchain_clean_str}; then
 		printf "The toolchain build failed!\n"
 		printf "\nAborting...\n"
 		exit 1
