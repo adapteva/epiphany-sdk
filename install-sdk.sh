@@ -109,6 +109,7 @@ basedir=`(cd "$d/.." && pwd)`
 logfile=${LOGDIR}/build-$(date -u +%F-%H%M).log
 rm -f "${logfile}"
 echo "Logging to ${logfile}"
+touch ${logfile}
 
 
 # -----------------------------------------------------------------------------
@@ -125,9 +126,6 @@ ESDKPATH="${basedir}"	 # In user account, adjacent directory
 # Default Revision number of new eSDK build
 REV="DevBuild"
 export REV
-
-# Host machine architecture
-ARCH="armv7l"
 
 # List of available BSPs and default BSP
 BSPS="zed_E16G3_512mb zed_E64G4_512mb parallella_E16G3_1GB"
@@ -214,8 +212,6 @@ do
 			echo "the following environment variables:"
 			echo ""
 			echo "\tBSP"
-			echo "\tARCH"
-			echo "\tBSP"
 			echo "\tBLD_VERSION"
 			echo "\tCROSS_COMPILE"
 			exit 0
@@ -243,7 +239,7 @@ done
 
 
 # Sort out Canadian cross stuff. First is it really a canadian cross
-build_arch=`uname -m`
+build_arch=$(getarch $(uname -m))
 if [ "x" != "x${host}" ]
 then
     host_arch=`getarch ${host}`
@@ -260,12 +256,12 @@ else
 fi
 
 # Argument validation
-arch_valid="ERR"
-if [ \( "x${ARCH}" = "xarmv7l" \) -o \( "x${ARCH}" = "x86_64" \) ]
+host_arch_valid="ERR"
+if [ \( "x${host_arch}" = "xarmv7l" \) -o \( "x${host_arch}" = "x86_64" \) ]
 then
-	arch_valid="OK"
+	host_arch_valid="OK"
 else
-	echo "\"${ARCH}\" is not a valid SDK architecture"
+	echo "\"${host_arch}\" is not a valid SDK architecture"
 fi
 
 bsp_valid="ERR"
@@ -283,7 +279,7 @@ then
 fi
 
 # Give up if either argument was invalid
-if [   \( "${arch_valid}"  != "OK" \) -o \( "${bsp_valid}"	 != "OK" \) ]
+if [   \( "${host_arch_valid}"  != "OK" \) -o \( "${bsp_valid}"	 != "OK" \) ]
 then
 	exit 1
 fi

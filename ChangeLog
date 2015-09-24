@@ -1,3 +1,7 @@
+2015-09-24  Ola Jeppsson  <ola@adapteva.com>
+
+	* install-sdk.sh: Remove unused $ARCH variable.
+
 2015-09-23  Ola Jeppsson  <ola@adapteva.com>
 
 	* setup.sh: Prepend $arch to paths
