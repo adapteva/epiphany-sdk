@@ -1,5 +1,9 @@
 2015-09-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Use git to figure out branch name.
+
+2015-09-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Remove all references to multicore
 	simulator. It's merged into epiphany-gdb-7.10
 	* build-toolchain.sh: Likewise.
