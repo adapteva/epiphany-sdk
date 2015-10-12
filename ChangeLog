@@ -1,3 +1,7 @@
+2015-10-12  Marty Fouts  <martyfouts@users.noreply.github.com>
+
+	* get-versions.sh: Fix detached head with git 2.4+
+
 2015-09-17  Ola Jeppsson  <ola@adapteva.com>
 
 	* download-toolchain.sh: Change default infra_url to working
