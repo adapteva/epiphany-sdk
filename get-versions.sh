@@ -205,8 +205,8 @@ do
     then
 	logterm "Fetching ${tool}"
 
-	# See note below why two expressions are requied.
-	if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
+	# See note below why two expressions are required.
+	if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)' -e '\* (HEAD detached at .*)'
 	then
 	    # Try to guess a good branch with a working tree similar to the
 	    # tag's
@@ -216,7 +216,7 @@ do
 	    fi
 
 	    # Check if repo is still in detached head
-	    if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
+	    if git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)' -e '\* (HEAD detached at .*)'
 	    then
 		# Detached head. Checkout an 'arbitrary' branch...
 		# ... but it cannot be a remote name, or HEAD etc. ...
@@ -267,7 +267,8 @@ do
         # If tree is in detahed state, output differs between Git versions:
         # Git 1.8 prints: * (detached from <tag_name>>)
         # Git <1.8 prints: * (no branch)
-        if ! git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)'
+        # Git >2.4+ prints: (HEAD detached at ...)
+        if ! git branch | grep -q -e '\* (detached from .*)' -e '\* (no branch)' -e '\* (HEAD detached at .*)'
         then
             logterm "Pulling latest version of ${branch}"
             if ! git pull >> ${logfile} 2>&1
