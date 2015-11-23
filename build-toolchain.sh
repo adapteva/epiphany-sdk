@@ -874,6 +874,16 @@ then
 	    failedbuild
 	fi
 
+	# Force guile 1.8 in build if available.
+	guile18=`which guile1.8 2>/dev/null`
+	[ "x$guile18" = x ] && guile18=`which guile-1.8 2>/dev/null`
+	if ! [ "x${guile18}" = "x" ]
+	then
+	    mkdir -p guile/libguile
+	    ln -sf ${guile18} guile/libguile/guile
+	fi
+	unset guile18
+
         # Configure the required components of the tool chain. We only need
         # binutils, as, ld and gcc. We need to temporarily move
         # CFLAGS_FOR_TARGET out of the way.
@@ -987,6 +997,16 @@ then
     logterm "ERROR: Could not change to build directory ${bd_host}."
     failedbuild
 fi
+
+# Force guile 1.8 in build if available.
+guile18=`which guile1.8 2>/dev/null`
+[ "x$guile18" = x ] && guile18=`which guile-1.8 2>/dev/null`
+if ! [ "x${guile18}" = "x" ]
+then
+    mkdir -p guile/libguile
+    ln -sf ${guile18} guile/libguile/guile
+fi
+unset guile18
 
 # Configure the entire tool chain, but only if we are doing a clean build
 

@@ -1,5 +1,9 @@
 2015-11-23  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-toolchain.sh: Enforce use of guile-1.8, if available.
+
+2015-11-23  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-libs.sh: New file. Replaces install-sdk.sh.
 	* install-sdk.sh: Remove.
 	* build-epiphany-sdk.sh: Use build-epiphany-libs.sh for
