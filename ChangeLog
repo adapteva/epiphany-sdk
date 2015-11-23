@@ -1,3 +1,14 @@
+2015-11-23  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: New file. Replaces install-sdk.sh.
+	* install-sdk.sh: Remove.
+	* build-epiphany-sdk.sh: Use build-epiphany-libs.sh for
+	building epiphany-libs. Install top-level files (README,
+	COPYING, setup.sh, setup.csh) here.
+	* build-toolchain.sh: Install libgcc, libgloss, and
+	libstdc++-v3 for BUILD machine.
+	* components.conf: Remove parallella-linux.
+
 2015-10-12  Marty Fouts  <martyfouts@users.noreply.github.com>
 
 	* get-versions.sh: Fix detached head with git 2.4+

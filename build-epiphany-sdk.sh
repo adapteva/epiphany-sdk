@@ -243,20 +243,26 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 fi
 
-if [ -z "${PARALLELLA_LINUX_HOME}" ]; then
-    PARALLELLA_LINUX_HOME=${basedir}/parallella-linux
-    export PARALLELLA_LINUX_HOME
-fi
-
-# build the epiphany-libs and install the SDK
-# TODO: We shouldn't need to pass in ${RELEASE} and ${BRANCH}.
-if ! ./install-sdk.sh -n ${RELEASE} -x ${BRANCH} \
-	--prefix ${ESDK_DESTDIR} \
-	${sdk_host_str} ${sdk_debug_str} ${sdk_clean_str}; then
-	printf "The Epiphany SDK build failed!\n"
+# Build epiphany-libs
+if ! ./build-epiphany-libs.sh \
+	${jobs_str} \
+	--install-dir-host   ${HOST} \
+	--install-dir-target ${GNU}/epiphany-elf \
+	--install-dir-bsps   ${ESDK}/bsps \
+	${sdk_host_str} \
+	${sdk_clean_str};
+then
+	printf "The epiphany-libs build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
 fi
+
+# Copy top files
+echo "Copying top files"
+cp -d README    ${ESDK}
+cp -d COPYING   ${ESDK}
+cp -d setup.sh  ${ESDK}
+cp -d setup.csh ${ESDK}
 
 printf "The Epiphany SDK Build Completed successfully\n"
 exit 0

@@ -894,7 +894,8 @@ then
         # Build the parts of the tool chain we need: binutils and GCC
 	logterm "Building build machine tool chain..."
 	if ! make ${parallel} all-build all-binutils all-gas all-ld all-gcc \
-	    all-target-newlib  >> "${logfile}" 2>&1
+	    all-target-libgcc all-target-libgloss all-target-newlib \
+	    all-target-libstdc++-v3 >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Tool chain build for build machine failed."
 	    failedbuild
@@ -903,7 +904,8 @@ then
         # Install binutils, GCC, newlib and GDB
 	logterm "Installing build machine tool chain..."
 	if ! make install-binutils install-gas install-ld install-gcc \
-	    install-target-newlib  >> "${logfile}" 2>&1
+	    install-target-libgcc install-target-libgloss install-target-newlib \
+	    install-target-libstdc++-v3 >> "${logfile}" 2>&1
 	then
 	    logterm "Error: Tool chain installation for build machine failed."
 	    failedbuild
