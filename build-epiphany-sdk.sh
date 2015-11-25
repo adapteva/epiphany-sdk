@@ -182,6 +182,10 @@ else
 	host_str="--host ${ARCH_TRIPLET}"
 fi
 
+# Force gnu89 C standard. GCC 5+ defaults to gnu11, but some of the components
+# in the 2015.1 release do not support that version of the standard.
+export CFLAGS="-std=gnu89 ${CFLAGS}"
+
 if [ "xyes" = "x$DEBUG" ]; then
 	export CFLAGS="-g ${CFLAGS}"
 	export CXXFLAGS="-g ${CXXFLAGS}"
