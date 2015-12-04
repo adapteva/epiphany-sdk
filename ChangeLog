@@ -68,6 +68,12 @@
 
 2015-12-04  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-toolchain.sh (CFLAGS): Set default value to "-O2 -g". Append
+	"-fPIC" to CFLAGS passed to configure. Needed for building simulator
+	shared library.
+
+2015-12-04  Ola Jeppsson  <ola@adapteva.com>
+
 	* setup.sh (LD_LIBRARY_PATH): Include e-gnu in library search path.
 	* setup.csh: Likewise.
 

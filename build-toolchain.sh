@@ -351,6 +351,7 @@ do_ncurses="--ncurses"
 # The assembler and/or linker are broken so that constant merging doesn't
 # work.
 CFLAGS_FOR_TARGET="-O2 -g"
+CFLAGS=${CFLAGS:-"-O2 -g"}
 config_extra=""
 disable_werror="--disable-werror"
 
@@ -674,6 +675,7 @@ logonly "Use ISL source:                 ${do_isl}"
 logonly "Use Cloog source:               ${do_cloog}"
 logonly "Use ncurses source:             ${do_ncurses}"
 logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
+logonly "CFLAGS:                         ${CFLAGS}"
 logonly "Extra config flags:             ${config_extra}"
 
 
@@ -917,10 +919,13 @@ then
         # Configure the required components of the tool chain. We only need
         # binutils, as, ld and gcc. We need to temporarily move
         # CFLAGS_FOR_TARGET out of the way.
+	# Append -fPIC to CFLAGS. Needed for building simulator shared library.
 	logterm "Configuring build machine tool chain..."
 	OLD_CFLAGS_FOR_TARGET=${CFLAGS_FOR_TARGET}
 	CFLAGS_FOR_TARGET=
-	if ! "${unisrc_dir}/configure" --target=epiphany-elf \
+	if ! "${unisrc_dir}/configure" \
+	    CFLAGS="${CFLAGS} -fPIC" \
+	    --target=epiphany-elf \
 	    --with-pkgversion="Epiphany toolchain ${RELEASE}" \
 	    --with-bugurl=support-sdk@adapteva.com \
 	    --enable-fast-install=N/A \
@@ -1046,7 +1051,10 @@ if [ ${do_clean_host} = "--clean-host" ]
 then
     logterm "Configuring tool chain..."
     export CFLAGS_FOR_TARGET
-    if ! "${unisrc_dir}/configure" --target=epiphany-elf ${host_str} \
+    # Append -fPIC to CFLAGS. Needed for building simulator shared library.
+    if ! "${unisrc_dir}/configure" \
+	CFLAGS="${CFLAGS} -fPIC" \
+	--target=epiphany-elf ${host_str} \
 	--with-pkgversion="Epiphany toolchain ${RELEASE}" \
 	--with-bugurl=support-sdk@adapteva.com \
 	--enable-fast-install=N/A \
