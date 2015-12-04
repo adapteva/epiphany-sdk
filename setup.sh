@@ -26,6 +26,7 @@ else
 	PATH=${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/bin:${PATH}
 	PATH=${EPIPHANY_HOME}/tools/host${_esdk_arch}/bin:${PATH}
 	LD_LIBRARY_PATH=${EPIPHANY_HOME}/tools/host${_esdk_arch}/lib:${LD_LIBRARY_PATH}
+	LD_LIBRARY_PATH=${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/lib:${LD_LIBRARY_PATH}
 	EPIPHANY_HDF=${EPIPHANY_HOME}/bsps/current/platform.hdf
 	MANPATH=${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/share/man:${MANPATH}
 

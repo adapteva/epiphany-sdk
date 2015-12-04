@@ -1,3 +1,8 @@
+2015-12-04  Ola Jeppsson  <ola@adapteva.com>
+
+	* setup.sh (LD_LIBRARY_PATH): Include e-gnu in library search path.
+	* setup.csh: Likewise.
+
 2015-11-23  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Enforce use of guile-1.8, if available.
