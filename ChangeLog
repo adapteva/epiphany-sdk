@@ -1,5 +1,11 @@
 2015-12-04  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-libs.sh: Add default toolchain install
+	include and library path to CFLAGS / LDFLAGS when calling
+	configure.
+
+2015-12-04  Ola Jeppsson  <ola@adapteva.com>
+
 	* setup.sh (LD_LIBRARY_PATH): Include e-gnu in library search path.
 	* setup.csh: Likewise.
 
