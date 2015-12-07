@@ -824,9 +824,21 @@ then
       logterm "ERROR: Failed to build unified source tree in ${unisrc_dir}."
       failedbuild
   fi
+
   ln -fs ${basedir}/gdb/include/floatformat.h ${unisrc_dir}/include
   ln -fs ${basedir}/gdb/libiberty/floatformat.c ${unisrc_dir}/libiberty
+
+  # Apply patches. Symlink will be overwritten, not the underlying file.
+  for p in ${basedir}/sdk/patches/*; do
+    logterm "Applying patch: $p"
+    if ! patch -d ${unisrc_dir} --follow-symlinks -Np1 < $p
+    then
+      logterm "ERROR: Failed to apply patch \"${p}\"."
+      failedbuild
+    fi
+  done
 fi
+
 
 # Ensure the staging directory exists.
 if ! mkdir -p "$staging_host"

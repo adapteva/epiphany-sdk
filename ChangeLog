@@ -1,3 +1,8 @@
+2015-11-25  Ola Jeppsson  <ola@adapteva.com>
+
+	* patches/ncurses-6.0-gcc-5.patch: New file.
+	* build-toolchain.sh: Apply patches in unisrc
+
 2015-11-23  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Enforce use of guile-1.8, if available.
