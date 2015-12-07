@@ -1,3 +1,9 @@
+2015-12-07  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Remove special-casing of linking
+	include/floatformat.h and libiberty/floatformat.c from gdb in
+	unisrc.
+
 2015-11-25  Ola Jeppsson  <ola@adapteva.com>
 
 	* patches/ncurses-6.0-gcc-5.patch: New file.

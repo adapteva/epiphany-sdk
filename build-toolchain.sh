@@ -825,9 +825,6 @@ then
       failedbuild
   fi
 
-  ln -fs ${basedir}/gdb/include/floatformat.h ${unisrc_dir}/include
-  ln -fs ${basedir}/gdb/libiberty/floatformat.c ${unisrc_dir}/libiberty
-
   # Apply patches. Symlink will be overwritten, not the underlying file.
   for p in ${basedir}/sdk/patches/*; do
     logterm "Applying patch: $p"
