@@ -40,8 +40,10 @@ endif
 
 if ( $?LD_LIBRARY_PATH  ) then
 	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host${_esdk_arch}/lib:${LD_LIBRARY_PATH}
+	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/lib:${LD_LIBRARY_PATH}
 else
 	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/host${_esdk_arch}/lib
+	setenv LD_LIBRARY_PATH ${EPIPHANY_HOME}/tools/e-gnu${_esdk_arch}/lib:${LD_LIBRARY_PATH}
 endif
 
 unset _esdk_arch

@@ -262,9 +262,8 @@ srcdir=${basedir}/epiphany-libs
 jobs=
 load=
 
-# The assembler and/or linker are broken so that constant merging doesn't
-# work.
 CFLAGS_FOR_TARGET="-O2 -g"
+CFLAGS=${CFLAGS:-"-O2 -g"}
 config_extra=""
 disable_werror="--disable-werror"
 
@@ -422,19 +421,23 @@ then
     then
 	# Default install directory without datestamp
 	id_host="/opt/adapteva/esdk.${RELEASE}/tools/host.${host_arch}"
+	id_gnu="/opt/adapteva/esdk.${RELEASE}/tools/e-gnu.${host_arch}"
     else
 	# Default install directory with datestamp
 	id_host="/opt/adapteva/esdk.${RELEASE}-${ds_host}/tools/host.${host_arch}"
+	id_gnu="/opt/adapteva/esdk.${RELEASE}-${ds_host}/tools/e-gnu.${host_arch}"
     fi
 else
     if [ "x${ds_host}" = "x" ]
     then
 	# Custom install directory without datestamp
-	# No nothing
-	true
+	# Do nothing for id_host
+
+	id_gnu="${id_host}/../e-gnu.${host_arch}"
     else
 	# Custom install directory with datestamp
 	id_host="${id_host}-${ds_host}"
+	id_gnu="${id_host}-${ds_host}/../e-gnu.${host_arch}"
     fi
 fi
 
@@ -488,6 +491,7 @@ logonly "Host architecture:                   ${host_arch}"
 logonly "Host:                                ${target}"
 logonly "Target architecture:                 ${target_arch}"
 logonly "Install directory (host arch):       ${id_host}"
+logonly "Toolchain directory (host arch):     ${id_gnu}"
 logonly "Install directory (target arch):     ${id_target}"
 logonly "Symlink directory:                   ${symlink_dir}"
 logonly "Datestamp (build arch):              ${ds_build}"
@@ -497,6 +501,7 @@ logonly "Automatic pull:                      ${auto_pull}"
 logonly "Automatic checkout:                  ${auto_checkout}"
 logonly "Maximum jobs:                        ${jobs}"
 logonly "Maximum load:                        ${load}"
+logonly "Host CFLAGS:                         ${CFLAGS}"
 logonly "Target CFLAGS:                       ${CFLAGS_FOR_TARGET}"
 logonly "Extra config flags:                  ${config_extra}"
 
@@ -601,7 +606,11 @@ then
 	logterm "ERROR: Failed bootstrapping source."
 	failedbuild
     fi
+
+    # Make toolchain host headers and libraries available in build
     if ! "${srcdir}/configure" \
+	CFLAGS="-I${id_gnu}/include $CFLAGS" \
+	LDFLAGS="-L${id_gnu}/lib $LDFLAGS" \
 	${host_str} \
 	--enable-fast-install=N/A \
 	--prefix="${id_host}" \
