@@ -46,7 +46,7 @@ RELEASE_PATCH=""
 
 # The full release version
 RELEASE="${RELEASE_MAJOR}.${RELEASE_MINOR}${RELEASE_PATCH}"
-RELEASE="master"
+RELEASE="pal-devel"
 
 # Create a common log directory for all logs in this and sub-scripts
 LOGDIR=${basedir}/logs/${RELEASE}

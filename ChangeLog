@@ -1,3 +1,10 @@
+2016-02-23  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build pal.
+	* build-pal.sh: New file.
+	* components.conf: Add pal entry.
+	* define-release.sh: Set release name to pal-devel.
+
 2015-12-07  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Remove special-casing of linking

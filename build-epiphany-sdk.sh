@@ -243,19 +243,34 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 fi
 
-# Build epiphany-libs
-if ! ./build-epiphany-libs.sh \
+# Disable temporarily
+## Build epiphany-libs
+#if ! ./build-epiphany-libs.sh \
+#	${jobs_str} \
+#	--install-dir-host   ${HOST} \
+#	--install-dir-target ${GNU}/epiphany-elf \
+#	--install-dir-bsps   ${ESDK}/bsps \
+#	${sdk_host_str} \
+#	${sdk_clean_str};
+#then
+#	printf "The epiphany-libs build failed!\n"
+#	printf "\nAborting...\n"
+#	exit 1
+#fi
+
+# Build pal
+if ! ./build-pal.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
-	--install-dir-bsps   ${ESDK}/bsps \
 	${sdk_host_str} \
 	${sdk_clean_str};
 then
-	printf "The epiphany-libs build failed!\n"
+	printf "The pal build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
 fi
+
 
 # Copy top files
 echo "Copying top files"
@@ -266,4 +281,3 @@ cp -d setup.csh ${ESDK}
 
 printf "The Epiphany SDK Build Completed successfully\n"
 exit 0
-
