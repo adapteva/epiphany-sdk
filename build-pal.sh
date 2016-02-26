@@ -590,9 +590,12 @@ then
 
     # Make toolchain host headers and libraries available in build
     if ! "${srcdir}/configure" \
-	CFLAGS="-I${id_gnu}/include $CFLAGS" \
-	LDFLAGS="-L${id_gnu}/lib $LDFLAGS" \
+	CFLAGS="-I${id_host}/include -I${id_gnu}/include $CFLAGS" \
+	LDFLAGS="-L${id_host}/lib -L${id_gnu}/lib $LDFLAGS" \
 	${host_str} \
+	--disable-benchmark \
+	--disable-examples \
+	--disable-tests \
 	--enable-fast-install=N/A \
 	--prefix="${id_host}" \
 	--with-target="${target}" \

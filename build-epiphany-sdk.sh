@@ -257,13 +257,11 @@ then
 	exit 1
 fi
 
-
-# Build pal
+# Build pal for device
 if ! ./build-pal.sh \
 	${jobs_str} \
-	--install-dir-host   ${HOST} \
-	--install-dir-target ${GNU}/epiphany-elf \
-	${sdk_host_str} \
+	--install-dir ${GNU}/epiphany-elf \
+	--host epiphany-elf \
 	${sdk_clean_str};
 then
 	printf "The pal build failed!\n"
@@ -271,6 +269,19 @@ then
 	exit 1
 fi
 
+# Build pal
+if ! ./build-pal.sh \
+	${jobs_str} \
+	--install-dir-host   ${HOST} \
+	--install-dir-target ${GNU}/epiphany-elf \
+	--config-extra "--enable-device-epiphany" \
+	${sdk_host_str} \
+	${sdk_clean_str};
+then
+	printf "The pal build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
+fi
 
 # Copy top files
 echo "Copying top files"

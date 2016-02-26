@@ -1,5 +1,11 @@
 2016-02-26  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Build both host and device pal libraries.
+	* build-pal.sh: Don't build benchmark, tests, and examples. Fix
+	CFLAGS and LDFLAGS.
+
+2016-02-26  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Build epiphany-libs again.
 	* components.conf: Uncomment epiphany-libs.
 
