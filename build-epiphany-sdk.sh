@@ -243,20 +243,20 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 fi
 
-# Disable temporarily
-## Build epiphany-libs
-#if ! ./build-epiphany-libs.sh \
-#	${jobs_str} \
-#	--install-dir-host   ${HOST} \
-#	--install-dir-target ${GNU}/epiphany-elf \
-#	--install-dir-bsps   ${ESDK}/bsps \
-#	${sdk_host_str} \
-#	${sdk_clean_str};
-#then
-#	printf "The epiphany-libs build failed!\n"
-#	printf "\nAborting...\n"
-#	exit 1
-#fi
+# Build epiphany-libs
+if ! ./build-epiphany-libs.sh \
+	${jobs_str} \
+	--install-dir-host   ${HOST} \
+	--install-dir-target ${GNU}/epiphany-elf \
+	--install-dir-bsps   ${ESDK}/bsps \
+	${sdk_host_str} \
+	${sdk_clean_str};
+then
+	printf "The epiphany-libs build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
+fi
+
 
 # Build pal
 if ! ./build-pal.sh \
