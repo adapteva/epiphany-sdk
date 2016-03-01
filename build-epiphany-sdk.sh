@@ -243,16 +243,25 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 fi
 
-# Build epiphany-libs
+# Build order for dependencies is:
+# 1. e-lib
+# 2. pal device
+# 3. pal host
+# 4. e-hal (depends on pal) + the rest of epiphany-libs
+
+# Build epiphany-libs (w/o e-hal == only e-lib)
+# We must clean because we share build directory w/ e-hal build
+# below (ugly but works !!!)
 if ! ./build-epiphany-libs.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
 	--install-dir-bsps   ${ESDK}/bsps \
-	${sdk_host_str} \
-	${sdk_clean_str};
+	--clean \
+	--config-extra "--disable-ehal --enable-elib" \
+	${sdk_host_str};
 then
-	printf "The epiphany-libs build failed!\n"
+	printf "The epiphany-libs (elib) build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
 fi
@@ -269,7 +278,7 @@ then
 	exit 1
 fi
 
-# Build pal
+# Build pal for host
 if ! ./build-pal.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
@@ -282,6 +291,23 @@ then
 	printf "\nAborting...\n"
 	exit 1
 fi
+
+# Build e-hal + rest of epiphany-libs
+if ! CFLAGS="-I${HOST}/include ${CFLAGS}" LDFLAGS="-L${HOST}/lib ${LDFLAGS}"
+     ./build-epiphany-libs.sh \
+	${jobs_str} \
+	--install-dir-host   ${HOST} \
+	--install-dir-target ${GNU}/epiphany-elf \
+	--install-dir-bsps   ${ESDK}/bsps \
+	--clean \
+	--config-extra "--disable-elib --enable-ehal --enable-pal-target" \
+	${sdk_host_str};
+then
+	printf "The epiphany-libs (e-hal) build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
+fi
+
 
 # Copy top files
 echo "Copying top files"
