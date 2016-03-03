@@ -1,3 +1,7 @@
+2016-03-03  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Add missing backslash.
+
 2016-03-01  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh: Build epiphany-libs (e-hal) with PAL

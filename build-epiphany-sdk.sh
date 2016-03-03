@@ -293,7 +293,7 @@ then
 fi
 
 # Build e-hal + rest of epiphany-libs
-if ! CFLAGS="-I${HOST}/include ${CFLAGS}" LDFLAGS="-L${HOST}/lib ${LDFLAGS}"
+if ! CFLAGS="-I${HOST}/include ${CFLAGS}" LDFLAGS="-L${HOST}/lib ${LDFLAGS}" \
      ./build-epiphany-libs.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
