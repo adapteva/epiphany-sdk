@@ -1,5 +1,9 @@
 2016-03-13  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Create tarball.
+
+2016-03-13  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Add --destdir command line argument.
 	* build-epiphany-libs.sh: Likewise.
 	* build-epiphany-sdk.sh: Pass --destdir to

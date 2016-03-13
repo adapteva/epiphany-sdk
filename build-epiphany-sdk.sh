@@ -270,6 +270,9 @@ cp -d COPYING   ${ESDK_DESTDIR}${ESDK}
 cp -d setup.sh  ${ESDK_DESTDIR}${ESDK}
 cp -d setup.csh ${ESDK_DESTDIR}${ESDK}
 
+echo "Creating tarball"
+tar czf ${ESDK_BUILDROOT}/esdk.${RELEASE}.tar.gz -C ${ESDK_DESTDIR}${ESDK_PREFIX} esdk.${RELEASE}
+
 printf "The Epiphany SDK Build Completed successfully\n"
 exit 0
 
