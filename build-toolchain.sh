@@ -72,6 +72,7 @@
 #                          [--install-dir-build <dir>]
 #                          [--install-dir-host <dir>]
 #                          [--symlink-dir <dir>]
+#                          [--destdir <dir>]
 #                          [--datestamp-install]
 #                          [--datestamp-install-build]
 #                          [--datestamp-install-host]
@@ -146,6 +147,11 @@
 #     <host-arch> is the architecture name of the *host* machine (so should
 #     usually be armv7l).  This argument is only relevant if --host is set to
 #     a triplet whose architecture differs from the build machine.
+
+# --destdir <destdir>
+
+#     If specified, all files will be installed to <destdir> staging
+#     directory.
 
 # --symlink-dir <symlink_dir>
 
@@ -321,6 +327,7 @@ host=
 id_build=
 id_host=
 staging_host=
+destdir=
 symlink_dir=e-gnu
 ds_build=
 ds_host=
@@ -375,6 +382,11 @@ case ${opt} in
     --install-dir | --install-dir-host)
 	shift
 	id_host=`absdir "$1"`
+	;;
+
+    --destdir)
+	shift
+	destdir="$(absdir $1 | sed s,[/]*$,,g)/"
 	;;
 
     --symlink-dir)
@@ -599,6 +611,14 @@ else
     fi
 fi
 
+if [ "x${destdir}" = "x" ]
+then
+    destdir_str=""
+else
+    destdir_str="DESTDIR=\"${destdir}\""
+fi
+
+
 # Add ${disable_werror} to ${config_extra}. Note that this argument takes
 # precedence, so don't try setting disable-werror in config_extra.
 config_extra="${config_extra} ${disable_werror}"
@@ -635,6 +655,7 @@ logonly "Host:                           ${host}"
 logonly "Host architecture:              ${host_arch}"
 logonly "Install directory (build arch): ${id_build}"
 logonly "Install directory (host arch):  ${id_host}"
+logonly "Staging directory (destdir):    ${destdir}"
 logonly "Symlink directory:              ${symlink_dir}"
 logonly "Datestamp (build arch):         ${ds_build}"
 logonly "Datestamp (host arch):          ${ds_host}"
@@ -979,8 +1000,8 @@ then
 
 	# We add the include and library paths to CFLAGS/LDFLAGS respectively to
 	# make them available for the real build.
-	CFLAGS="-I${staging_host}/include -I${id_host}/include $CFLAGS"
-	LDFLAGS="-L${staging_host}/lib -L${id_host}/lib $LDFLAGS"
+	CFLAGS="-I${staging_host}/include -I${destdir}${id_host}/include $CFLAGS"
+	LDFLAGS="-L${staging_host}/lib -L${destdir}${id_host}/lib $LDFLAGS"
 	export CFLAGS
 	export LDFLAGS
     fi
@@ -1049,7 +1070,7 @@ fi
 
 # Install binutils, GCC, newlib and GDB
 logterm "Installing tool chain..."
-if ! make install-binutils install-gas install-ld install-gcc \
+if ! make ${destdir_str} install-binutils install-gas install-ld install-gcc \
         install-target-libgcc install-target-libgloss install-target-newlib \
         install-target-libstdc++-v3 install-gdb install-sim >> "${logfile}" 2>&1
 then
@@ -1061,7 +1082,7 @@ fi
 # If the toolchain was built for this arch we can now use it
 if [ "x${host_arch}" = "x${build_arch}" ]
 then
-    PATH=${id_host}/bin:$PATH
+    PATH=${destdir}${id_host}/bin:$PATH
     export PATH
 fi
 
@@ -1077,9 +1098,9 @@ fi
 # pages.
 logterm "Creating symbolic links for tools"
 
-if ! cd "${id_host}/bin"
+if ! cd "${destdir}${id_host}/bin"
 then
-    logterm "ERROR: Unable to select bin directory in ${id_host}"
+    logterm "ERROR: Unable to select bin directory in ${destdir}${id_host}"
     failedbuild
 fi
 
@@ -1095,9 +1116,9 @@ done
 
 logterm "Creating symbolic links for man pages"
 
-if ! cd "${id_host}/share/man/man1"
+if ! cd "${destdir}${id_host}/share/man/man1"
 then
-    logterm "ERROR: Unable to select share/man/man1 directory in ${id_host}"
+    logterm "ERROR: Unable to select share/man/man1 directory in ${destdir}${id_host}"
     failedbuild
 fi
 
@@ -1115,11 +1136,11 @@ done
 # directory.
 if [ "x${symlink_dir}" = "x" ]
 then
-    report_dir="${id_host}"
+    report_dir="${destdir}${id_host}"
 else
     echo "Setting up the main symlink directory..."
     id_base=`basename ${id_host}`
-    cd "${id_host}/.."
+    cd "${destdir}${id_host}/.."
     report_dir="`pwd`/${symlink_dir}"
     rm -f "${symlink_dir}"
     ln -s ${id_base} "${symlink_dir}"

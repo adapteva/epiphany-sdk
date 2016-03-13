@@ -74,6 +74,7 @@
 #                           [--install-dir-host <dir>]
 #                           [--install-dir-target <dir>]
 #                           [--install-dir-bsps <dir>]
+#                           [--destdir <dir>]
 #                           [--symlink-dir <dir>]
 #                           [--datestamp-install]
 #                           [--datestamp-install-build]
@@ -132,6 +133,11 @@
 #     The install directory for e-lib
 
 # --install-dir-bsps <install_dir>
+
+# --destdir <destdir>
+
+#     If specified, all files will be installed to <destdir> staging
+#     directory.
 
 #     The install directory for BSPs
 
@@ -302,6 +308,11 @@ case ${opt} in
 	id_bsps=`absdir "$1"`
 	;;
 
+    --destdir)
+	shift
+	destdir="$(absdir $1 | sed s,[/]*$,,g)/"
+	;;
+
     --symlink-dir)
 	shift
 	# Force it to be simple name
@@ -455,6 +466,15 @@ else
     id_target_str="--with-target-prefix=${id_target}"
 fi
 
+
+if [ "x${destdir}" = "x" ]
+then
+    destdir_str=""
+else
+    destdir_str="DESTDIR=\"${destdir}\""
+fi
+
+
 # Add ${disable_werror} to ${config_extra}. Note that this argument takes
 # precedence, so don't try setting disable-werror in config_extra.
 config_extra="${config_extra} ${disable_werror}"
@@ -493,6 +513,7 @@ logonly "Target architecture:                 ${target_arch}"
 logonly "Install directory (host arch):       ${id_host}"
 logonly "Toolchain directory (host arch):     ${id_gnu}"
 logonly "Install directory (target arch):     ${id_target}"
+logonly "Staging directory (destdir):        ${destdir}"
 logonly "Symlink directory:                   ${symlink_dir}"
 logonly "Datestamp (build arch):              ${ds_build}"
 logonly "Datestamp (host arch):               ${ds_host}"
@@ -634,7 +655,7 @@ fi
 
 # Install everything
 logterm "Installing epiphany-libs..."
-if ! make install >> "${logfile}" 2>&1
+if ! make ${destdir_str} install >> "${logfile}" 2>&1
 then
   logterm "Error: epiphany-libs installation failed."
   failedbuild
@@ -644,7 +665,7 @@ fi
 # If the toolchain was built for this arch we can now use it
 if [ "x${host_arch}" = "x${build_arch}" ]
 then
-    PATH=${id_host}/bin:$PATH
+    PATH=${destdir}${id_host}/bin:$PATH
     export PATH
 fi
 
@@ -664,11 +685,11 @@ logterm "Creating symbolic links for epiphany-libs"
 # directory.
 if [ "x${symlink_dir}" = "x" ]
 then
-    report_dir="${id_host}"
+    report_dir="${destdir}${id_host}"
 else
     echo "Setting up the main symlink directory..."
     id_base=`basename ${id_host}`
-    cd "${id_host}/.."
+    cd "${destdir}${id_host}/.."
     report_dir="`pwd`/${symlink_dir}"
     rm -f "${symlink_dir}"
     ln -s ${id_base} "${symlink_dir}"

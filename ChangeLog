@@ -1,3 +1,10 @@
+2016-03-13  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Add --destdir command line argument.
+	* build-epiphany-libs.sh: Likewise.
+	* build-epiphany-sdk.sh: Pass --destdir to
+	build-epiphany-libs.sh and build-toolchain.sh.
+
 2015-12-07  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Remove special-casing of linking
