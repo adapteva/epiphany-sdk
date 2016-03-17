@@ -1,3 +1,8 @@
+2016-03-17  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: Configure with --enable-fast-install.
+	Needed with 'make DESTDIR=foo install'.
+
 2016-03-13  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh: Create tarball.

@@ -633,7 +633,7 @@ then
 	CFLAGS="-I${id_gnu}/include $CFLAGS" \
 	LDFLAGS="-L${id_gnu}/lib $LDFLAGS" \
 	${host_str} \
-	--enable-fast-install=N/A \
+	--enable-fast-install \
 	--prefix="${id_host}" \
 	--with-target="${target}" \
 	"${id_target_str}" \
