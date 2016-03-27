@@ -8,6 +8,10 @@
 	improve debug situation.
 	(CXXFLAGS): Likewise.
 
+2016-03-28  Ola Jeppsson  <ola@adapteva.com>
+
+	* .travis.yml: Switch to Ubuntu Trusty beta build environment.
+
 2016-03-17  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-libs.sh: Configure with --enable-fast-install.
