@@ -1,18 +1,14 @@
+sudo: required
+dist: trusty
+
 language: c
 
 before_install:
-    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update -qq
-    - sudo apt-get install -qq libstdc++-4.8-dev
-    - sudo apt-get install -qq gcc-4.8
-    - sudo apt-get install -qq g++-4.8
-    - mkdir cc-link
-    - ln -s $(which gcc-4.8) cc-link/gcc
-    - ln -s $(which g++-4.8) cc-link/g++
-    - export PATH=$(pwd)/cc-link:${PATH}
-    - gcc --version
-    - sudo apt-get install -qq
+    - sudo apt-get upgrade -qq -o Dpkg::Options::="--force-confnew"
+    - sudo apt-get install -qq -o Dpkg::Options::="--force-confnew"
       build-essential
+    - sudo apt-get install -qq -o Dpkg::Options::="--force-confnew"
       bison
       flex
       g++-arm-linux-gnueabihf
