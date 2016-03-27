@@ -1,3 +1,8 @@
+2016-03-27  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf: Use epiphany-libs 2016.3
+	* define-release.sh: Bump version numbers to 2016.3
+
 2016-03-17  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-libs.sh: Configure with --enable-fast-install.
