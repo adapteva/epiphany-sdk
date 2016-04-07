@@ -203,6 +203,9 @@ else
 	sdk_debug_str=""
 fi
 
+export CFLAGS="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CFLAGS}"
+export CXXLAGS="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CXXFLAGS}"
+
 if [ "xyes" = "x$CLEAN" ]; then
 	toolchain_clean_str="--clean-build --clean-host"
 	sdk_clean_str="--clean"
