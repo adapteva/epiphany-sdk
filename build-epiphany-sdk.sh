@@ -125,10 +125,13 @@ if [ "x${ESDK_BUILDROOT}" = "x" ]; then
 fi
 
 if [ "x${ESDK_DESTDIR}" = "x" ]; then
-	ESDK_DESTDIR=${ESDK_BUILDROOT}
+	ESDK_DESTDIR="$(echo ${ESDK_BUILDROOT}/esdk.${RELEASE}/ | sed s,[/]*$,/,g)"
+else
+	ESDK_DESTDIR="$(echo ${ESDK_DESTDIR}/ | sed s,[/]*$,/,g)"
 fi
 
-ESDK="${ESDK_DESTDIR}/esdk.${RELEASE}"
+ESDK_PREFIX=/opt/adapteva
+ESDK="${ESDK_PREFIX}/esdk.${RELEASE}"
 HOSTNAME="host.$(getarch ${ELIBS_CANONICAL_HOST})"
 HOST="${ESDK}/tools/${HOSTNAME}"
 GNUNAME="e-gnu.$(getarch ${TOOLCHAIN_CANONICAL_HOST})"
@@ -147,7 +150,8 @@ echo "    ESDK_DESTDIR=${ESDK_DESTDIR}"
 echo ""
 echo "Build settings:"
 echo ""
-echo "    eSDK install directory:       ${ESDK}"
+echo "    eSDK install directory:       ${ESDK_DESTDIR}"
+echo "    eSDK prefix directory:        ${ESDK}"
 echo "    Tool chain host prefix:       ${TOOLCHAIN_CANONICAL_HOST}"
 echo "    epiphany-libs host prefix:    ${ELIBS_CANONICAL_HOST}"
 echo "    Build version:                ${RELEASE}"
@@ -159,15 +163,15 @@ cd ${ESDK_BUILDROOT}/sdk || exit 1
 # Create the SDK tree
 echo "Creating the eSDK directory tree..."
 
-mkdir -p ${ESDK} ${ESDK}/bsps ${ESDK}/tools
-mkdir -p ${HOST}/lib ${HOST}/include ${HOST}/bin
-mkdir -p ${GNU}
+mkdir -p ${ESDK_DESTDIR}${ESDK} ${ESDK_DESTDIR}${ESDK}/bsps ${ESDK_DESTDIR}${ESDK}/tools
+mkdir -p ${ESDK_DESTDIR}${HOST}/lib ${ESDK_DESTDIR}${HOST}/include ${ESDK_DESTDIR}${HOST}/bin
+mkdir -p ${ESDK_DESTDIR}${GNU}
 
 # Create toolchain symbolic links (force overwrite if exists)
 (
-    cd ${ESDK}/..
+    cd ${ESDK_DESTDIR}${ESDK}/..
     ln -sTf esdk.${RELEASE} esdk
-    cd ${ESDK}/tools
+    cd ${ESDK_DESTDIR}${ESDK}/tools
     ln -sTf ${HOSTNAME} host
     ln -sTf ${GNUNAME}  e-gnu
 )
@@ -199,6 +203,9 @@ else
 	sdk_debug_str=""
 fi
 
+export CFLAGS="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CFLAGS}"
+export CXXLAGS="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CXXFLAGS}"
+
 if [ "xyes" = "x$CLEAN" ]; then
 	toolchain_clean_str="--clean-build --clean-host"
 	sdk_clean_str="--clean"
@@ -212,7 +219,7 @@ fi
 if [ "x${TOOLCHAIN_CANONICAL_HOST}" = "x" -o \
      "x$(getarch ${TOOLCHAIN_CANONICAL_HOST})" = "x$(uname -m)" ]
 then
-    id_buildarch_toolchain="${GNU}"
+    id_buildarch_toolchain="${ESDK_DESTDIR}${GNU}"
     buildarch_install_dir_str=""
 else
     id_buildarch_toolchain=${ESDK_BUILDROOT}/builds/id-$(uname -m)-${RELEASE}-toolchain
@@ -233,6 +240,7 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	# before we release.
 	if ! ./build-toolchain.sh ${jobs_str} \
 		--install-dir-host ${GNU} \
+		--destdir ${ESDK_DESTDIR} \
 		--enable-werror \
 		--enable-cgen-maint \
 		${buildarch_install_dir_str} \
@@ -257,6 +265,7 @@ if ! ./build-epiphany-libs.sh \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
 	--install-dir-bsps   ${ESDK}/bsps \
+	--destdir ${ESDK_DESTDIR} \
 	--clean \
 	--config-extra "--disable-ehal --enable-elib" \
 	${sdk_host_str};
@@ -311,10 +320,13 @@ fi
 
 # Copy top files
 echo "Copying top files"
-cp -d README    ${ESDK}
-cp -d COPYING   ${ESDK}
-cp -d setup.sh  ${ESDK}
-cp -d setup.csh ${ESDK}
+cp -d README    ${ESDK_DESTDIR}${ESDK}
+cp -d COPYING   ${ESDK_DESTDIR}${ESDK}
+cp -d setup.sh  ${ESDK_DESTDIR}${ESDK}
+cp -d setup.csh ${ESDK_DESTDIR}${ESDK}
+
+echo "Creating tarball"
+tar czf ${ESDK_BUILDROOT}/esdk.${RELEASE}.tar.gz -C ${ESDK_DESTDIR}${ESDK_PREFIX} esdk.${RELEASE}
 
 printf "The Epiphany SDK Build Completed successfully\n"
 exit 0
