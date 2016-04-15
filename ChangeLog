@@ -1,3 +1,8 @@
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Pass --destdir to build-pal.sh
+	* build-pal.sh: Add destdir flag
+
 2016-04-07  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh (CFLAGS): Strip/replace source path to somewhat

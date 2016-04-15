@@ -280,6 +280,7 @@ if ! ./build-pal.sh \
 	${jobs_str} \
 	--install-dir ${GNU}/epiphany-elf \
 	--host epiphany-elf \
+	--destdir ${ESDK_DESTDIR} \
 	${sdk_clean_str};
 then
 	printf "The pal build failed!\n"

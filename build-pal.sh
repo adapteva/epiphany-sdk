@@ -73,6 +73,7 @@
 #                           [--install-dir <dir>]
 #                           [--install-dir-host <dir>]
 #                           [--install-dir-target <dir>]
+#                           [--destdir <dir>]
 #                           [--symlink-dir <dir>]
 #                           [--datestamp-install]
 #                           [--datestamp-install-build]
@@ -129,6 +130,13 @@
 # --install-dir-target <install_dir>
 
 #     The install directory for e-lib
+
+# --destdir <destdir>
+
+#     If specified, all files will be installed to <destdir> staging
+#     directory.
+
+#     The install directory for BSPs
 
 # --symlink-dir <symlink_dir>
 
@@ -291,6 +299,11 @@ case ${opt} in
 	id_target=`absdir "$1"`
 	;;
 
+    --destdir)
+	shift
+	destdir="$(absdir $1 | sed s,[/]*$,,g)/"
+	;;
+
     --symlink-dir)
 	shift
 	# Force it to be simple name
@@ -350,6 +363,7 @@ case ${opt} in
         echo "             [--install-dir <dir> ]"
         echo "             [--install-dir-host <dir> ]"
         echo "             [--install-dir-target <dir> ]"
+        echo "             [--destdir <dir>]"
         echo "             [--symlink-dir <dir>]"
         echo "             [--datestamp-install]"
         echo "             [--datestamp-install-build]"
@@ -436,6 +450,14 @@ else
     id_target_str="--with-target-prefix=${id_target}"
 fi
 
+if [ "x${destdir}" = "x" ]
+then
+    destdir_str=""
+else
+    destdir_str="DESTDIR=\"${destdir}\""
+fi
+
+
 # Add ${disable_werror} to ${config_extra}. Note that this argument takes
 # precedence, so don't try setting disable-werror in config_extra.
 config_extra="${config_extra} ${disable_werror}"
@@ -472,6 +494,7 @@ logonly "Host architecture:                   ${host_arch}"
 logonly "Host:                                ${target}"
 logonly "Target architecture:                 ${target_arch}"
 logonly "Install directory (host arch):       ${id_host}"
+logonly "Staging directory (destdir):         ${destdir}"
 logonly "Toolchain directory (host arch):     ${id_gnu}"
 logonly "Install directory (target arch):     ${id_target}"
 logonly "Symlink directory:                   ${symlink_dir}"
@@ -596,7 +619,7 @@ then
 	--disable-benchmark \
 	--disable-examples \
 	--disable-tests \
-	--enable-fast-install=N/A \
+	--enable-fast-install \
 	--prefix="${id_host}" \
 	--with-target="${target}" \
 	"${id_target_str}" \
@@ -617,7 +640,7 @@ fi
 
 # Install everything
 logterm "Installing pal..."
-if ! make install >> "${logfile}" 2>&1
+if ! make ${destdir_str} install >> "${logfile}" 2>&1
 then
   logterm "Error: pal installation failed."
   failedbuild
@@ -627,7 +650,7 @@ fi
 # If the toolchain was built for this arch we can now use it
 if [ "x${host_arch}" = "x${build_arch}" ]
 then
-    PATH=${id_host}/bin:$PATH
+    PATH=${destdir}${id_host}/bin:$PATH
     export PATH
 fi
 
@@ -647,11 +670,11 @@ logterm "Creating symbolic links for pal"
 # directory.
 if [ "x${symlink_dir}" = "x" ]
 then
-    report_dir="${id_host}"
+    report_dir="${destdir}${id_host}"
 else
     echo "Setting up the main symlink directory..."
     id_base=`basename ${id_host}`
-    cd "${id_host}/.."
+    cd "${destdir}${id_host}/.."
     report_dir="`pwd`/${symlink_dir}"
     rm -f "${symlink_dir}"
     ln -s ${id_base} "${symlink_dir}"
