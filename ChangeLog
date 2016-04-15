@@ -1,5 +1,17 @@
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.sh: unset CC, LD, AS, CXX and CPP
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
+	* .travis.sh: Fix arguments to tail.
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: Fix printing of destdir.
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Pass --destdir to build-pal.sh
 	* build-pal.sh: Add destdir flag
 
@@ -8,6 +20,10 @@
 	* build-epiphany-sdk.sh (CFLAGS): Strip/replace source path to somewhat
 	improve debug situation.
 	(CXXFLAGS): Likewise.
+
+2016-03-28  Ola Jeppsson  <ola@adapteva.com>
+
+	* .travis.yml: Switch to Ubuntu Trusty beta build environment.
 
 2016-03-17  Ola Jeppsson  <ola@adapteva.com>
 
