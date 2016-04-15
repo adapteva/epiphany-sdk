@@ -21,6 +21,12 @@ trap 'error_handler' ERR
 bash -c "while true; do echo; echo \$(date) - building ...; sleep $PING_SLEEP; done" &
 PING_LOOP_PID=$!
 
+env
+unset CC
+unset LD
+unset AS
+unset CXX
+unset CPP
 ./sdk/build-epiphany-sdk.sh -j 1
 
 # The build finished without returning an error so dump a tail of the output
