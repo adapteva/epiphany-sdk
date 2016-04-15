@@ -1,5 +1,9 @@
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.sh: Fix arguments to tail.
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-libs.sh: Fix printing of destdir.
 
 2016-04-07  Ola Jeppsson  <ola@adapteva.com>

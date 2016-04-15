@@ -6,7 +6,7 @@ export PING_SLEEP=30s
 
 dump_output() {
 	echo Tailing the last 500 lines of output:
-	tail -500 $(find logs -type f -name "build*.log")
+	tail -n500 $(find logs -type f -name "build*.log")
 }
 error_handler() {
 	echo ERROR: An error was encountered with the build.
