@@ -27,7 +27,7 @@ unset LD
 unset AS
 unset CXX
 unset CPP
-./sdk/build-epiphany-sdk.sh -j 1
+./sdk/build-epiphany-sdk.sh -j 2
 
 # The build finished without returning an error so dump a tail of the output
 dump_output
