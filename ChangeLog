@@ -1,5 +1,9 @@
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.sh: unset CC, LD, AS, CXX and CPP
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
 	* .travis.sh: Fix arguments to tail.
 
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
