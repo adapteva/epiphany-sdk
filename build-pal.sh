@@ -254,6 +254,7 @@ host=
 target="epiphany-elf"
 id_host=
 id_target=
+destdir=
 symlink_dir=host
 ds_build=
 ds_host=
@@ -613,8 +614,8 @@ then
 
     # Make toolchain host headers and libraries available in build
     if ! "${srcdir}/configure" \
-	CFLAGS="-I${id_host}/include -I${id_gnu}/include $CFLAGS" \
-	LDFLAGS="-L${id_host}/lib -L${id_gnu}/lib $LDFLAGS" \
+	CFLAGS="-I${destdir}/${id_host}/include -I${destdir}${id_gnu}/include $CFLAGS" \
+	LDFLAGS="-L${destdir}/${id_host}/lib -L${destdir}/${id_gnu}/lib $LDFLAGS" \
 	${host_str} \
 	--disable-benchmark \
 	--disable-examples \

@@ -276,6 +276,7 @@ then
 fi
 
 # Build pal for device
+export EPIPHANY_HOME=${ESDK_DESTDIR}/${ESDK}
 if ! ./build-pal.sh \
 	${jobs_str} \
 	--install-dir ${GNU}/epiphany-elf \
@@ -287,6 +288,7 @@ then
 	printf "\nAborting...\n"
 	exit 1
 fi
+unset EPIPHANY_HOME
 
 # Build pal for host
 if ! ./build-pal.sh \
