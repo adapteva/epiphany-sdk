@@ -631,8 +631,8 @@ then
 
     # Make toolchain host headers and libraries available in build
     if ! "${srcdir}/configure" \
-	CFLAGS="-I${id_gnu}/include $CFLAGS" \
-	LDFLAGS="-L${id_gnu}/lib $LDFLAGS" \
+	CFLAGS="-I${destdir}/${id_gnu}/include -I${destdir}/${id_host}/include $CFLAGS" \
+	LDFLAGS="-L${destdir}/${id_gnu}/lib -L${destdir}/${id_host}/lib $LDFLAGS" \
 	${host_str} \
 	--enable-fast-install \
 	--prefix="${id_host}" \

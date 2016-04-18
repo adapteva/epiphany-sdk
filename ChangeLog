@@ -1,5 +1,12 @@
 2016-04-18  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-libs.sh: Prefix paths in CFLAGS and LDFLAGS
+	with destdir.
+	* build-epiphany-sdk.sh: Pass --destdir to
+	build-epiphany-libs.sh.
+
+2016-04-18  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Set EPIPHANY_HOME when building PAL.
 	* build-pal.sh: Prefix paths in CFLAGS and LDFLAGS with destdir.
 

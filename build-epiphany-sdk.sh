@@ -295,6 +295,7 @@ if ! ./build-pal.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
+	--destdir ${ESDK_DESTDIR} \
 	--config-extra "--enable-device-epiphany" \
 	${sdk_host_str} \
 	${sdk_clean_str};
@@ -311,6 +312,7 @@ if ! CFLAGS="-I${HOST}/include ${CFLAGS}" LDFLAGS="-L${HOST}/lib ${LDFLAGS}" \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
 	--install-dir-bsps   ${ESDK}/bsps \
+	--destdir ${ESDK_DESTDIR} \
 	--clean \
 	--config-extra "--disable-elib --enable-ehal --enable-pal-target" \
 	${sdk_host_str};
