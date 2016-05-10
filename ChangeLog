@@ -1,3 +1,7 @@
+2016-05-10  Ola Jeppsson  <ola@adapteva.com>
+
+	* define-release.sh: Bump version to 2016.3.1
+
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
 	* .travis.sh: unset CC, LD, AS, CXX and CPP
