@@ -1,6 +1,19 @@
 sudo: required
 dist: trusty
 
+cache:
+    ccache: true
+    apt: true
+    directories:
+        - sdk/gcc
+        - sdk/binutils
+        - sdk/cgen
+        - sdk/epiphany-libs
+        - sdk/gcc
+        - sdk/gcc-infrastructure
+        - sdk/gdb
+        - sdk/newlib
+
 language: c
 
 before_install:
@@ -26,7 +39,7 @@ before_install:
       guile-1.8
 
 script:
-    - mkdir sdk
+    - mkdir -p sdk
     - mv * .* sdk || true
     - ./sdk/download-components.sh --download
     - ./sdk/.travis.sh

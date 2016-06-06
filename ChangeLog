@@ -12,6 +12,19 @@
 
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
+	* .travis.sh: Build with 2 jobs.
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
+	* README: Update links.
+	* README.md: Update links.
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
+	* .travis.yml: Enable ccache, apt, and directory caching.
+
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
 	* .travis.sh: unset CC, LD, AS, CXX and CPP
 
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
