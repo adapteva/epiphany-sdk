@@ -1,3 +1,8 @@
+2016-06-16  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: Set -rpath-link to help libtool find
+	toolchain libraries.
+
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
 	* .travis.sh: Build with 2 jobs.
