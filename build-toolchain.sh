@@ -1161,15 +1161,15 @@ logterm "Ensure these directories are in your PATH and MANPATH"
 # Make the top level link if appropriate
 release_dir="esdk.${RELEASE}"
 if `echo ${id_host} | grep /opt/adapteva/${release_dir} > /dev/null 2>&1` &&
-    [ -d "/opt/adapteva/${release_dir}" ]
+    [ -d "${destdir}opt/adapteva/${release_dir}" ]
 then
-    cd /opt/adapteva
+    cd ${destdir}opt/adapteva
 
     if rm -f esdk && ln -s "${release_dir}" esdk
     then
-	logterm "Top level /opt/adapteva/esdk linked to /opt/adapteva/${release_dir}"
+	logterm "Top level ${destdir}opt/adapteva/esdk linked to ${destdir}opt/adapteva/${release_dir}"
     else
-	logterm "Unable to create link to /opt/adapteva/esdk"
+	logterm "Unable to create link to ${destdir}opt/adapteva/esdk"
     fi
 fi
 
