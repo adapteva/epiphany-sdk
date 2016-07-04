@@ -632,8 +632,9 @@ then
     # Make toolchain host headers and libraries available in build
     if ! "${srcdir}/configure" \
 	CFLAGS="-I${destdir}/${id_gnu}/include -I${destdir}/${id_host}/include $CFLAGS" \
-	LDFLAGS="-L${destdir}/${id_gnu}/lib -L${destdir}/${id_host}/lib $LDFLAGS" \
+	LDFLAGS="-L${destdir}/${id_gnu}/lib -L${destdir}/${id_host}/lib -Wl,-rpath-link=${destdir}${id_gnu}/lib $LDFLAGS" \
 	${host_str} \
+	--enable-esim \
 	--enable-fast-install \
 	--prefix="${id_host}" \
 	--with-target="${target}" \

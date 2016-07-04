@@ -1,3 +1,17 @@
+2016-07-04  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Do not create any top level symlinks in
+	/opt/adapteva. Create symlinks in ${destdir}opt/adapteva.
+
+2015-06-16  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: Pass --enable-esim to configure.
+
+2016-06-16  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: Set -rpath-link to help libtool find
+	toolchain libraries.
+
 2016-04-18  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-libs.sh: Prefix paths in CFLAGS and LDFLAGS
@@ -109,6 +123,12 @@
 	* build-epiphany-libs.sh: Add default toolchain install
 	include and library path to CFLAGS / LDFLAGS when calling
 	configure.
+
+2015-12-04  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh (CFLAGS): Set default value to "-O2 -g". Append
+	"-fPIC" to CFLAGS passed to configure. Needed for building simulator
+	shared library.
 
 2015-12-04  Ola Jeppsson  <ola@adapteva.com>
 
