@@ -165,7 +165,7 @@ echo "Creating the eSDK directory tree..."
 
 mkdir -p ${ESDK_DESTDIR}${ESDK} ${ESDK_DESTDIR}${ESDK}/bsps ${ESDK_DESTDIR}${ESDK}/tools
 mkdir -p ${ESDK_DESTDIR}${HOST}/lib ${ESDK_DESTDIR}${HOST}/include ${ESDK_DESTDIR}${HOST}/bin
-mkdir -p ${ESDK_DESTDIR}${GNU}
+mkdir -p ${ESDK_DESTDIR}${GNU}/epiphany-elf
 
 # Create toolchain symbolic links (force overwrite if exists)
 (
@@ -174,6 +174,8 @@ mkdir -p ${ESDK_DESTDIR}${GNU}
     cd ${ESDK_DESTDIR}${ESDK}/tools
     ln -sTf ${HOSTNAME} host
     ln -sTf ${GNUNAME}  e-gnu
+    cd ${ESDK_DESTDIR}${HOST}
+    ln -sTf ../${GNUNAME}/epiphany-elf epiphany-elf
 )
 
 

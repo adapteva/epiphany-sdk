@@ -1,5 +1,10 @@
 2016-07-13  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Symlink epiphany-elf in host to
+	epiphany-elf in e-gnu toolchain.
+
+2016-07-13  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Build pal host and device together.
 
 2016-07-04  Ola Jeppsson  <ola@adapteva.com>
