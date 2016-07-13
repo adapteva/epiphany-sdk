@@ -253,8 +253,7 @@ fi
 
 # Build order for dependencies is:
 # 1. e-lib
-# 2. pal device
-# 3. pal host
+# 2. pal (host + epiphany device)
 # 4. e-hal (depends on pal) + the rest of epiphany-libs
 
 # Build epiphany-libs (w/o e-hal == only e-lib)
@@ -275,22 +274,8 @@ then
 	exit 1
 fi
 
-# Build pal for device
-export EPIPHANY_HOME=${ESDK_DESTDIR}/${ESDK}
-if ! ./build-pal.sh \
-	${jobs_str} \
-	--install-dir ${GNU}/epiphany-elf \
-	--host epiphany-elf \
-	--destdir ${ESDK_DESTDIR} \
-	${sdk_clean_str};
-then
-	printf "The pal build failed!\n"
-	printf "\nAborting...\n"
-	exit 1
-fi
-unset EPIPHANY_HOME
-
 # Build pal for host
+export EPIPHANY_HOME=${ESDK_DESTDIR}/${ESDK}
 if ! ./build-pal.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
@@ -304,6 +289,7 @@ then
 	printf "\nAborting...\n"
 	exit 1
 fi
+unset EPIPHANY_HOME
 
 # Build e-hal + rest of epiphany-libs
 if ! CFLAGS="-I${HOST}/include ${CFLAGS}" LDFLAGS="-L${HOST}/lib ${LDFLAGS}" \
@@ -321,7 +307,6 @@ then
 	printf "\nAborting...\n"
 	exit 1
 fi
-
 
 # Copy top files
 echo "Copying top files"

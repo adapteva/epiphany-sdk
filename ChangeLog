@@ -1,3 +1,7 @@
+2016-07-13  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build pal host and device together.
+
 2016-07-04  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Do not create any top level symlinks in
