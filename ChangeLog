@@ -3,7 +3,7 @@
 	* build-toolchain.sh: Do not create any top level symlinks in
 	/opt/adapteva. Create symlinks in ${destdir}opt/adapteva.
 
-2015-06-16  Ola Jeppsson  <ola@adapteva.com>
+2016-06-16  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-libs.sh: Pass --enable-esim to configure.
 
