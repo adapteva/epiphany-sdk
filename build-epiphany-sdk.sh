@@ -283,7 +283,7 @@ if ! ./build-pal.sh \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
 	--destdir ${ESDK_DESTDIR} \
-	--config-extra "--enable-device-epiphany" \
+	--config-extra "--enable-device-epiphany --enable-device-epiphany-sim" \
 	${sdk_host_str} \
 	${sdk_clean_str};
 then
