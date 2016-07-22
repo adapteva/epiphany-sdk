@@ -243,7 +243,7 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	if ! ./build-toolchain.sh ${jobs_str} \
 		--install-dir-host ${GNU} \
 		--destdir ${ESDK_DESTDIR} \
-		--enable-werror \
+		--disable-werror \
 		--enable-cgen-maint \
 		${buildarch_install_dir_str} \
 		${host_str} ${toolchain_clean_str}; then

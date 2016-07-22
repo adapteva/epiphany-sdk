@@ -1,5 +1,10 @@
 2016-07-22  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Disable error on warn in toolchain
+	build.
+
+2016-07-22  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh: Enable simulator support in PAL build.
 
 2016-07-13  Ola Jeppsson  <ola@adapteva.com>
