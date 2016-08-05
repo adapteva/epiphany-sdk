@@ -1,3 +1,8 @@
+2016-08-05  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf (epiphany-libs): Switch back to master branch.
+	(pal): Switch back to master branch.
+
 2016-07-22  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh: Disable error on warn in toolchain
