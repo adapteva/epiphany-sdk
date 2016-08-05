@@ -8,7 +8,7 @@
 # Contributor Simon Cook     <simon.cook@embecosm.com>
 # Contributor Ola Jeppsson   <ola@adapteva.com>
 
-# This file is a script to build epiphany-libs
+# This file is a script to build pal
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -66,14 +66,13 @@
 
 # Invocation:
 
-#     ./build-epiphany-libs [--build-dir <dir>]
+#     ./build-pal           [--build-dir <dir>]
 #                           [--build-dir-build <dir>]
 #                           [--build-dir-host <dir>]
 #                           [--host <host-triplet>]
 #                           [--install-dir <dir>]
 #                           [--install-dir-host <dir>]
 #                           [--install-dir-target <dir>]
-#                           [--install-dir-bsps <dir>]
 #                           [--destdir <dir>]
 #                           [--symlink-dir <dir>]
 #                           [--datestamp-install]
@@ -131,8 +130,6 @@
 # --install-dir-target <install_dir>
 
 #     The install directory for e-lib
-
-# --install-dir-bsps <install_dir>
 
 # --destdir <destdir>
 
@@ -240,7 +237,7 @@ basedir=`(cd "$d/.." && pwd)`
 . ${basedir}/sdk/define-release.sh
 
 # Set up a clean log
-logfile=${LOGDIR}/build-epiphany-libs-$(date -u +%F-%H%M).log
+logfile=${LOGDIR}/build-pal-$(date -u +%F-%H%M).log
 rm -f "${logfile}"
 echo "Logging to ${logfile}"
 
@@ -257,14 +254,14 @@ host=
 target="epiphany-elf"
 id_host=
 id_target=
-id_bsps=
+destdir=
 symlink_dir=host
 ds_build=
 ds_host=
 do_clean="--no-clean"
 auto_pull="--auto-pull"
 auto_checkout="--auto-checkout"
-srcdir=${basedir}/epiphany-libs
+srcdir=${basedir}/pal
 jobs=
 load=
 
@@ -301,11 +298,6 @@ case ${opt} in
     --install-dir-target)
 	shift
 	id_target=`absdir "$1"`
-	;;
-
-    --install-dir-bsps)
-	shift
-	id_bsps=`absdir "$1"`
 	;;
 
     --destdir)
@@ -372,7 +364,6 @@ case ${opt} in
         echo "             [--install-dir <dir> ]"
         echo "             [--install-dir-host <dir> ]"
         echo "             [--install-dir-target <dir> ]"
-        echo "             [--install-dir-bsps <dir> ]"
         echo "             [--destdir <dir>]"
         echo "             [--symlink-dir <dir>]"
         echo "             [--datestamp-install]"
@@ -423,7 +414,7 @@ fi
 # Create build directory names if needed.
 if [ "x${bd_host}" = "x" ]
 then
-    bd_host=${basedir}/builds/bd-epiphany-libs-${host_arch}-${RELEASE}
+    bd_host=${basedir}/builds/bd-pal-${host_arch}-${RELEASE}
 fi
 
 
@@ -453,20 +444,12 @@ else
     fi
 fi
 
-if [ "x${id_bsps}" = "x" ]
-then
-    id_bsps_str=
-else
-    id_bsps_str="--with-bsps-dir=${id_bsps}"
-fi
-
 if [ "x${id_target}" = "x" ]
 then
     id_target_str=
 else
     id_target_str="--with-target-prefix=${id_target}"
 fi
-
 
 if [ "x${destdir}" = "x" ]
 then
@@ -512,9 +495,9 @@ logonly "Host architecture:                   ${host_arch}"
 logonly "Host:                                ${target}"
 logonly "Target architecture:                 ${target_arch}"
 logonly "Install directory (host arch):       ${id_host}"
+logonly "Staging directory (destdir):         ${destdir}"
 logonly "Toolchain directory (host arch):     ${id_gnu}"
 logonly "Install directory (target arch):     ${id_target}"
-logonly "Staging directory (destdir):         ${destdir}"
 logonly "Symlink directory:                   ${symlink_dir}"
 logonly "Datestamp (build arch):              ${ds_build}"
 logonly "Datestamp (host arch):               ${ds_host}"
@@ -621,7 +604,7 @@ fi
 #       Python is available?
 if [ ${do_clean} = "--clean" ]
 then
-    logterm "Configuring epiphany-libs..."
+    logterm "Configuring pal..."
     export CFLAGS_FOR_TARGET
     if ! (cd ${srcdir} && ./bootstrap >> "${logfile}" 2>&1)
     then
@@ -631,35 +614,36 @@ then
 
     # Make toolchain host headers and libraries available in build
     if ! "${srcdir}/configure" \
-	CFLAGS="-I${destdir}/${id_gnu}/include -I${destdir}/${id_host}/include $CFLAGS" \
-	LDFLAGS="-L${destdir}/${id_gnu}/lib -L${destdir}/${id_host}/lib -Wl,-rpath-link=${destdir}${id_gnu}/lib $LDFLAGS" \
+	CFLAGS="-I${destdir}/${id_host}/include -I${destdir}${id_gnu}/include $CFLAGS" \
+	LDFLAGS="-L${destdir}/${id_host}/lib -L${destdir}/${id_gnu}/lib $LDFLAGS" \
 	${host_str} \
-	--enable-esim \
+	--disable-benchmark \
+	--disable-examples \
+	--disable-tests \
 	--enable-fast-install \
 	--prefix="${id_host}" \
 	--with-target="${target}" \
 	"${id_target_str}" \
-	"${id_bsps_str}" \
 	${config_extra} >> "${logfile}" 2>&1
     then
-	logterm "ERROR: epiphany-libs configuration for host machine failed."
+	logterm "ERROR: pal configuration for host machine failed."
 	failedbuild
     fi
 fi
 
 # Build everything
-logterm "Building epiphany-libs..."
+logterm "Building pal..."
 if ! make ${parallel} all >> "${logfile}" 2>&1
 then
-  logterm "ERROR: epiphany-libs build failed."
+  logterm "ERROR: pal build failed."
   failedbuild
 fi
 
 # Install everything
-logterm "Installing epiphany-libs..."
+logterm "Installing pal..."
 if ! make ${destdir_str} install >> "${logfile}" 2>&1
 then
-  logterm "Error: epiphany-libs installation failed."
+  logterm "Error: pal installation failed."
   failedbuild
 fi
 
@@ -681,7 +665,7 @@ fi
 
 # Create symbolic links in install directory for epiphany executables and man
 # pages.
-logterm "Creating symbolic links for epiphany-libs"
+logterm "Creating symbolic links for pal"
 
 # Set up the symlink directory if specified. This will be the reporting
 # directory.
@@ -697,7 +681,7 @@ else
     ln -s ${id_base} "${symlink_dir}"
 fi
 
-logterm "epiphany-libs installed at ${report_dir}/bin"
+logterm "pal installed at ${report_dir}/bin"
 logterm "Ensure these directories are in your PATH"
 
 logterm "BUILD COMPLETE: $(date)"

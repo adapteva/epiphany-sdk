@@ -1,3 +1,32 @@
+2016-08-05
+
+	Merged pal-devel
+
+	* define-release.sh: Set release name back to master.
+
+2016-08-05  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf (epiphany-libs): Switch back to master branch.
+	(pal): Switch back to master branch.
+
+2016-07-22  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Disable error on warn in toolchain
+	build.
+
+2016-07-22  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Enable simulator support in PAL build.
+
+2016-07-13  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Symlink epiphany-elf in host to
+	epiphany-elf in e-gnu toolchain.
+
+2016-07-13  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build pal host and device together.
+
 2016-07-04  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh: Do not create any top level symlinks in
@@ -11,6 +40,18 @@
 
 	* build-epiphany-libs.sh: Set -rpath-link to help libtool find
 	toolchain libraries.
+
+2016-04-18  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-libs.sh: Prefix paths in CFLAGS and LDFLAGS
+	with destdir.
+	* build-epiphany-sdk.sh: Pass --destdir to
+	build-epiphany-libs.sh.
+
+2016-04-18  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Set EPIPHANY_HOME when building PAL.
+	* build-pal.sh: Prefix paths in CFLAGS and LDFLAGS with destdir.
 
 2016-04-15  Ola Jeppsson  <ola@adapteva.com>
 
@@ -37,6 +78,11 @@
 
 	* build-epiphany-libs.sh: Fix printing of destdir.
 
+2016-04-15  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Pass --destdir to build-pal.sh
+	* build-pal.sh: Add destdir flag
+
 2016-04-07  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh (CFLAGS): Strip/replace source path to somewhat
@@ -62,6 +108,38 @@
 	* build-epiphany-libs.sh: Likewise.
 	* build-epiphany-sdk.sh: Pass --destdir to
 	build-epiphany-libs.sh and build-toolchain.sh.
+
+2016-03-03  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Add missing backslash.
+
+2016-03-01  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build epiphany-libs (e-hal) with PAL
+	backend enabled.
+	* components.conf (epiphany-libs): Switch to pal-backend branch.
+
+2016-02-26  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build both host and device pal libraries.
+	* build-pal.sh: Don't build benchmark, tests, and examples. Fix
+	CFLAGS and LDFLAGS.
+
+2016-02-26  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build epiphany-libs again.
+	* components.conf: Uncomment epiphany-libs.
+
+2016-02-23  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf: Switch to devel branch of pal.
+
+2016-02-23  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh: Build pal.
+	* build-pal.sh: New file.
+	* components.conf: Add pal entry.
+	* define-release.sh: Set release name to pal-devel.
 
 2015-12-07  Ola Jeppsson  <ola@adapteva.com>
 

@@ -165,7 +165,7 @@ echo "Creating the eSDK directory tree..."
 
 mkdir -p ${ESDK_DESTDIR}${ESDK} ${ESDK_DESTDIR}${ESDK}/bsps ${ESDK_DESTDIR}${ESDK}/tools
 mkdir -p ${ESDK_DESTDIR}${HOST}/lib ${ESDK_DESTDIR}${HOST}/include ${ESDK_DESTDIR}${HOST}/bin
-mkdir -p ${ESDK_DESTDIR}${GNU}
+mkdir -p ${ESDK_DESTDIR}${GNU}/epiphany-elf
 
 # Create toolchain symbolic links (force overwrite if exists)
 (
@@ -174,6 +174,8 @@ mkdir -p ${ESDK_DESTDIR}${GNU}
     cd ${ESDK_DESTDIR}${ESDK}/tools
     ln -sTf ${HOSTNAME} host
     ln -sTf ${GNUNAME}  e-gnu
+    cd ${ESDK_DESTDIR}${HOST}
+    ln -sTf ../${GNUNAME}/epiphany-elf epiphany-elf
 )
 
 
@@ -241,7 +243,7 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	if ! ./build-toolchain.sh ${jobs_str} \
 		--install-dir-host ${GNU} \
 		--destdir ${ESDK_DESTDIR} \
-		--enable-werror \
+		--disable-werror \
 		--enable-cgen-maint \
 		${buildarch_install_dir_str} \
 		${host_str} ${toolchain_clean_str}; then
@@ -251,17 +253,59 @@ if [ "$ESDK_BUILD_TOOLCHAIN" != "no" ]; then
 	fi
 fi
 
-# Build epiphany-libs
+# Build order for dependencies is:
+# 1. e-lib
+# 2. pal (host + epiphany device)
+# 4. e-hal (depends on pal) + the rest of epiphany-libs
+
+# Build epiphany-libs (w/o e-hal == only e-lib)
+# We must clean because we share build directory w/ e-hal build
+# below (ugly but works !!!)
 if ! ./build-epiphany-libs.sh \
 	${jobs_str} \
 	--install-dir-host   ${HOST} \
 	--install-dir-target ${GNU}/epiphany-elf \
 	--install-dir-bsps   ${ESDK}/bsps \
 	--destdir ${ESDK_DESTDIR} \
+	--clean \
+	--config-extra "--disable-ehal --enable-elib" \
+	${sdk_host_str};
+then
+	printf "The epiphany-libs (elib) build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
+fi
+
+# Build pal for host
+export EPIPHANY_HOME=${ESDK_DESTDIR}/${ESDK}
+if ! ./build-pal.sh \
+	${jobs_str} \
+	--install-dir-host   ${HOST} \
+	--install-dir-target ${GNU}/epiphany-elf \
+	--destdir ${ESDK_DESTDIR} \
+	--config-extra "--enable-device-epiphany --enable-device-epiphany-sim" \
 	${sdk_host_str} \
 	${sdk_clean_str};
 then
-	printf "The epiphany-libs build failed!\n"
+	printf "The pal build failed!\n"
+	printf "\nAborting...\n"
+	exit 1
+fi
+unset EPIPHANY_HOME
+
+# Build e-hal + rest of epiphany-libs
+if ! CFLAGS="-I${HOST}/include ${CFLAGS}" LDFLAGS="-L${HOST}/lib ${LDFLAGS}" \
+     ./build-epiphany-libs.sh \
+	${jobs_str} \
+	--install-dir-host   ${HOST} \
+	--install-dir-target ${GNU}/epiphany-elf \
+	--install-dir-bsps   ${ESDK}/bsps \
+	--destdir ${ESDK_DESTDIR} \
+	--clean \
+	--config-extra "--disable-elib --enable-ehal --enable-pal-target" \
+	${sdk_host_str};
+then
+	printf "The epiphany-libs (e-hal) build failed!\n"
 	printf "\nAborting...\n"
 	exit 1
 fi
@@ -278,4 +322,3 @@ tar czf ${ESDK_BUILDROOT}/esdk.${RELEASE}.tar.gz -C ${ESDK_DESTDIR}${ESDK_PREFIX
 
 printf "The Epiphany SDK Build Completed successfully\n"
 exit 0
-
