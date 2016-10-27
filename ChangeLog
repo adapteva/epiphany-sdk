@@ -1,3 +1,10 @@
+2016-10-27  Ola Jeppsson  <ola@adapteva.com>
+
+	* components.conf (binutils): Update to 2.27 branch.
+	(gdb): Update to 7.12 branch.
+	(cgen): newabi branch was merge into epiphany cgen mainline
+	branch.
+
 2016-08-05
 
 	Merged pal-devel
