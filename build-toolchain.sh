@@ -1036,12 +1036,6 @@ then
 	    failedbuild
 	fi
 
-	# We add the include and library paths to CFLAGS/LDFLAGS respectively to
-	# make them available for the real build.
-	CFLAGS="-I${staging_host}/include -I${destdir}${id_host}/include $CFLAGS"
-	LDFLAGS="-L${staging_host}/lib -L${destdir}${id_host}/lib $LDFLAGS"
-	export CFLAGS
-	export LDFLAGS
     fi
 
     # We also first build expat in the case of cross compilation so a
@@ -1080,6 +1074,17 @@ then
 	    failedbuild
 	fi
     fi
+
+    # We add the include and library paths to CFLAGS/CXXFLAGS/CPPFLAGS/LDFLAGS
+    # respectively to make them available for the real build.
+    CFLAGS="-I${staging_host}/include -I${destdir}${id_host}/include $CFLAGS"
+    CXXFLAGS="-I${staging_host}/include -I${destdir}${id_host}/include $CXXFLAGS"
+    CPPFLAGS="-I${staging_host}/include -I${destdir}${id_host}/include $CPPFLAGS"
+    LDFLAGS="-L${staging_host}/lib -L${destdir}${id_host}/lib $LDFLAGS"
+    export CFLAGS
+    export CXXFLAGS
+    export CPPFLAGS
+    export LDFLAGS
 fi
 
 

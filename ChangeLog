@@ -1,5 +1,10 @@
 2016-10-31  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-toolchain.sh (CXXFLAGS) (CPPFLAGS): Append staging and
+	install dir to search path.
+
+2016-10-31  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Add fPIC to CXXFLAGS.
 
 2016-10-31  Ola Jeppsson  <ola@adapteva.com>
