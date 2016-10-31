@@ -257,6 +257,17 @@
 
 #     Defaults --gmp --mpfr --mpc --isl --cloog --ncurses.
 
+# --expat | --no-expat
+
+#     Indicate that the corresponding GDB infrastructure component exists as a
+#     source directory within the base directory and should be linked into the
+#     unified source directory.  With the "--no-" versions, indicate the
+#     component is not available as a source directory, and that the compiler
+#     should rely on the installed developer package for the relevant headers
+#     and libraries.
+
+#     Defaults --expat
+
 # --target-cflags <flags>
 
 #     Specify C flags to be used when building target libraries (libgcc.a,
@@ -347,6 +358,7 @@ do_mpc="--mpc"
 do_isl="--isl"
 do_cloog="--no-cloog"
 do_ncurses="--ncurses"
+do_expat="--expat"
 
 # The assembler and/or linker are broken so that constant merging doesn't
 # work.
@@ -476,6 +488,10 @@ case ${opt} in
 	do_ncurses="$1"
 	;;
 
+    --expat | --no-expat)
+	do_expat="$1"
+	;;
+
     --target-cflags)
 	shift
 	CFLAGS_FOR_TARGET="$1"
@@ -520,6 +536,7 @@ case ${opt} in
         echo "             [--isl | --no-isl]"
         echo "             [--cloog | --no-cloog]"
         echo "             [--ncurses | --no-ncurses]"
+        echo "             [--expat | --no-expat]"
         echo "             [--target-cflags <flags>]"
         echo "             [--config-extra <flags>]"
         echo "             [--disable-werror | --enable-werror]"
@@ -674,6 +691,7 @@ logonly "Use MPC source:                 ${do_mpc}"
 logonly "Use ISL source:                 ${do_isl}"
 logonly "Use Cloog source:               ${do_cloog}"
 logonly "Use ncurses source:             ${do_ncurses}"
+logonly "Use expat source:               ${do_expat}"
 logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
 logonly "CFLAGS:                         ${CFLAGS}"
 logonly "Extra config flags:             ${config_extra}"
@@ -774,6 +792,15 @@ then
 else
     infra_exclude="ncurses ${infra_exclude}"
 fi
+
+if [ "${do_expat}" = "--expat" ]
+then
+    check_dir_exists "gcc-infrastructure/expat" || res="failure"
+    infra_dir="gcc-infrastructure"
+else
+    infra_exclude="expat ${infra_exclude}"
+fi
+
 
 if [ "${res}" != "success" ]
 then
@@ -1009,6 +1036,43 @@ then
 	LDFLAGS="-L${staging_host}/lib -L${destdir}${id_host}/lib $LDFLAGS"
 	export CFLAGS
 	export LDFLAGS
+    fi
+
+    # We also first build expat in the case of cross compilation so a
+    # suitable XML library is available for GDB.
+    if [ "${do_expat}" = "--expat" ]
+    then
+	bd_expat="${bd_host}-expat"
+	rm -rf "${bd_expat}"
+	if ! mkdir -p "${bd_expat}"
+	then
+	    logterm "ERROR: Failed to create expat build directory."
+	fi
+
+	if ! cd "${bd_expat}"; then
+	    logterm "ERROR: Could not change to build directory ${bd_expat}."
+	    failedbuild
+	fi
+
+	logterm "Building expat for host..."
+	if ! "${unisrc_dir}/expat/configure" ${host_str} --prefix="${staging_host}" \
+	    >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to configure expat for host"
+	    failedbuild
+	fi
+
+	if ! make ${parallel} buildlib >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to build expat for host"
+	    failedbuild
+	fi
+
+	if ! make installlib >> "${logfile}" 2>&1
+	then
+	    logterm "ERROR: Unable to install expat for host"
+	    failedbuild
+	fi
     fi
 fi
 

@@ -1,3 +1,8 @@
+2016-10-31  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh: Add expat build recipe.
+	* components.conf (expat): Add component.
+
 2016-10-27  Ola Jeppsson  <ola@adapteva.com>
 
 	* components.conf (binutils): Update to 2.27 branch.
