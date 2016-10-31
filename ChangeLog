@@ -1,5 +1,10 @@
 2016-10-31  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-toolchain.sh (ncurses): Build shared library.
+	Use ncurses 5 ABI.
+
+2016-10-31  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Add expat build recipe.
 	* components.conf (expat): Add component.
 

@@ -1011,6 +1011,7 @@ then
 	logterm "Building ncurses for host..."
 	if ! "${unisrc_dir}/ncurses/configure" ${host_str} --prefix="${staging_host}" \
 	    --without-progs --without-ada --without-manpages --without-tests \
+	    --with-abi-version=5 --with-shared \
 	    --with-terminfo-dirs="${staging_host}/install/share/terminfo:/usr/share/terminfo"\
 	    >> "${logfile}" 2>&1
 	then
