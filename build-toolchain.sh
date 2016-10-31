@@ -950,8 +950,11 @@ then
 	logterm "Configuring build machine tool chain..."
 	OLD_CFLAGS_FOR_TARGET=${CFLAGS_FOR_TARGET}
 	CFLAGS_FOR_TARGET=
+	OLD_CXXFLAGS_FOR_TARGET=${CXXFLAGS_FOR_TARGET}
+	CXXFLAGS_FOR_TARGET=
 	if ! "${unisrc_dir}/configure" \
 	    CFLAGS="${CFLAGS} -fPIC" \
+	    CXXFLAGS="${CXXFLAGS} -fPIC" \
 	    --target=epiphany-elf \
 	    --with-pkgversion="Epiphany toolchain ${RELEASE}" \
 	    --with-bugurl=support-sdk@adapteva.com \
@@ -990,6 +993,8 @@ then
 	    logterm "Error: Failed to created tools for build machine."
 	    failedbuild
 	fi
+	CFLAGS_FOR_TARGET=${OLD_CFLAGS_FOR_TARGET}
+	CXXFLAGS_FOR_TARGET=${OLD_CXXFLAGS_FOR_TARGET}
     fi
 
     # We also first build ncurses in the case of cross compilation such a
@@ -1116,9 +1121,11 @@ if [ ${do_clean_host} = "--clean-host" ]
 then
     logterm "Configuring tool chain..."
     export CFLAGS_FOR_TARGET
+    export CXXFLAGS_FOR_TARGET
     # Append -fPIC to CFLAGS. Needed for building simulator shared library.
     if ! "${unisrc_dir}/configure" \
 	CFLAGS="${CFLAGS} -fPIC" \
+	CXXFLAGS="${CXXFLAGS} -fPIC" \
 	--target=epiphany-elf ${host_str} \
 	--with-pkgversion="Epiphany toolchain ${RELEASE}" \
 	--with-bugurl=support-sdk@adapteva.com \

@@ -1,5 +1,9 @@
 2016-10-31  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-toolchain.sh: Add fPIC to CXXFLAGS.
+
+2016-10-31  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh (ncurses): Build shared library.
 	Use ncurses 5 ABI.
 
