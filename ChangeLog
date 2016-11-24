@@ -1,5 +1,11 @@
 2016-11-24  Ola Jeppsson  <ola@adapteva.com>
 
+	* components.conf (epiphany-libs): Use 2016.11 branch.
+	(pal): Ditto.
+	* define-release.sh: Set version number to 2016.11
+
+2016-11-24  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-epiphany-sdk.sh (CFLAGS_FOR_TARGET): Provide
 	-fdebug-prefix-map. Export.
 	(CXXFLAGS_FOR_TARGET): Ditto.
