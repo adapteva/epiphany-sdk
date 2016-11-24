@@ -195,7 +195,10 @@ else
 	sdk_host_str="--host ${ELIBS_CANONICAL_HOST}"
 fi
 
-
+CFLAGS_FOR_TARGET=${CFLAGS_FOR_TARGET:-"-O2"}
+CXXFLAGS_FOR_TARGET=${CXXFLAGS_FOR_TARGET:-"-O2"}
+CFLAGS=${CFLAGS:-"-O2"}
+CXXFLAGS=${CFLAGS:-"-O2"}
 
 if [ "xyes" = "x$DEBUG" ]; then
 	export CFLAGS="-g ${CFLAGS}"
@@ -207,6 +210,8 @@ fi
 
 export CFLAGS="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CFLAGS}"
 export CXXLAGS="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CXXFLAGS}"
+export CFLAGS_FOR_TARGET="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CFLAGS_FOR_TARGET}"
+export CXXLAGS_FOR_TARGET="-fdebug-prefix-map=${basedir}=${ESDK}/src ${CXXFLAGS_FOR_TARGET}"
 
 if [ "xyes" = "x$CLEAN" ]; then
 	toolchain_clean_str="--clean-build --clean-host"

@@ -362,8 +362,10 @@ do_expat="--expat"
 
 # The assembler and/or linker are broken so that constant merging doesn't
 # work.
-CFLAGS_FOR_TARGET="-O2 -g"
+CFLAGS_FOR_TARGET=${CFLAGS_FOR_TARGET:-"-O2 -g"}
+CXXFLAGS_FOR_TARGET=${CXXFLAGS_FOR_TARGET:-"-O2 -g"}
 CFLAGS=${CFLAGS:-"-O2 -g"}
+CXXFLAGS=${CXXFLAGS:-"-O2 -g"}
 config_extra=""
 disable_werror="--disable-werror"
 
@@ -693,7 +695,9 @@ logonly "Use Cloog source:               ${do_cloog}"
 logonly "Use ncurses source:             ${do_ncurses}"
 logonly "Use expat source:               ${do_expat}"
 logonly "Target CFLAGS:                  ${CFLAGS_FOR_TARGET}"
+logonly "Target CXXFLAGS:                ${CXXFLAGS_FOR_TARGET}"
 logonly "CFLAGS:                         ${CFLAGS}"
+logonly "CXXFLAGS:                       ${CXXFLAGS}"
 logonly "Extra config flags:             ${config_extra}"
 
 
@@ -1120,15 +1124,18 @@ unset guile18
 
 # Configure the entire tool chain, but only if we are doing a clean build
 
+export CFLAGS_FOR_TARGET
+export CXXFLAGS_FOR_TARGET
+
 # @todo Should we enable Python support in GDB? If so do we need to check
 #       Python is available?
 if [ ${do_clean_host} = "--clean-host" ]
 then
     logterm "Configuring tool chain..."
-    export CFLAGS_FOR_TARGET
-    export CXXFLAGS_FOR_TARGET
     # Append -fPIC to CFLAGS. Needed for building simulator shared library.
     if ! "${unisrc_dir}/configure" \
+	CFLAGS_FOR_TARGET="${CFLAGS_FOR_TARGET}" \
+	CXXFLAGS_FOR_TARGET="${CXXFLAGS_FOR_TARGET}" \
 	CFLAGS="${CFLAGS} -fPIC" \
 	CXXFLAGS="${CXXFLAGS} -fPIC" \
 	--target=epiphany-elf ${host_str} \

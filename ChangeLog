@@ -1,3 +1,12 @@
+2016-11-24  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-epiphany-sdk.sh (CFLAGS_FOR_TARGET): Provide
+	-fdebug-prefix-map. Export.
+	(CXXFLAGS_FOR_TARGET): Ditto.
+	* build-toolchain.sh (CFLAGS_FOR_TARGET): Pass to tool chain
+	configure.
+	(CXXFLAGS_FOR_TARGET): Ditto.
+
 2016-10-31  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-toolchain.sh (CXXFLAGS) (CPPFLAGS): Append staging and
