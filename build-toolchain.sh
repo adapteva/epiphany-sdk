@@ -743,7 +743,7 @@ check_dir_exists "newlib"   || res="failure"
 check_dir_exists "cgen"     || res="failure"
 check_dir_exists "sdk"      || res="failure"
 
-component_dirs="newlib gdb binutils cgen gcc"
+component_dirs="newlib cgen gcc gdb binutils"
 
 # Optional GCC infrastructure components
 infra_dir=""

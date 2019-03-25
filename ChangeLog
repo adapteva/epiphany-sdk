@@ -1,3 +1,16 @@
+2019-03-24  Ola Jeppsson  <ola@adapteva.com>
+
+	* build-toolchain.sh (component_dirs): Adjust order.
+	* components.conf: Update versions to latest
+	releases.
+	(toolchain:gcc): Use epiphany-gcc-8 branch.
+	(toolchain:binutils): Use epiphany-binutils-2.32 branch.
+	(toolchain:gdb): Use epiphany-gdb-8.2 branch.
+	(toolchain:newlib): Update to epiphany-newlib-3.0 branch.
+	(gccinfra): Update to match recommended GCC 8.3 versions.
+	(other:ncurses): Update to 6.1
+	(other:expat): Update to 2.2.6
+
 2016-11-24  Ola Jeppsson  <ola@adapteva.com>
 
 	* build-epiphany-sdk.sh (CFLAGS_FOR_TARGET): Provide
