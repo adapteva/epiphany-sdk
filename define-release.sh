@@ -40,13 +40,13 @@
 # Epiphany releases have the naming convention:
 
 #   <year>.<month>[.<patch>]
-RELEASE_MAJOR="2014"
-RELEASE_MINOR="11"
+RELEASE_MAJOR="2019"
+RELEASE_MINOR="1"
 RELEASE_PATCH=""
 
 # The full release version
 RELEASE="${RELEASE_MAJOR}.${RELEASE_MINOR}${RELEASE_PATCH}"
-RELEASE="master"
+#RELEASE="master"
 
 # Create a common log directory for all logs in this and sub-scripts
 LOGDIR=${basedir}/logs/${RELEASE}
