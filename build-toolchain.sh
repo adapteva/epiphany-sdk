@@ -1059,20 +1059,20 @@ then
 	fi
 
 	logterm "Building expat for host..."
-	if ! "${unisrc_dir}/expat/configure" ${host_str} --prefix="${staging_host}" \
+	if ! "${unisrc_dir}/expat/configure" ${host_str} --prefix="${staging_host}" --without-xmlwf \
 	    >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to configure expat for host"
 	    failedbuild
 	fi
 
-	if ! make ${parallel} buildlib >> "${logfile}" 2>&1
+	if ! make ${parallel} >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to build expat for host"
 	    failedbuild
 	fi
 
-	if ! make installlib >> "${logfile}" 2>&1
+	if ! make install >> "${logfile}" 2>&1
 	then
 	    logterm "ERROR: Unable to install expat for host"
 	    failedbuild
