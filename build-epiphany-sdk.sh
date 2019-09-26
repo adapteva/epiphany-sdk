@@ -315,15 +315,24 @@ then
 	exit 1
 fi
 
+res="success"
+
 # Copy top files
 echo "Copying top files"
-cp -d README    ${ESDK_DESTDIR}${ESDK}
-cp -d COPYING   ${ESDK_DESTDIR}${ESDK}
-cp -d setup.sh  ${ESDK_DESTDIR}${ESDK}
-cp -d setup.csh ${ESDK_DESTDIR}${ESDK}
+cp -d README    ${ESDK_DESTDIR}${ESDK} || res="failure"
+cp -d COPYING   ${ESDK_DESTDIR}${ESDK} || res="failure"
+cp -d setup.sh  ${ESDK_DESTDIR}${ESDK} || res="failure"
+cp -d setup.csh ${ESDK_DESTDIR}${ESDK} || res="failure"
 
 echo "Creating tarball"
-tar czf ${ESDK_BUILDROOT}/esdk.${RELEASE}.tar.gz -C ${ESDK_DESTDIR}${ESDK_PREFIX} esdk.${RELEASE}
+tar czf ${ESDK_BUILDROOT}/esdk.${RELEASE}.tar.gz \
+	-C ${ESDK_DESTDIR}${ESDK_PREFIX} esdk.${RELEASE} || res="failure"
+
+if [ "x${res}" != "xsuccess" ]
+then
+	echo "Packaging failed!"
+	exit 1
+fi
 
 printf "The Epiphany SDK Build Completed successfully\n"
 exit 0

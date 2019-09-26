@@ -1,5 +1,9 @@
 2019-09-25  Ola Jeppsson  <ola@adapteva.com>
 
+	* build-epiphany-sdk.sh: Detect errors when copying files.
+
+2019-09-25  Ola Jeppsson  <ola@adapteva.com>
+
 	* build-toolchain.sh: Fix expat build. Disable xmlwf.
 	Adjust for missing buildlib and installlib makefile targets in
 	newer releases.
